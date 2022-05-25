@@ -1,0 +1,40 @@
+@import 'antd/dist/antd.css';
+
+// 滚动条美化
+.scroll-bar{
+  overflow: auto;
+  &::-webkit-scrollbar{
+    width: 8px;
+    height: 1px;
+  }
+  &::-webkit-scrollbar-thumb{
+    box-shadow: inset 0 0 5px rgba(24, 144, 255,.2);
+    background: rgba(82, 83, 83, 0.2);
+    border-radius: 4px;
+  }
+  &::-webkit-scrollbar-track{
+    border-radius: 8px;
+    background: rgba(255,255,255,0.1);
+  }
+}
+
+
+// antd菜单收起超出处理
+ul.ant-menu.ant-menu-root.ant-menu-vertical.ant-menu-dark.ant-menu-inline-collapsed{
+  max-width: 100%;
+}
+
+// antd隐藏日历年月切换
+.hide-mode-switch-calendar{
+  .ant-picker-calendar-mode-switch{
+    display: none;
+  }
+}
+
+
+// 左侧父菜单宽度处理
+.ant-layout-sider-collapsed.fMenuContainer{
+  min-width: auto !important;
+  flex: 0 0 55px !important;
+  width: 55px !important;
+}
