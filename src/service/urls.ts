@@ -244,8 +244,8 @@ export const apisForSDK: Apis<ApiIdForSDK> = [
   },
   {
     id: 'envlist',
-    url: '/packer/admin/system-env/list',
-    name: '获取环境列表',
+    url: '/packer/admin/systemEnv',
+    name: '环境列表',
     allowEmpty: true,
     urlTranform: ({ url, state }) => {
       const apiUrl = getApiUrl({ state })

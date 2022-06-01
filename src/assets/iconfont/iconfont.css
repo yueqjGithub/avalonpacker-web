@@ -1,16 +1,20 @@
 @font-face {
   font-family: "iconfont"; /* Project id 3152052 */
-  src: url('iconfont.woff2?t=1648434253291') format('woff2'),
-       url('iconfont.woff?t=1648434253291') format('woff'),
-       url('iconfont.ttf?t=1648434253291') format('truetype');
+  src: url('iconfont.woff2?t=1653877519448') format('woff2'),
+       url('iconfont.woff?t=1653877519448') format('woff'),
+       url('iconfont.ttf?t=1653877519448') format('truetype');
 }
 
 .iconfont {
   font-family: "iconfont" !important;
-  /* font-size: 16px; */
+  font-size: 16px;
   font-style: normal;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+.icon-huanjingjiance:before {
+  content: "\e60f";
 }
 
 .icon-app:before {

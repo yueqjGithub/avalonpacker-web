@@ -73,16 +73,16 @@ const Main = ({ state, dispatch }: Props) => {
     return result
   }, [motherAll, currentGame])
   const permissionList = {
-    a: hasPermission({ state, moduleName: '出包工具', action: '添加打包记录' }),
-    upload: hasPermission({ state, moduleName: '出包工具', action: '上传母包' }),
-    d: hasPermission({ state, moduleName: '出包工具', action: '删除' }),
-    setPlugins: hasPermission({ state, moduleName: '出包工具', action: '打包记录设置插件' }),
-    setMedia: hasPermission({ state, moduleName: '出包工具', action: '打包记录设置媒体标识' }),
-    getChannelVersion: hasPermission({ state, moduleName: '出包工具', action: '获取渠道版本' }),
-    getChannelSign: hasPermission({ state, moduleName: '出包工具', action: '渠道签名文件列表' }),
-    u: hasPermission({ state, moduleName: '出包工具', action: '更新打包记录' }),
-    do: hasPermission({ state, moduleName: '出包工具', action: '打包' }),
-    download: hasPermission({ state, moduleName: '出包工具', action: '获取下载链接' })
+    a: hasPermission({ state, moduleName: '配置管理', action: '添加打包记录' }),
+    upload: hasPermission({ state, moduleName: '配置管理', action: '上传母包' }),
+    d: hasPermission({ state, moduleName: '配置管理', action: '删除' }),
+    setPlugins: hasPermission({ state, moduleName: '配置管理', action: '打包记录设置插件' }),
+    setMedia: hasPermission({ state, moduleName: '配置管理', action: '打包记录设置媒体标识' }),
+    getChannelVersion: hasPermission({ state, moduleName: '配置管理', action: '获取渠道版本' }),
+    getChannelSign: hasPermission({ state, moduleName: '配置管理', action: '渠道签名文件列表' }),
+    u: hasPermission({ state, moduleName: '配置管理', action: '更新打包记录' }),
+    do: hasPermission({ state, moduleName: '配置管理', action: '打包' }),
+    download: hasPermission({ state, moduleName: '配置管理', action: '获取下载链接' })
   }
   const cancelPayload: any = {}
   const tableDatas = useMemo(() => {

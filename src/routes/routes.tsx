@@ -21,9 +21,10 @@ export const routeConfig:RouteSingle[] = [
         path: '/setGame',
         auth: false,
         isMenu: false,
-        menuName: '游戏管理',
+        menuName: '应用管理',
         icon: <i className='iconfont icon-app'></i>,
-        component: SetGame
+        component: SetGame,
+        parent: '/common'
       },
       {
         path: '/channel',
@@ -51,19 +52,28 @@ export const routeConfig:RouteSingle[] = [
         icon: <i className='iconfont icon-duomeiti-'></i>,
         component: lazy(() => import('../pages/mediaFlag')),
         parent: '/common'
+      },
+      {
+        path: '/env',
+        menuName: '环境配置',
+        isMenu: true,
+        auth: true,
+        icon: <i className='iconfont icon-huanjingjiance'></i>,
+        component: lazy(() => import('../pages/envSetting')),
+        parent: '/common'
       }
     ]
   },
   {
     path: '/tools',
-    menuName: '打包工具',
+    menuName: '分包工具',
     auth: true,
     isMenu: true,
     icon: <ToolOutlined />,
     childrens: [
       {
         path: '/packerrecord',
-        menuName: '出包工具',
+        menuName: '配置管理',
         isMenu: true,
         auth: true,
         component: lazy(() => import('../pages/packerRecord')),
