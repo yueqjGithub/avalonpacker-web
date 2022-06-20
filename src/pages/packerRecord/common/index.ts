@@ -24,6 +24,7 @@ export type RecordDataRow = {
   couldDownload: boolean
   ftpPath?: string
   motherIsFtp: 1 | 0
+  configName: string
 }
 
 export const statusEnum = [

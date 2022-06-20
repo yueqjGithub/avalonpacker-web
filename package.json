@@ -16,7 +16,7 @@
     "@types/lodash": "^4.14.172",
     "@types/moment": "^2.13.0",
     "@types/react-router-dom": "^5.1.8",
-    "antd": "^4.17.3",
+    "antd": "^4.21.3",
     "avalon-antd-util-client": "^2.1.47",
     "avalon-iam-util-client": "^1.0.73",
     "avalon-iam-util-global": "^1.6.67",
