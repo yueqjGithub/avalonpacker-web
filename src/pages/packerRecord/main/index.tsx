@@ -350,7 +350,7 @@ const Main = ({ state, dispatch }: Props) => {
                       onChange={async (val, selectedOptions) => {
                         const result: Partial<RecordDataRow> = {
                           motherIsFtp: selectedOptions[1].path ? 1 : 0,
-                          sourceName: val[1]
+                          sourceName: val[1] as string
                         }
                         if (selectedOptions[1].path) {
                           result.ftpPath = selectedOptions[1].path

@@ -13,7 +13,7 @@ const Channel = ({ state, dispatch }: Props) => {
     <PageContainer
       state={state}
       dispatch={dispatch}
-      data={[{ id: 'querySourceList', data: { appId: currentGame } }, { id: 'envlist' }, { id: 'channel' }, { id: 'mediaflag' }, { id: 'pluginstypes' }, { id: 'plugins' }]}
+      data={[{ id: 'querySourceList', data: { appId: currentGame } }, { id: 'envlist', data: { isEnable: 1 } }, { id: 'channel' }, { id: 'mediaflag' }, { id: 'pluginstypes' }, { id: 'plugins' }]}
     >
       <Main state={state} dispatch={dispatch}></Main>
     </PageContainer>
