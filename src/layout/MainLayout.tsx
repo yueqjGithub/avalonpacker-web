@@ -8,6 +8,7 @@ import { routeConfig } from '../routes/routes'
 import CurrentShow from '../components/currentShow'
 import { useHistory } from 'react-router-dom'
 import { didShowThisMenu } from '../utils/utils'
+
 type Props = {
   state: State
   children: Element | JSX.Element,
@@ -22,7 +23,7 @@ const MainLayout = (props: Props) => {
   const [collapsed, setColl] = React.useState(false)
   const history = useHistory()
   const commonMenus = React.useMemo(() => {
-    const result: RouteSingle[] = []
+    const result: any[] = []
     routeConfig.filter(item => item.isCommon).forEach(item => {
       item.childrens && item.childrens.forEach(d => {
         if (!d.auth || didShowThisMenu({ state, moduleName: d.menuName! })) {
@@ -71,10 +72,17 @@ const MainLayout = (props: Props) => {
                       theme={menuTheme}
                       selectedKeys={selectedKeys}
                       onSelect={({ key, domEvent }) => routeHandler(key, domEvent)}
+                      items={commonMenus.map(item => {
+                        return {
+                          key: item.path,
+                          label: item.menuName,
+                          icon: item.icon
+                        }
+                      })}
                     >
-                      {
+                      {/* {
                         commonMenus.map(item => <Menu.Item key={item.path} icon={item.icon || <></>}>{item.menuName}</Menu.Item>)
-                      }
+                      } */}
                     </Menu>
                   </div>
                 </Layout.Sider>

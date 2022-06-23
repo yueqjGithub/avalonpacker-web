@@ -1,7 +1,6 @@
 import React from 'react'
 import { State } from '../../store/state'
 import { Menu, MenuTheme } from 'antd'
-import SubMenu from 'antd/lib/menu/SubMenu'
 import { useHistory } from 'react-router-dom'
 import { didShowThisMenu } from '../../utils/utils'
 
@@ -28,18 +27,16 @@ const filterRoutes = (state:State, list:RouteSingle[], routeHandler:RouteMethod)
     if (item.childrens) {
       const willShow = item.childrens.some(d => didShowThisMenu({ state, moduleName: d.menuName! }))
       return willShow
-        ? (
-                <SubMenu key={item.path} title={
-                  <>
-                    {item.icon ? item.icon : <></>}
-                    <span>{item.menuName}</span>
-                  </>
-                }>{filterRoutes(state, item.childrens, routeHandler)}</SubMenu>
-          )
+        ? {
+            key: item.path,
+            label: item.menuName,
+            icon: item.icon,
+            children: filterRoutes(state, item.childrens, routeHandler)
+          }
         : ''
     } else {
       const willShow = !item.auth || didShowThisMenu({ state, moduleName: item.menuName! })
-      return willShow ? <Menu.Item key={item.path} icon={item.icon || <></>} title={item.menuName}>{item.menuName}</Menu.Item> : ''
+      return willShow ? { key: item.path, label: item.menuName, icon: null } : ''
     }
   })
   return result
@@ -69,8 +66,8 @@ const CusMenu = (props: Props) => {
                 defaultSelectedKeys={selectedKeys}
                 defaultOpenKeys={[defaultOpenKeys]}
                 onSelect={({ key }) => routeHandler(key)}
+                items={filterRoutes(state, routeConfig, routeHandler)}
             >
-                {filterRoutes(state, routeConfig, routeHandler)}
             </Menu>
         </div>
   )

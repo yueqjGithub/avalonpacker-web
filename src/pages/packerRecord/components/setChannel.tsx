@@ -16,11 +16,12 @@ type FormType = {
 }
 
 const SetChannel = ({ channelList, state, editSuccess }: Props) => {
-  const { currentGame } = state
+  const { currentGame, user } = state
   const [loading, setLoading] = React.useState<boolean>(false)
   const [form] = Form.useForm<FormType>()
   const submitHandler = async (val: FormType) => {
     const requestData = {
+      createAs: user.username,
       appId: currentGame,
       ...val
     }
