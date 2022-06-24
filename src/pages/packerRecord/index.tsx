@@ -8,12 +8,11 @@ type Props = {
 }
 
 const Channel = ({ state, dispatch }: Props) => {
-  const { currentGame } = state
   return (
     <PageContainer
       state={state}
       dispatch={dispatch}
-      data={[{ id: 'querySourceList', data: { appId: currentGame } }, { id: 'envlist' }, { id: 'channel' }, { id: 'mediaflag' }, { id: 'pluginstypes' }, { id: 'plugins' }]}
+      data={[{ id: 'envlist' }, { id: 'channel' }, { id: 'mediaflag' }, { id: 'pluginstypes' }, { id: 'plugins' }]}
     >
       <Main state={state} dispatch={dispatch}></Main>
     </PageContainer>

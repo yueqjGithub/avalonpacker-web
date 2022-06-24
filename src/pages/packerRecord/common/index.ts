@@ -25,6 +25,9 @@ export type RecordDataRow = {
   ftpPath?: string
   motherIsFtp: 1 | 0
   configName: string
+  createAs: string
+  lastUpdateAs: string
+  updateTime: string
 }
 
 export const statusEnum = [

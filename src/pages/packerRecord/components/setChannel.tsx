@@ -21,7 +21,7 @@ const SetChannel = ({ channelList, state, editSuccess }: Props) => {
   const [form] = Form.useForm<FormType>()
   const submitHandler = async (val: FormType) => {
     const requestData = {
-      createAs: user.username,
+      lastUpdateAs: user.username,
       appId: currentGame,
       ...val
     }

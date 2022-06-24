@@ -13,7 +13,6 @@ import EditModule from '../components/editModule'
 import PluginsSetting from '../components/setPlugins'
 import MediaSetting from '../components/setMedia'
 // import FailReason from '../components/failReason'
-import dayjs from 'dayjs'
 import { PermissionHoc } from '../../../components/permissionHOC'
 
 type Props = {
@@ -29,6 +28,17 @@ const Main = ({ state, dispatch }: Props) => {
   const { currentGame } = state
   const { data = [], loading } = getApiDataState<RecordDataRow[]>({ apiId, state })
   const { data: channelList = [] } = getApiDataState<ChannelDataRow[]>({ apiId: 'channel', state })
+  // 混合渠道和渠道已有配置数量
+  const channelWithConfList = useMemo(() => {
+    const result:Array<ChannelDataRow & { count: number }> = []
+    channelList.forEach(item => {
+      result.push({
+        ...item,
+        count: data.filter(j => j.channelId === item.id).length
+      })
+    })
+    return result
+  }, [channelList, data])
   // 当前选择的渠道
   const [currentChannel, setCurrentChannel] = useState<string[]>([])
   // 根据选择的渠道过滤出列表展示
@@ -152,7 +162,7 @@ const Main = ({ state, dispatch }: Props) => {
                       })
                     }
                   }}>
-                    <i className='font-30 iconfont text-primary icon-plus'></i>
+                    <i className='font-30-important iconfont text-primary icon-plus'></i>
                   </div>
                 </Badge>
               )
@@ -178,18 +188,26 @@ const Main = ({ state, dispatch }: Props) => {
                       })
                     }
                   }}>
-                    <i className='font-30 iconfont text-primary icon-plus'></i>
+                    <i className='font-30-important iconfont text-primary icon-plus'></i>
                   </div>
                 </Badge>
               )
             }
           },
           {
-            title: '打包时间',
+            title: '最近配置修改记录',
             filterDropdown: false,
+            sorter: undefined,
             align: 'center',
             width: 220,
-            render: record => <span>{record.packerTime ? dayjs(record.packerTime).format('YYYY年MM月DD日 HH:mm') : '无'}</span>
+            render: record => {
+              return (
+                <div className='flex-col flex-jst-start flex-ali-center full-width'>
+                  <p>{record.lastUpdateAs}</p>
+                  <p>{record.updateTime}</p>
+                </div>
+              )
+            }
           },
           {
             title: '配置参数',
@@ -267,7 +285,7 @@ const Main = ({ state, dispatch }: Props) => {
                 placeholder='选择渠道查看配置'
               >
                 {
-                  channelList.map(item => <Select.Option key={item.id} value={item.id!}>{item.channelName}</Select.Option>)
+                  channelWithConfList.map(item => <Select.Option key={item.id} value={item.id!}>{`${item.channelName}（${item.count || 0}）`}</Select.Option>)
                 }
               </Select>
               <PermissionHoc
