@@ -1,0 +1,15 @@
+.cusFormLine {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  &:nth-of-type(n+2) {
+    margin-top: 10px;
+  }
+  .label {
+    width: 80px;
+    text-align: right;
+    white-space: pre-wrap;
+    word-break: break-all;
+    margin-right: 10px;
+  }
+}

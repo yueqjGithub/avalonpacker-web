@@ -21,6 +21,7 @@ export type RecordDataRow = {
   publicArea: string
   channelVersion: string
   envCode: string
+  couldPack: boolean
   couldDownload: boolean
   ftpPath?: string
   motherIsFtp: 1 | 0
@@ -28,6 +29,8 @@ export type RecordDataRow = {
   createAs: string
   lastUpdateAs: string
   updateTime: string
+  lastOps: string
+  lastPackTime: string
 }
 
 export const statusEnum = [

@@ -72,6 +72,15 @@ export const routeConfig:RouteSingle[] = [
     icon: <ToolOutlined />,
     childrens: [
       {
+        path: '/package',
+        menuName: '分包工具',
+        auth: false,
+        isMenu: true,
+        component: lazy(() => import('../pages/out')),
+        parent: '/tools',
+        dependGame: true
+      },
+      {
         path: '/packerrecord',
         menuName: '配置管理',
         isMenu: true,

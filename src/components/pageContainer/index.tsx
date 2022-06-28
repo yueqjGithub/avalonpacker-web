@@ -1,6 +1,6 @@
 import { CloseCircleFilled } from '@ant-design/icons'
 import { Breadcrumb, Button, Spin } from 'antd'
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useState, useEffect, useRef, useMemo } from 'react'
 import { httpWithStore } from '../../service/axios'
 import { ApiIdForSDK } from '../../service/urls'
 import { State } from '../../store/state'
@@ -87,7 +87,7 @@ export default function PageContainer ({ data, state, dispatch, children, otherC
     }
   }, [])
 
-  const dom = () => {
+  const dom = useMemo(() => {
     switch (loadStatus) {
       case 'loading':
         return (
@@ -111,7 +111,7 @@ export default function PageContainer ({ data, state, dispatch, children, otherC
           </div>
         )
     }
-  }
+  }, [loadStatus, children])
   return (
     <div className={`${styles.pageContainer} flex-col flex-jst-start flex-ali-start`}>
       <div className='full-width flex-row flex-jst-btw flex-ali-center'>
@@ -122,7 +122,7 @@ export default function PageContainer ({ data, state, dispatch, children, otherC
       </Breadcrumb>
       {otherCompnent || null}
       </div>
-      {dom()}
+      {dom}
     </div>
   )
 }
