@@ -85,7 +85,7 @@ export const apisForSDK: Apis<ApiIdForSDK> = [
   {
     id: 'packrecord',
     url: '/packer/admin/packerRecord',
-    name: '出包工具列表',
+    name: '配置列表',
     allowEmpty: true,
     urlTranform: ({ url, state }) => {
       const apiUrl = getApiUrl({ state })
@@ -95,7 +95,7 @@ export const apisForSDK: Apis<ApiIdForSDK> = [
   {
     id: 'addrecord',
     url: '/packer/admin/packerRecord/add',
-    name: '添加打包记录',
+    name: '添加打包配置',
     allowEmpty: true,
     urlTranform: ({ url, state }) => {
       const apiUrl = getApiUrl({ state })
@@ -105,7 +105,7 @@ export const apisForSDK: Apis<ApiIdForSDK> = [
   {
     id: 'setplugins',
     url: '/packer/admin/packerRecord/setPlugins',
-    name: '打包记录设置插件',
+    name: '配置设置插件',
     allowEmpty: true,
     urlTranform: ({ url, state }) => {
       const apiUrl = getApiUrl({ state })
@@ -115,7 +115,7 @@ export const apisForSDK: Apis<ApiIdForSDK> = [
   {
     id: 'setmedia',
     url: '/packer/admin/packerRecord/setMedia',
-    name: '打包记录设置媒体标识',
+    name: '配置设置媒体标识',
     allowEmpty: true,
     urlTranform: ({ url, state }) => {
       const apiUrl = getApiUrl({ state })
@@ -145,7 +145,7 @@ export const apisForSDK: Apis<ApiIdForSDK> = [
   {
     id: 'dopackage',
     url: '/packer/admin/packerRecord/package',
-    name: '打包',
+    name: '分包',
     allowEmpty: true,
     urlTranform: ({ url, state }) => {
       const apiUrl = getApiUrl({ state })
