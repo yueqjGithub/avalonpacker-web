@@ -114,3 +114,25 @@ export const getLimit = (params: { state: State, moduleName: string, name: strin
   const limit = user.policyEffectData.all.find(item => item.value === target?.id)
   return limit?.objectAttr[limitName]
 }
+
+/** 复制 */
+export const copyHandler = (copyContent) => {
+  if (navigator.clipboard) {
+    return navigator.clipboard.writeText(String(copyContent))
+  } else {
+    const txt = document.createElement('textarea')
+    txt.textContent = String(copyContent)
+    txt.style.width = '0'
+    txt.style.height = '0'
+    document.body.appendChild(txt)
+    txt.focus()
+    document.execCommand('SelectAll')
+    const suc = document.execCommand('Copy')
+    document.body.removeChild(txt)
+    if (suc) {
+      return Promise.resolve()
+    } else {
+      return Promise.reject(new Error('Copy failed'))
+    }
+  }
+}

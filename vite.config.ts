@@ -1,5 +1,5 @@
 import { defineConfig, loadEnv } from 'vite'
-// import reactRefresh from '@vitejs/plugin-react-refresh'
+import reactRefresh from '@vitejs/plugin-react-refresh'
 import legacy from '@vitejs/plugin-legacy'
 // https://vitejs.dev/config/
 
@@ -14,8 +14,8 @@ export default ({ mode }) => {
       host: '10.172.188.117',
       port: 20001,
       proxy: {
-        '/packer': 'http://10.172.188.117:8087'
-        // '/packer': 'http://test-packer.avalongames.com'
+        // '/packer': 'http://10.172.188.117:8087'
+        '/packer': 'http://test-packer.avalongames.com'
       },
       open: `/SDKmanage?iam_url=${iamUrlValue}&instance_id=${instanceId}`
     },
@@ -23,7 +23,7 @@ export default ({ mode }) => {
       include: ['avalon-iam-util-client', 'avalon-common-util-global', 'avalon-iam-util-global', 'avalon-antd-util-client']
     },
     plugins: [
-      // reactRefresh(),
+      reactRefresh(),
       legacy({
         targets: ['defaults', 'not IE 11']
       })

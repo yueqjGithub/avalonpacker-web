@@ -256,8 +256,9 @@ const Main = ({ state, dispatch }: Props) => {
                         onClick={async () => {
                           Modal.confirm({
                             content: '确定要删除该打包记录吗？',
-                            onOk: () => {
-                              deleteHandler(record.id!)
+                            onOk: async () => {
+                              await deleteHandler(record.id!)
+                              setCurrentChannel([])
                             }
                           })
                         }}
@@ -283,6 +284,7 @@ const Main = ({ state, dispatch }: Props) => {
                 style={{ width: 430 }}
                 onChange={selectValue => selectValue && setCurrentChannel(selectValue as string[])}
                 placeholder='选择渠道查看配置'
+                value={currentChannel}
               >
                 {
                   channelWithConfList.map(item => <Select.Option key={item.id} value={item.id!}>{`${item.channelName}（${item.count || 0}）`}</Select.Option>)

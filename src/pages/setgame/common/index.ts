@@ -3,6 +3,7 @@ export type AppDataRow = {
   appId: string
   appName: string
   sourcePath: string
+  versionCode: number
   screenOrientation: 'portrait' | 'landscape'
   motherFtpPaths: string
   [key: string]: any

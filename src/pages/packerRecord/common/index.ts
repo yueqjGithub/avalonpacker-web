@@ -6,7 +6,7 @@ export type RecordDataRow = {
   baseConfig: string
   pluginsConfig: string
   gameName: string
-  versionCode: string
+  // versionCode: string
   resultType: string
   iconUrl: string
   splashUrl: string
@@ -31,6 +31,8 @@ export type RecordDataRow = {
   updateTime: string
   lastOps: string
   lastPackTime: string
+  lastHisId: string
+  loading?: boolean
 }
 
 export const statusEnum = [

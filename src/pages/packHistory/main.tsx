@@ -6,13 +6,14 @@ import { httpWithStore } from '../../service/axios'
 import { CloseCircleFilled, FileTextOutlined } from '@ant-design/icons'
 import { ATable } from 'avalon-antd-util-client'
 import { getApiDataState } from 'avalon-iam-util-client'
-import { RecordDataRow } from './common'
+import { HistoryDataRow } from './common'
 import SearchBar from '../../components/searchBar'
 import moment, { Moment } from 'moment'
 import { AppDataRow } from '../setgame/common'
 import { ChannelDataRow } from '../channel/common'
 import Detail from './detail'
 import dayjs from 'dayjs'
+import { RecordDataRow } from '../packerRecord/common'
 type Props = {
   state: State
   dispatch: any
@@ -29,7 +30,7 @@ type QueryOptions = {
 }
 type DataSource = {
   total: number
-  records: RecordDataRow[]
+  records: HistoryDataRow[]
 }
 const apiId: ApiIdForSDK = 'queryhistory'
 
@@ -38,9 +39,10 @@ const Main = ({ state, dispatch }: Props) => {
   const [loadStatus, setStatus] = useState<'loading' | 'resolve' | 'reject'>('resolve')
   const { data } = getApiDataState<DataSource>({ apiId, state })
   const [showDetail, setShowDetail] = useState<boolean>(false)
-  const [target, setTarget] = useState<RecordDataRow>()
+  const [target, setTarget] = useState<HistoryDataRow>()
   const { data: gameList = [] } = getApiDataState<AppDataRow[]>({ apiId: 'gamelist', state })
   const { data: channelList = [] } = getApiDataState<ChannelDataRow[]>({ apiId: 'channel', state })
+  const { data: configList = [] } = getApiDataState<RecordDataRow[]>({ apiId: 'packrecord', state })
   const page = React.useRef<number>(1)
   const pageSize = React.useRef<number>(10)
   const end = React.useRef<Moment>(moment())
@@ -140,12 +142,30 @@ const Main = ({ state, dispatch }: Props) => {
               )
             }}
             columns={[
-              { dataIndex: 'app', title: '游戏项目', filterDropdown: false, render: val => <span>{gameList.find((item: AppDataRow) => item.appId === val)!.appName}</span> },
-              { dataIndex: 'createTime', filterDropdown: false, title: '打包时间', render: val => <span>{val ? dayjs(val).format('YYYY-MM-DD HH:mm:ss') : ''}</span> },
-              { dataIndex: 'channelCode', title: '渠道', filterDropdown: false, render: val => <span>{channelList.find((item: ChannelDataRow) => item.channelCode === val)!.channelName}</span> },
-              { dataIndex: 'channelVersion', filterDropdown: false, title: '渠道版本' },
-              { dataIndex: 'supersdkVersion', filterDropdown: false, title: 'SuperSDK版本' },
-              { dataIndex: 'motherShortName', filterDropdown: false, title: '母包' },
+              { dataIndex: 'app', title: '游戏项目', sorter: undefined, filterDropdown: false, render: val => <span>{gameList.find((item: AppDataRow) => item.appId === val)!.appName}</span> },
+              {
+                dataIndex: 'createTime',
+                filterDropdown: false,
+                sorter: undefined,
+                title: '分包记录',
+                align: 'center',
+                render: (val, record) => {
+                  return (
+                    <div className='full-width flex-col flex-jst-center flex-ali-center'>
+                      <span>{record.opsUser}</span>
+                      <span>{val ? dayjs(val).format('YYYY-MM-DD HH:mm:ss') : ''}</span>
+                    </div>
+                  )
+                }
+              },
+              { dataIndex: 'channelCode', align: 'center', title: '渠道', sorter: undefined, filterDropdown: false, render: val => <span>{channelList.find((item: ChannelDataRow) => item.channelCode === val)!.channelName}</span> },
+              // { dataIndex: 'channelVersion', filterDropdown: false, title: '渠道版本' },
+              {
+                dataIndex: 'configId', sorter: undefined, title: '配置名称', align: 'center', render: val => <span>{configList.find(item => item.id === val)?.configName}</span>
+              },
+              { dataIndex: 'channelVersion', align: 'center', filterDropdown: false, sorter: undefined, title: '渠道版本' },
+              { dataIndex: 'supersdkVersion', align: 'center', filterDropdown: false, sorter: undefined, title: 'SuperSDK版本' },
+              { dataIndex: 'motherShortName', align: 'center', filterDropdown: false, sorter: undefined, title: '母包' },
               {
                 title: '详情',
                 sorter: undefined,
@@ -162,8 +182,8 @@ const Main = ({ state, dispatch }: Props) => {
             ]}
             ></ATable>
           </Spin>
-          <Modal title='' footer={false} destroyOnClose width={'55vw'} visible={showDetail} maskClosable={false} onCancel={() => setShowDetail(false)}>
-            <Detail target={target} state={state} />
+          <Modal title='详情' footer={false} destroyOnClose width={'75vw'} visible={showDetail} maskClosable={false} onCancel={() => setShowDetail(false)}>
+            <Detail target={target?.id} state={state} />
           </Modal>
         </div>
             )

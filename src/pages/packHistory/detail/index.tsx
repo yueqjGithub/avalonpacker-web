@@ -1,17 +1,20 @@
-import { Descriptions, message, Spin, Table } from 'antd'
+import { Button, Descriptions, message, Spin, Table } from 'antd'
 import { getApiDataState } from 'avalon-iam-util-client'
 import React, { useEffect, useState } from 'react'
 import { httpApi } from '../../../service/axios'
 import { State } from '../../../store/state'
 import { ChannelDataRow } from '../../channel/common'
 import { AppDataRow } from '../../setgame/common'
-import { RecordDataRow } from '../common'
 import dayjs from 'dayjs'
 import { PluginsDataRow } from '../../plugins/common'
 import { MediaFlagDataRow } from '../../mediaFlag/common'
+import { RecordDataRow } from '../../packerRecord/common'
+import styles from '../common/hisStyle.module.scss'
+import { copyHandler } from '../../../utils/utils'
+import QRCode from 'qrcode.react'
 type Props = {
   state: State
-  target: RecordDataRow | undefined
+  target?: string // id
 }
 
 const Detail = ({ target, state }: Props) => {
@@ -20,15 +23,17 @@ const Detail = ({ target, state }: Props) => {
   const { data: gameList = [] } = getApiDataState<AppDataRow[]>({ apiId: 'gamelist', state })
   const { data: channelList = [] } = getApiDataState<ChannelDataRow[]>({ apiId: 'channel', state })
   const { data: mediaList = [] } = getApiDataState<MediaFlagDataRow[]>({ apiId: 'mediaflag', state })
+  const { data: configList = [] } = getApiDataState<RecordDataRow[]>({ apiId: 'packrecord', state })
   const queryDetail = async () => {
     try {
       setLoading(true)
       const { data } = await httpApi({
         state,
         apiId: 'historydetail',
-        targetId: target?.id
+        method: 'POST',
+        data: { ids: [target] }
       }).request
-      setDetail(data.data)
+      setDetail(data.data[0])
     } catch {
       message.error('请求详情出错')
     } finally {
@@ -42,47 +47,78 @@ const Detail = ({ target, state }: Props) => {
     <div className='full-width'>
       <Spin spinning={loading}>
         <div className='full-width scroll-bar' style={{ maxHeight: '70vh' }}>
-          <Descriptions title={<></>} column={2} labelStyle={{ width: 140, display: 'flex', justifyContent: 'flex-end', color: 'grey' }}>
-            <Descriptions.Item label='游戏项目' span={2}>{gameList.find((item: AppDataRow) => item.appId === target?.app)?.appName || ''}</Descriptions.Item>
-            <Descriptions.Item label='渠道'>{channelList.find((item: ChannelDataRow) => item.channelCode === target?.channelCode)?.channelName || ''}</Descriptions.Item>
-            <Descriptions.Item label='渠道版本'>{target?.channelVersion}</Descriptions.Item>
-            <Descriptions.Item label='母包'>{target?.motherName}</Descriptions.Item>
-            <Descriptions.Item label='superSDK版本'>{target?.supersdkVersion}</Descriptions.Item>
-            <Descriptions.Item label='包名' span={2}>{target?.packageName}</Descriptions.Item>
-            <Descriptions.Item label='打包时间' span={2}>{dayjs(target?.createTime).format('YYYY-MM-DD HH:mm:ss')}</Descriptions.Item>
-            <Descriptions.Item label='插件列表' span={2}>
-              <Table rowKey='code' size='small' bordered dataSource={(detail?.pluginsList as PluginsDataRow[]) || []}
-              pagination={false}
-              columns={[
-                { dataIndex: 'name', title: '插件名' },
-                { dataIndex: 'code', title: 'code' }
-              ]}
-              ></Table>
-            </Descriptions.Item>
-            <Descriptions.Item label='媒体标识与成品包' span={2}>
-            <Table rowKey='id' size='small' bordered dataSource={detail?.mediaFinishedPackagesList || []}
-              style={{ width: '100%' }}
-              pagination={false}
-              columns={[
-                { dataIndex: 'mediaName', title: '媒体标识名称', render: val => <span>{mediaList.find(item => item.code === val)?.mediaName || 'default'}</span> },
-                { dataIndex: 'packageName', title: '成品包' },
-                {
-                  dataIndex: 'downUrl',
-                  width: 80,
-                  title: '下载',
-                  render: (val, record) => {
-                    const downloadUrl = `${detail.downloadHost}${val}`
-                    return (
-                      <div className='flex-row flex-jst-start flex-ali-center'>
-                        <a href={downloadUrl} download={record.packageName} target="_blank" rel="noreferrer">下载</a>
-                      </div>
-                    )
-                  }
-                }
-              ]}
-              ></Table>
-            </Descriptions.Item>
+          <div className={styles.detailTit}>母包信息</div>
+          <Descriptions title="" bordered>
+            <Descriptions.Item label="游戏项目">{gameList.find((item: AppDataRow) => item.appId === detail?.app)?.appName || ''}</Descriptions.Item>
+            <Descriptions.Item label='superSDK版本'>{detail?.supersdkVersion}</Descriptions.Item>
           </Descriptions>
+          <div className={styles.detailTit}>分包信息</div>
+          <Descriptions title="" bordered column={3}>
+            <Descriptions.Item label='渠道'>{channelList.find((item: ChannelDataRow) => item.channelCode === detail?.channelCode)?.channelName || ''}</Descriptions.Item>
+            <Descriptions.Item label='分包配置'>{configList.find(item => item.id === detail?.configId)?.configName || ''}</Descriptions.Item>
+            <Descriptions.Item label='包名'>{detail?.packageName}</Descriptions.Item>
+            <Descriptions.Item label='分包环境'>{detail?.envDesc}</Descriptions.Item>
+            <Descriptions.Item label='渠道版本'>{detail?.channelVersion}</Descriptions.Item>
+            <Descriptions.Item label='分包时间'>{dayjs(detail?.createTime).format('YYYY-MM-DD HH:mm:ss')}</Descriptions.Item>
+            <Descriptions.Item label='操作人'>{detail?.opsUser}</Descriptions.Item>
+          </Descriptions>
+          <div className={styles.detailTit}>插件列表</div>
+          <Table rowKey='code' style={{ width: '35%' }} size='small' bordered dataSource={(detail?.pluginsList as PluginsDataRow[]) || []}
+          pagination={false}
+          columns={[
+            { dataIndex: 'name', title: '插件名' },
+            { dataIndex: 'code', title: 'code' }
+          ]}
+          ></Table>
+          <div className={styles.detailTit}>媒体标识与成品包</div>
+          <Table rowKey='id' size='small' bordered dataSource={detail?.mediaFinishedPackagesList || []}
+            style={{ width: '100%' }}
+            pagination={false}
+            columns={[
+              { dataIndex: 'configId', title: '分包配置', render: val => <span>{configList.find(item => item.id === val)?.configName}</span> },
+              { dataIndex: 'mediaName', align: 'center', title: '媒体标识', render: val => <span>{mediaList.find(item => item.code === val)?.mediaName || 'default'}</span> },
+              { dataIndex: 'packageName', align: 'center', title: '成品包' },
+              {
+                dataIndex: 'downUrl',
+                width: 80,
+                align: 'center',
+                title: '下载',
+                render: (val, record) => {
+                  const targetUrl = `${detail.downloadHost}${val}`
+                  return (
+                    <div className='full-width flex-col flex-jst-center flex-ali-center'>
+                      <Button type="primary" size="small" href={targetUrl}>下载</Button>
+                      <Button
+                      onClick={() => {
+                        copyHandler(targetUrl)?.then(() => message.success('已复制'), () => message.error('复制失败'))
+                      }}
+                      size="small"
+                      type="primary"
+                      className='ma-col-sm'
+                      >
+                        复制下载连接
+                      </Button>
+                    </div>
+                  )
+                }
+              },
+              {
+                title: '二维码下载',
+                sorter: undefined,
+                filterDropdown: false,
+                align: 'center',
+                render: record => {
+                  const targetUrl = `${record.downloadHost}${record.downUrl}`
+                  return (
+                    <QRCode
+                      width={200}
+                      value={targetUrl}
+                    ></QRCode>
+                  )
+                }
+              }
+            ]}
+            ></Table>
         </div>
       </Spin>
     </div>

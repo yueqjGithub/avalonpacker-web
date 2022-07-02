@@ -58,6 +58,7 @@ const AppItem = ({ target, state, freshHandler, updateApp, openDetail, setCurren
             <div className='full-width flex-col flex-jst-start flex-ali-start'>
               <p>APPID：{target.appId}</p>
               <p>应用名称：{target.appName}</p>
+              <p>version：{target.versionCode}</p>
             </div>
             <div className='flex-row flex-jst-start flex-ali-center'>
               <p>屏幕方向：</p>

@@ -204,7 +204,7 @@ export const apisForSDK: Apis<ApiIdForSDK> = [
   },
   {
     id: 'historydetail',
-    url: '/packer/admin/history-record/detail',
+    url: '/packer/admin/history-record/detailList',
     name: '历史记录详情',
     allowEmpty: true,
     urlTranform: ({ url, state }) => {

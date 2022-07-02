@@ -1,4 +1,4 @@
-import { Button, Divider, Form, Input, message, Radio, Select } from 'antd'
+import { Button, Divider, Form, Input, InputNumber, message, Radio, Select } from 'antd'
 import React, { ChangeEvent, MutableRefObject, useEffect, useRef, useState } from 'react'
 import { httpApi } from '../../../service/axios'
 import { ApiIdForSDK } from '../../../service/urls'
@@ -150,6 +150,9 @@ const EditModule = ({ target, state, editSuccess, permissionList }: Props) => {
         </Form.Item>
         <Form.Item label="母包FTP路径" name="motherFtpPaths" rules={[{ required: true, message: '母包FTP路径不能为空' }]} help='多个路径请用英文,隔开，如/dungeonkeeper/cn/client/,/dungeonkeeper/global/client/'>
           <Input />
+        </Form.Item>
+        <Form.Item label="versionCode" name="versionCode" rules={[{ required: true, message: '请设置versionCode' }]} initialValue={target?.versionCode}>
+          <InputNumber min={0} step={1}></InputNumber>
         </Form.Item>
         <Form.Item label="屏幕方向" name="screenOrientation" rules={[{ required: true, message: '请设置屏幕方向' }]}>
           <Radio.Group>

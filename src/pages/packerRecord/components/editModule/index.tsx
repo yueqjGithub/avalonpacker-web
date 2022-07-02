@@ -1,4 +1,4 @@
-import { Button, Divider, Form, Input, InputNumber, message, notification, Select, Spin, Tabs } from 'antd'
+import { Button, Divider, Form, Input, message, notification, Select, Spin, Tabs } from 'antd'
 import React, { ChangeEvent, MutableRefObject, useEffect, useRef, useState } from 'react'
 import { State } from '../../../../store/state'
 import { EnvDataRow, RecordDataRow } from '../../common'
@@ -30,7 +30,11 @@ type ChannelVersionData = {
 
 const EditModule = ({ target, initView, state, editSuccess, dispatch }: Props) => {
   const targetRef = useRef({ ...target })
+  // const { currentGame } = state
   const { data: gameList = [] } = getApiDataState<AppDataRow[]>({ apiId: 'gamelist', state })
+  // const currentGameInfo = useMemo(() => {
+  //   return gameList.find(item => item.id === currentGame)
+  // }, [currentGame, gameList])
   const ref: MutableRefObject<any> = useRef(null)
   const [signList, setList] = useState<string[]>([])
   // const [signFileValue, setFileValue] = useState<string>()
@@ -196,9 +200,10 @@ const EditModule = ({ target, initView, state, editSuccess, dispatch }: Props) =
             <Form.Item label='安装游戏名' initialValue={target?.gameName} name='gameName' >
               <Input placeholder='请输入安装游戏名' onChange={e => getVal({ keyname: 'gameName', val: e.target.value })}></Input>
             </Form.Item>
-            <Form.Item label='内部版本号' initialValue={target?.versionCode} name='versionCode'>
+            {/* <Form.Item label='versionCode' help={'请注意：执行分包后，versionCode会增加1,可在应用管理界面自定义versionCode'}>
               <InputNumber min={0} placeholder='请输入内部版本号' onChange={val => getVal({ keyname: 'versionCode', val })}></InputNumber>
-            </Form.Item>
+              <span>{currentGameInfo?.versionCode}</span>
+            </Form.Item> */}
             <Form.Item label='发行区域' name='publicArea' initialValue={target?.publicArea}>
               <Input placeholder='请填写发行区域代码，如CN、US、GLOBAL' onChange={e => getVal({ keyname: 'publicArea', val: e.target.value })}></Input>
             </Form.Item>

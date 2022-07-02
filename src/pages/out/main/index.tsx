@@ -1,18 +1,28 @@
-import { Button, Cascader, Divider, message, Select } from 'antd'
+import { Button, Cascader, Divider, message, Modal, Popover, Select, Tooltip } from 'antd'
 import { ATable } from 'avalon-antd-util-client'
 import { getApiDataState } from 'avalon-iam-util-client'
-import React, { ChangeEvent, useContext, useMemo, useRef, useState } from 'react'
+import React, { ChangeEvent, useContext, useEffect, useMemo, useRef, useState } from 'react'
 import { PermissionHoc } from '../../../components/permissionHOC'
 import { httpApi, httpWithStore } from '../../../service/axios'
 import { Context } from '../../../store/context'
 import { ChannelDataRow } from '../../channel/common'
 import { RecordDataRow } from '../../packerRecord/common'
+import { HistoryDataRow } from '../../packHistory/common'
+import Detail from '../../packHistory/detail'
 import { AppDataRow } from '../../setgame/common'
-import { CurrentMotherPack, MotherPackageResponse } from '../common'
+import { CurrentMotherPack, HistoryDetailVo, MotherPackageResponse } from '../common'
 import styles from '../common/styles.module.scss'
+import DownloadModal from '../component/download'
+
+type ReasonType = {
+  configName: string,
+  reason: string
+}[] | string
+
 const Main = () => {
+  const timeOutRef = useRef<number>(-1)
   const { state, dispatch } = useContext(Context)
-  const { currentGame } = state
+  const { currentGame, user } = state
   // appList
   const { data: gameList = [] } = getApiDataState<AppDataRow[]>({ apiId: 'gamelist', state })
   // 权限
@@ -96,13 +106,158 @@ const Main = () => {
 
   // 渠道
   const { data: channelList = [] } = getApiDataState<ChannelDataRow[]>({ apiId: 'channel', state })
-  const [curChannel, setChannel] = useState<string>()
+  const [curChannel, setChannel] = useState<string[]>([])
   // 配置
   const { data: configAll = [] } = getApiDataState<RecordDataRow[]>({ apiId: 'packrecord', state })
   const configList = useMemo(() => {
-    return configAll.filter(item => item.channelId === curChannel && item.couldPack)
+    return configAll.filter(item => curChannel.includes(item.channelId) && item.couldPack)
   }, [configAll, curChannel])
   const [curConfig, setConfigs] = useState<string[]>([])
+  const curConfigList = useMemo(() => {
+    return configList.filter(item => curConfig.includes(item.id!))
+  }, [configList, curConfig])
+  const readConfigList = async () => {
+    await httpWithStore({
+      apiId: 'packrecord',
+      state,
+      dispatch,
+      data: { appId: currentGame },
+      force: true
+    })
+  }
+  // 查询打包状态
+  const [historyIds, setHistoryIds] = useState<string[]>([])
+  const [reason, setReason] = useState<ReasonType>('')
+  const [packStatus, setStatus] = useState<'loading' | 'success' | 'faild'>()
+
+  const queryStatus = async (cancelNext?: boolean) => {
+    // packerstatus
+    const requestData = {
+      hisIds: historyIds
+    }
+    try {
+      const { data: res }: { data: { data: HistoryDataRow[] } } = await httpApi({
+        apiId: 'querystatus',
+        data: requestData,
+        state,
+        method: 'POST',
+        httpCustomConfig: {
+          headers: {
+            actionName: encodeURIComponent('')
+          }
+        }
+      }).request
+      const packEnd = res.data.filter(item => item.packStatus === 1).length === 0
+      if (packEnd) {
+        const failedList = res.data.filter(item => item.packStatus === 3)
+        if (failedList.length > 0) {
+          const failReasons = failedList.map(item => {
+            return {
+              configName: configList.find(j => j.id === item.configId)?.configName || '',
+              reason: item.reason
+            }
+          })
+          setReason(failReasons)
+          setStatus('faild')
+        } else {
+          setStatus('success')
+        }
+        setLoading(false)
+        // setHistoryIds([])
+        readConfigList() // 读取configList,刷新最近打包(成功)时间,
+        // 操作结束后清空凭证队列
+      } else {
+        if (!cancelNext) {
+          timeOutRef.current = setTimeout(() => {
+            queryStatus()
+          }, 2000)
+        }
+      }
+    } catch (e) {
+      if ((e as Error).message) {
+        message.error((e as Error).message)
+      }
+      if (!cancelNext) {
+        timeOutRef.current = setTimeout(() => {
+          queryStatus()
+        }, 2000)
+      }
+    }
+  }
+  // 分包
+  const doPackage = async () => {
+    const requestData: any = {
+      id: currentGame,
+      channelId: curChannel,
+      motherPackage: curMotherPack![1],
+      configs: curConfig,
+      ops: user.username,
+      motherIsFtp: curMotherPack![0] === 'ftpNames' ? 1 : 0
+    }
+    if (curMotherPack![0] === 'ftpNames') {
+      requestData.ftpPath = motherAll?.ftpNames.find(item => item.fileName === curMotherPack![1])?.path
+    }
+    try {
+      setStatus('loading')
+      const { data: res } = await httpApi({
+        apiId: 'dopackage',
+        state,
+        method: 'POST',
+        data: requestData
+      }).request
+      if (res.status === 0) {
+        setHistoryIds(res.data)
+        message.success('服务器正在打包,请耐心等待')
+        // queryStatus()
+      } else {
+        setStatus('faild')
+        // setHistoryIds([])
+        setReason(res.message)
+      }
+    } catch {
+      setStatus('faild')
+      setReason('程序出错')
+    }
+  }
+  useEffect(() => {
+    if (historyIds.length > 0) {
+      queryStatus()
+    }
+    return () => {
+      clearTimeout(timeOutRef.current)
+    }
+  }, [historyIds])
+  // 下载按钮
+  const [downLoading, setDownLoading] = useState<boolean>()
+  const [downList, setDownList] = useState<HistoryDetailVo[]>()
+  const [showDown, setShowDown] = useState<boolean>()
+  const queryDownload = async () => {
+    const requestData = {
+      ids: historyIds
+    }
+    try {
+      setDownLoading(true)
+      const { data: res } = await httpApi({
+        apiId: 'historydetail',
+        data: requestData,
+        method: 'POST',
+        state
+      }).request
+      if (res.status === 0) {
+        setDownList(res.data)
+        setShowDown(true)
+      } else {
+        message.error(res.message)
+      }
+    } catch {
+      message.error('程序错误')
+    } finally {
+      setDownLoading(false)
+    }
+  }
+  // 点击打开历史详情
+  const [curHis, setHis] = useState<HistoryDataRow['id']>()
+  const [showDetail, setShowDetail] = useState<boolean>(false)
   // render
   return (
     <div className="full-width">
@@ -114,7 +269,7 @@ const Main = () => {
             <div className={styles.label}>选择母包:</div>
             <Cascader
               placeholder="请选择母包"
-              style={{ width: 350 }}
+              style={{ width: 450 }}
               fieldNames={{ label: 'label', value: 'value', children: 'children' }}
               options={motherList}
               showSearch
@@ -123,8 +278,8 @@ const Main = () => {
               displayRender={(labels, selectedOptions) => {
                 return <span>{labels.pop()}</span>
               }}
-              onChange={async (val, selectedOptions) => {
-                console.log(val, selectedOptions)
+              onChange={async (val:any) => {
+                setMotherPack(val)
               }}
             />
             <PermissionHoc
@@ -141,7 +296,8 @@ const Main = () => {
             <Select
               placeholder='请选择渠道'
               showSearch
-              style={{ width: 350 }}
+              mode='multiple'
+              style={{ width: 450 }}
               value={curChannel}
               onChange={val => setChannel(val)}
               filterOption={(val, opt) => {
@@ -156,7 +312,7 @@ const Main = () => {
           <div className={styles.cusFormLine}>
             <div className={styles.label}>选择配置:</div>
             <Select
-              style={{ width: 350 }}
+              style={{ width: 450 }}
               disabled={!curChannel}
               placeholder={curChannel ? '请选择配置' : '请先选择渠道'}
               mode='multiple'
@@ -176,13 +332,37 @@ const Main = () => {
         </div>
         {/* 打包区域 */}
         <div className='flex-row flex-jst-end flex-ali-center'>
+          {
+            packStatus === 'faild' && (
+              <Popover
+                arrowPointAtCenter
+                title='打包失败'
+                content={typeof reason === 'string'
+                  ? reason
+                  : (
+                  <>
+                    {
+                      reason && reason.map(item => {
+                        return <p key={item.configName}>{item.configName}:{item.reason}</p>
+                      })
+                    }
+                  </>
+                    ) || '未知错误'}
+              >
+                <i className='iconfont icon-fill-tips text-danger ma-lf-05 font-18'/>
+              </Popover>
+            )
+          }
           <PermissionHoc
             permission={permissionList.do}
             component={
               <Button
                 icon={<i className='iconfont icon-gongwenbao'></i>}
                 type='primary'
+                className='ma-lf-05'
                 disabled={curConfig.length === 0 || !curMotherPack}
+                loading={packStatus === 'loading'}
+                onClick={() => doPackage()}
               >
                 分包
               </Button>
@@ -195,6 +375,9 @@ const Main = () => {
                 icon={<i className='iconfont icon-download'></i>}
                 type='primary'
                 className='ma-lf-05'
+                disabled={packStatus !== 'success'}
+                loading={downLoading}
+                onClick={() => queryDownload()}
               >
                 下载
               </Button>
@@ -206,7 +389,7 @@ const Main = () => {
       <Divider></Divider>
       <div className='full-width'>
         <ATable
-          dataSource={configList.filter(item => curConfig.includes(item.id!))}
+          dataSource={curConfigList}
           rowKey='id'
           pagination={{
             hideOnSinglePage: true
@@ -244,18 +427,34 @@ const Main = () => {
               align: 'center',
               sorter: undefined,
               filterDropdown: false,
+              onCell: (record) => {
+                return {
+                  onClick: () => {
+                    setHis(record.lastHisId)
+                    setShowDetail(true)
+                  }
+                }
+              },
               render: (record: RecordDataRow) => {
                 return (
-                  <div className='full-width flex-col flex-jst-center flex-ali-center'>
-                    <span>{record.lastOps || '无'}</span>
-                    <span>{record.lastPackTime}</span>
-                  </div>
+                  <Tooltip title="点击查看最近一次分包详情">
+                    <div className='full-width flex-col flex-jst-center flex-ali-center cursor-pointer'>
+                      <span>{record.lastOps || '无'}</span>
+                      <span>{record.lastPackTime}</span>
+                    </div>
+                  </Tooltip>
                 )
               }
             }
           ]}
         ></ATable>
       </div>
+      <Modal footer={null} destroyOnClose width='80vw' title="下载" visible={showDown} onCancel={() => setShowDown(false)}>
+        <DownloadModal configList={curConfigList} historyList={downList!} ></DownloadModal>
+      </Modal>
+      <Modal footer={null} destroyOnClose width="80vw" title="分包详情" visible={showDetail} onCancel={() => setShowDetail(false)}>
+        <Detail target={curHis} state={state} />
+      </Modal>
     </div>
   )
 }

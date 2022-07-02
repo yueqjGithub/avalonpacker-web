@@ -17,7 +17,8 @@ const packHistory = ({ state, dispatch }: Props) => {
       data={[
         { id: 'gamelist' },
         { id: 'channel' },
-        { id: 'mediaflag' }
+        { id: 'mediaflag' },
+        { id: 'packrecord', data: { appId: state.currentGame } }
       ]}
     >
       <Main state={state} dispatch={dispatch}></Main>
