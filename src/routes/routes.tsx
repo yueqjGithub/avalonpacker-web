@@ -74,7 +74,7 @@ export const routeConfig:RouteSingle[] = [
       {
         path: '/package',
         menuName: '分包工具',
-        auth: false,
+        auth: true,
         isMenu: true,
         component: lazy(() => import('../pages/out')),
         parent: '/tools',
