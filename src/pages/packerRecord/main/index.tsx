@@ -306,7 +306,7 @@ const Main = ({ state, dispatch }: Props) => {
         <SetChannel channelList={channelList} state={state} editSuccess={editSuccess}></SetChannel>
       </Modal>
       <Modal
-        title={<>{`打包配置 ${channelList.find(item => item.id === target?.channelId)?.channelName}-${target?.configName}`}</>}
+        title={<>{`分包配置 ${channelList.find(item => item.id === target?.channelId)?.channelName}-${target?.configName}`}</>}
         footer={false}
         destroyOnClose
         width={'75vw'}
