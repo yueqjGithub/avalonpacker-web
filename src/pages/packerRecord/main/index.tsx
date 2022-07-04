@@ -53,7 +53,7 @@ const Main = ({ state, dispatch }: Props) => {
   const [showEdit, setEdit] = useState<boolean>(false)
   const [target, setTarget] = useState<RecordDataRow>()
   const permissionList = {
-    a: hasPermission({ state, moduleName: '配置管理', action: '添加打包记录' }),
+    a: hasPermission({ state, moduleName: '配置管理', action: '添加打包配置' }),
     upload: hasPermission({ state, moduleName: '配置管理', action: '上传母包' }),
     d: hasPermission({ state, moduleName: '配置管理', action: '删除' }),
     setPlugins: hasPermission({ state, moduleName: '配置管理', action: '打包记录设置插件' }),
