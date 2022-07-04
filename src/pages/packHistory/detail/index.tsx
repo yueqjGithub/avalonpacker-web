@@ -75,7 +75,13 @@ const Detail = ({ target, state }: Props) => {
             style={{ width: '100%' }}
             pagination={false}
             columns={[
-              { dataIndex: 'configId', title: '分包配置', render: val => <span>{configList.find(item => item.id === val)?.configName}</span> },
+              {
+                dataIndex: 'configId',
+                title: '分包配置',
+                render: val => {
+                  return <span>{configList.find(item => item.id === detail?.configId)?.configName || ''}</span>
+                }
+              },
               { dataIndex: 'mediaName', align: 'center', title: '媒体标识', render: val => <span>{mediaList.find(item => item.code === val)?.mediaName || 'default'}</span> },
               { dataIndex: 'packageName', align: 'center', title: '成品包' },
               {
