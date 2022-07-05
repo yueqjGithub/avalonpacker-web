@@ -91,7 +91,7 @@ const EditModule = ({ target, state, dispatch, editSuccess, isEdit }: Props) => 
             <Input maxLength={50} disabled={!isEdit}></Input>
           </Form.Item>
           <Divider></Divider>
-          <Alert message="以下配置将会影响打包界面中，”插件参数”中的可配置属性" type="warning" showIcon></Alert>
+          <Alert message="以下配置将会影响配置界面中，”插件参数”中的可配置属性" type="warning" showIcon></Alert>
           {
             optionsList.map(l => {
               return (
@@ -119,7 +119,7 @@ const EditModule = ({ target, state, dispatch, editSuccess, isEdit }: Props) => 
                                       name={[name, 'keyName']}
                                       wrapperCol={{ span: 22 }}
                                       fieldKey={[fieldKey, 'keyName']}
-                                      help={'填写打包时传递给脚本的属性key'}
+                                      help={'填写分包时传递给脚本的属性key'}
                                       rules={[{
                                         required: true,
                                         message: '属性key值不能为空'

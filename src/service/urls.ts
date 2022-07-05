@@ -135,7 +135,7 @@ export const apisForSDK: Apis<ApiIdForSDK> = [
   {
     id: 'updaterecord',
     url: '/packer/admin/packerRecord/update',
-    name: '更新打包记录',
+    name: '更新配置',
     allowEmpty: true,
     urlTranform: ({ url, state }) => {
       const apiUrl = getApiUrl({ state })
@@ -195,7 +195,7 @@ export const apisForSDK: Apis<ApiIdForSDK> = [
   {
     id: 'queryhistory',
     url: '/packer/admin/history-record/doPage',
-    name: '打包历史',
+    name: '分包历史',
     allowEmpty: true,
     urlTranform: ({ url, state }) => {
       const apiUrl = getApiUrl({ state })

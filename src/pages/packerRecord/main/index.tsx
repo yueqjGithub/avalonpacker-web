@@ -53,7 +53,7 @@ const Main = ({ state, dispatch }: Props) => {
   const [showEdit, setEdit] = useState<boolean>(false)
   const [target, setTarget] = useState<RecordDataRow>()
   const permissionList = {
-    a: hasPermission({ state, moduleName: '配置管理', action: '添加打包配置' }),
+    a: hasPermission({ state, moduleName: '配置管理', action: '添加分包配置' }),
     upload: hasPermission({ state, moduleName: '配置管理', action: '上传母包' }),
     d: hasPermission({ state, moduleName: '配置管理', action: '删除' }),
     setPlugins: hasPermission({ state, moduleName: '配置管理', action: '配置设置插件' }),
@@ -255,7 +255,7 @@ const Main = ({ state, dispatch }: Props) => {
                         danger
                         onClick={async () => {
                           Modal.confirm({
-                            content: '确定要删除该打包记录吗？',
+                            content: '确定要删除该配置吗？',
                             onOk: async () => {
                               await deleteHandler(record.id!)
                               setCurrentChannel([])
