@@ -147,7 +147,7 @@ const Main = ({ state, dispatch }: Props) => {
                 dataIndex: 'createTime',
                 filterDropdown: false,
                 sorter: undefined,
-                title: '分包记录',
+                title: '分包时间',
                 align: 'center',
                 render: (val, record) => {
                   return (

@@ -14,8 +14,8 @@ export default ({ mode }) => {
       host: '10.172.188.117',
       port: 20001,
       proxy: {
-        // '/packer': 'http://10.172.188.117:8087'
-        '/packer': 'http://test-packer.avalongames.com'
+        '/packer': 'http://10.172.188.117:8087'
+        // '/packer': 'http://test-packer.avalongames.com'
       },
       open: `/SDKmanage?iam_url=${iamUrlValue}&instance_id=${instanceId}`
     },
