@@ -207,7 +207,7 @@ const Main = () => {
       }).request
       if (res.status === 0) {
         if (res.data.hisList.length > 0) {
-          setHistoryIds(res.data)
+          setHistoryIds(res.data.hisList)
           message.success('服务器正在打包,请耐心等待')
         } else {
           setStatus(undefined)
