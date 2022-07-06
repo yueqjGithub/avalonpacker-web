@@ -208,11 +208,13 @@ const Main = () => {
       if (res.status === 0) {
         if (res.data.hisList.length > 0) {
           setHistoryIds(res.data)
+          message.success('服务器正在打包,请耐心等待')
+        } else {
+          setStatus(undefined)
         }
         if (res.data.denyList.length > 0) {
           message.warning(`${res.data.denyList.join(',')}配置正在正在被使用，请稍后再试`)
         }
-        message.success('服务器正在打包,请耐心等待')
         // queryStatus()
       } else {
         setStatus('faild')
