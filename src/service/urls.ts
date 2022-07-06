@@ -95,7 +95,7 @@ export const apisForSDK: Apis<ApiIdForSDK> = [
   {
     id: 'addrecord',
     url: '/packer/admin/packerRecord/add',
-    name: '添加打包配置',
+    name: '添加分包配置',
     allowEmpty: true,
     urlTranform: ({ url, state }) => {
       const apiUrl = getApiUrl({ state })
