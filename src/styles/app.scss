@@ -38,3 +38,10 @@ ul.ant-menu.ant-menu-root.ant-menu-vertical.ant-menu-dark.ant-menu-inline-collap
   flex: 0 0 55px !important;
   width: 55px !important;
 }
+
+// antd form label换行
+.ant-form-item-label-wrap label {
+  max-width: 100%;
+  white-space: pre-wrap;
+  word-break: break-all;
+}

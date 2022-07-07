@@ -85,7 +85,7 @@ const PluginsConfig = ({ target, state, submitSymbol, submitVal, clearCount }: P
 
   return (
     <div className='full-width'>
-      <Form form={form} wrapperCol={{ span: 20 }} labelCol={{ span: 3 }}>
+      <Form form={form} wrapperCol={{ span: 20 }} labelCol={{ span: 3 }} labelWrap>
         <div className='scroll-bar' style={{ maxHeight: '70vh' }}>
         {
           optionsList!.map(item => {
@@ -103,7 +103,6 @@ const PluginsConfig = ({ target, state, submitSymbol, submitVal, clearCount }: P
                                   <Form.Item
                                     {...restField}
                                     name={[name, 'value']}
-                                    fieldKey={[fieldKey, 'value']}
                                     label={item.settings[key].keyName}
                                     help={item.settings[key].label}
                                     required={item.settings[key].required}

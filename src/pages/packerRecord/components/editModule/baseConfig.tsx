@@ -89,7 +89,7 @@ const BaseConfig = ({ target, state, submitSymbol, submitVal, clearCount, channe
     <div className='full-width'>
       <div className='full-width' dangerouslySetInnerHTML={{ __html: targetChannel?.description || '' }}></div>
       <Divider></Divider>
-      <Form form={form} wrapperCol={{ span: 18 }} labelCol={{ span: 5 }}>
+      <Form form={form} wrapperCol={{ span: 18 }} labelCol={{ span: 5 }} labelWrap>
         <Card size='small' title='渠道版本选择' style={{ width: '100%', marginTop: 20 }}>
           <Form.Item name='channelVersion' label='渠道版本' initialValue={target.channelVersion} rules={[{ required: true, message: '渠道版本必选' }]}>
             <Select>
@@ -112,7 +112,6 @@ const BaseConfig = ({ target, state, submitSymbol, submitVal, clearCount, channe
                             <Form.Item
                                 {...restField}
                                 name={[name, 'value']}
-                                fieldKey={[fieldKey, 'value']}
                                 label={obj.clientConfigDoc[key].keyName}
                                 help={obj.clientConfigDoc[key].label}
                                 required={obj.clientConfigDoc[key].required}
@@ -143,7 +142,6 @@ const BaseConfig = ({ target, state, submitSymbol, submitVal, clearCount, channe
                             <Form.Item
                                 {...restField}
                                 name={[name, 'value']}
-                                fieldKey={[fieldKey, 'value']}
                                 label={obj.serverConfigDoc[key].keyName}
                                 help={obj.serverConfigDoc[key].label}
                                 required={obj.serverConfigDoc[key].required}
@@ -174,7 +172,6 @@ const BaseConfig = ({ target, state, submitSymbol, submitVal, clearCount, channe
                             <Form.Item
                                 {...restField}
                                 name={[name, 'value']}
-                                fieldKey={[fieldKey, 'value']}
                                 label={obj.extra[key].keyName}
                                 help={obj.extra[key].label}
                                 required={obj.extra[key].required}
