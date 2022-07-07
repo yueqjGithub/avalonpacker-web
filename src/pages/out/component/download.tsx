@@ -5,10 +5,14 @@ import { copyHandler } from '../../../utils/utils'
 import { RecordDataRow } from '../../packerRecord/common'
 import { ChannelMediaPackage, HistoryDetailVo } from '../common'
 import QRCode from 'qrcode.react'
+import { getApiDataState } from 'avalon-iam-util-client'
+import { MediaFlagDataRow } from '../../mediaFlag/common'
+import { State } from '../../../store/state'
 
 type Props = {
   historyList: HistoryDetailVo[]
   configList: RecordDataRow[]
+  state: State
 }
 
 type DataRowType = ChannelMediaPackage & {
@@ -17,7 +21,8 @@ type DataRowType = ChannelMediaPackage & {
   updateTime?: string
 }
 
-const DownloadModal = ({ historyList, configList }: Props) => {
+const DownloadModal = ({ historyList, configList, state }: Props) => {
+  const { data: mediaList = [] } = getApiDataState<MediaFlagDataRow[]>({ apiId: 'mediaflag', state })
   const fileList = useMemo(() => {
     const result: DataRowType[] = []
     historyList.forEach(item => {
@@ -57,7 +62,8 @@ const DownloadModal = ({ historyList, configList }: Props) => {
             align: 'center',
             sorter: undefined,
             filterDropdown: false,
-            dataIndex: 'mediaName'
+            dataIndex: 'mediaName',
+            render: val => <>{mediaList.find(item => item.code === val)?.mediaName || 'default'}</>
           },
           {
             title: '成品包',
