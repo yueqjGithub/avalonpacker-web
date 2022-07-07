@@ -15,9 +15,10 @@ import QRCode from 'qrcode.react'
 type Props = {
   state: State
   target?: string // id
+  isFromConfig?: boolean
 }
 
-const Detail = ({ target, state }: Props) => {
+const Detail = ({ target, state, isFromConfig = false }: Props) => {
   const [loading, setLoading] = useState<boolean>(false)
   const [detail, setDetail] = useState<any>()
   const { data: gameList = [] } = getApiDataState<AppDataRow[]>({ apiId: 'gamelist', state })
@@ -31,6 +32,14 @@ const Detail = ({ target, state }: Props) => {
         state,
         apiId: 'historydetail',
         method: 'POST',
+        httpCustomConfig: isFromConfig
+          ? {
+              headers: {
+                dependPath: '/packer/admin/packerRecord/package',
+                dependAction: encodeURIComponent('分包')
+              }
+            }
+          : {},
         data: { ids: [target] }
       }).request
       setDetail(data.data[0])
