@@ -91,7 +91,7 @@ export const routeConfig:RouteSingle[] = [
       },
       {
         path: '/packhistory',
-        menuName: '打包历史',
+        menuName: '分包历史',
         isMenu: true,
         auth: false,
         parent: '/tools',

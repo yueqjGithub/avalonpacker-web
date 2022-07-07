@@ -86,7 +86,7 @@ const DownloadModal = ({ historyList, configList }: Props) => {
                   type="primary"
                   className='ma-col-sm'
                   >
-                    复制下载连接
+                    复制下载链接
                   </Button>
                 </div>
               )
