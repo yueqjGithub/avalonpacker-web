@@ -114,7 +114,7 @@ const Detail = ({ target, state }: Props) => {
                 filterDropdown: false,
                 align: 'center',
                 render: record => {
-                  const targetUrl = `${record.downloadHost}${record.downUrl}`
+                  const targetUrl = `${detail.downloadHost}${record.downUrl}`
                   return (
                     <QRCode
                       width={200}
