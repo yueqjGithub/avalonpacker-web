@@ -524,7 +524,7 @@ const Main = () => {
         <DownloadModal configList={curConfigList} historyList={downList!} state={state} ></DownloadModal>
       </Modal>
       <Modal footer={null} destroyOnClose width="80vw" title="分包详情" visible={showDetail} onCancel={() => setShowDetail(false)}>
-        <Detail target={curHis} state={state} />
+        <Detail target={curHis} state={state} isFromConfig />
       </Modal>
     </div>
   )
