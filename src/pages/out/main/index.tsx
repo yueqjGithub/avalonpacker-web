@@ -35,6 +35,12 @@ const Main = () => {
         data: { appId: currentGame },
         apiId: 'querySourceList',
         force: true,
+        httpCustomConfig: {
+          headers: {
+            dependPath: '/packer/admin/packerRecord/package',
+            dependAction: encodeURIComponent('分包')
+          }
+        },
         cancelPayload: cancel
       })
     }
@@ -55,6 +61,12 @@ const Main = () => {
         data: { appId: currentGame },
         apiId: 'packrecord',
         force: true,
+        httpCustomConfig: {
+          headers: {
+            dependPath: '/packer/admin/packerRecord/package',
+            dependAction: encodeURIComponent('分包')
+          }
+        },
         cancelPayload: cancel
       })
     }
@@ -95,6 +107,12 @@ const Main = () => {
         apiId: 'querySourceList',
         state,
         force: true,
+        httpCustomConfig: {
+          headers: {
+            dependPath: '/packer/admin/packerRecord/package',
+            dependAction: encodeURIComponent('分包')
+          }
+        },
         data: { appId: currentGame },
         dispatch
       })
@@ -161,6 +179,12 @@ const Main = () => {
       apiId: 'packrecord',
       state,
       dispatch,
+      httpCustomConfig: {
+        headers: {
+          dependPath: '/packer/admin/packerRecord/package',
+          dependAction: encodeURIComponent('分包')
+        }
+      },
       data: { appId: currentGame },
       force: true
     })

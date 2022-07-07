@@ -15,10 +15,43 @@ const packHistory = ({ state, dispatch }: Props) => {
       state={state}
       dispatch={dispatch}
       data={[
-        { id: 'gamelist' },
-        { id: 'channel' },
-        { id: 'mediaflag' },
-        { id: 'packrecord', data: { appId: state.currentGame } }
+        {
+          id: 'gamelist',
+          httpCustomConfig: {
+            headers: {
+              dependPath: '/packer/admin/history-record/doPage',
+              dependAction: encodeURIComponent('分包历史')
+            }
+          }
+        },
+        {
+          id: 'channel',
+          httpCustomConfig: {
+            headers: {
+              dependPath: '/packer/admin/history-record/doPage',
+              dependAction: encodeURIComponent('分包历史')
+            }
+          }
+        },
+        {
+          id: 'mediaflag',
+          httpCustomConfig: {
+            headers: {
+              dependPath: '/packer/admin/history-record/doPage',
+              dependAction: encodeURIComponent('分包历史')
+            }
+          }
+        },
+        {
+          id: 'packrecord',
+          data: { appId: state.currentGame },
+          httpCustomConfig: {
+            headers: {
+              dependPath: '/packer/admin/history-record/doPage',
+              dependAction: encodeURIComponent('分包历史')
+            }
+          }
+        }
       ]}
     >
       <Main state={state} dispatch={dispatch}></Main>

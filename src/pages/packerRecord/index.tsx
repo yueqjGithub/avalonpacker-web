@@ -12,7 +12,53 @@ const Channel = ({ state, dispatch }: Props) => {
     <PageContainer
       state={state}
       dispatch={dispatch}
-      data={[{ id: 'envlist' }, { id: 'channel' }, { id: 'mediaflag' }, { id: 'pluginstypes' }, { id: 'plugins' }]}
+      data={[
+        {
+          id: 'envlist',
+          httpCustomConfig: {
+            headers: {
+              dependPath: '/packer/admin/packerRecord',
+              dependAction: encodeURIComponent('配置列表')
+            }
+          }
+        },
+        {
+          id: 'channel',
+          httpCustomConfig: {
+            headers: {
+              dependPath: '/packer/admin/packerRecord',
+              dependAction: encodeURIComponent('配置列表')
+            }
+          }
+        },
+        {
+          id: 'mediaflag',
+          httpCustomConfig: {
+            headers: {
+              dependPath: '/packer/admin/packerRecord',
+              dependAction: encodeURIComponent('配置列表')
+            }
+          }
+        },
+        {
+          id: 'pluginstypes',
+          httpCustomConfig: {
+            headers: {
+              dependPath: '/packer/admin/packerRecord',
+              dependAction: encodeURIComponent('配置列表')
+            }
+          }
+        },
+        {
+          id: 'plugins',
+          httpCustomConfig: {
+            headers: {
+              dependPath: '/packer/admin/packerRecord',
+              dependAction: encodeURIComponent('配置列表')
+            }
+          }
+        }
+      ]}
     >
       <Main state={state} dispatch={dispatch}></Main>
     </PageContainer>
