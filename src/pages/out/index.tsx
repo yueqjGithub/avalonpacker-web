@@ -5,15 +5,14 @@ import Main from './main'
 
 const OutPage = () => {
   const { state, dispatch } = useContext(Context)
-  const { currentGame } = state
   return (
     <PageContainer
       state={state}
       dispatch={dispatch}
       data={[
-        { id: 'querySourceList', data: { appId: currentGame } },
-        { id: 'channel' },
-        { id: 'packrecord', data: { appId: currentGame } }
+        // { id: 'querySourceList', data: { appId: currentGame } },
+        { id: 'channel' }
+        // { id: 'packrecord', data: { appId: currentGame } }
       ]}
     >
       <Main></Main>

@@ -3,7 +3,7 @@ import { ATable } from 'avalon-antd-util-client'
 import { getApiDataState } from 'avalon-iam-util-client'
 import React, { ChangeEvent, useContext, useEffect, useMemo, useRef, useState } from 'react'
 import { PermissionHoc } from '../../../components/permissionHOC'
-import { httpApi, httpWithStore } from '../../../service/axios'
+import { CancelPayload, httpApi, httpWithStore } from '../../../service/axios'
 import { Context } from '../../../store/context'
 import { ChannelDataRow } from '../../channel/common'
 import { RecordDataRow } from '../../packerRecord/common'
@@ -25,6 +25,46 @@ const Main = () => {
   const { currentGame, user } = state
   // appList
   const { data: gameList = [] } = getApiDataState<AppDataRow[]>({ apiId: 'gamelist', state })
+  // 母包列表获取
+  useEffect(() => {
+    const cancel: CancelPayload = {}
+    const getMotherHandler = async () => {
+      await httpWithStore({
+        state,
+        dispatch,
+        data: { appId: currentGame },
+        apiId: 'querySourceList',
+        force: true,
+        cancelPayload: cancel
+      })
+    }
+    getMotherHandler()
+    return () => {
+      if (cancel.querySourceList) {
+        cancel.querySourceList.cancel()
+      }
+    }
+  }, [currentGame])
+  // 配置列表获取
+  useEffect(() => {
+    const cancel: CancelPayload = {}
+    const getConfigHandler = async () => {
+      await httpWithStore({
+        state,
+        dispatch,
+        data: { appId: currentGame },
+        apiId: 'packrecord',
+        force: true,
+        cancelPayload: cancel
+      })
+    }
+    getConfigHandler()
+    return () => {
+      if (cancel.querySourceList) {
+        cancel.querySourceList.cancel()
+      }
+    }
+  }, [currentGame])
   // 权限
   const permissionList = {
     upload: true, // 上传母包
