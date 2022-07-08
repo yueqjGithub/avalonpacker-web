@@ -1,4 +1,3 @@
-import { UserDataRow } from 'avalon-iam-util-global'
 import type { State } from './state'
 
 export type ActionType = {
@@ -7,13 +6,13 @@ export type ActionType = {
     type: 'SET_DATA' | 'GET_DATA'
 }
 
-export function reducer(state: State, action:ActionType) {
-    switch (action.type) {
-        case 'SET_DATA':
-            return { ...state, [action.id]: action.value };
-        case 'GET_DATA':
-            return state[action.id] || null;
-        default:
-            return state
-    }
+export function reducer (state: State, action:ActionType) {
+  switch (action.type) {
+    case 'SET_DATA':
+      return { ...state, [action.id]: action.value }
+    case 'GET_DATA':
+      return state[action.id] || null
+    default:
+      return state
+  }
 }
