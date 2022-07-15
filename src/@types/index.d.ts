@@ -35,3 +35,14 @@ declare module ProjectTypesSource {
 declare type PermissionList = {
   [key: string]: boolean
 }
+
+declare type IamUserType = {
+  id: number
+  name: string
+  email: string
+  company: string
+  accountInfo: {
+    type: number
+    username?: string
+  }[]
+}

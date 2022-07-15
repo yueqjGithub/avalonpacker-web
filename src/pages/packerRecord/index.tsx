@@ -14,6 +14,10 @@ const Channel = ({ state, dispatch }: Props) => {
       dispatch={dispatch}
       data={[
         {
+          id: 'iamuserlist',
+          delHeaderAction: true
+        },
+        {
           id: 'envlist',
           httpCustomConfig: {
             headers: {

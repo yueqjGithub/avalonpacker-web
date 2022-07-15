@@ -17,10 +17,11 @@ type ApiDataRow = Partial<ApiRow<ApiIdForSDK>> & {
   id: ApiIdForSDK
   data?: any
   responseTransform?: ((res:AxiosResponse['data']) => AxiosResponse['data']) | null
+  delHeaderAction?: boolean
 }
 
 type Props = {
-  data: ApiDataRow[],
+  data: Array<ApiDataRow>,
   state: State,
   dispatch: any,
   children?: JSX.Element | Element
@@ -57,7 +58,8 @@ export default function PageContainer ({ data, state, dispatch, children, otherC
         dispatch,
         successStatus: 0,
         cancelPayload: cancelObj.current,
-        responseTransform: item.responseTransform || null
+        responseTransform: item.responseTransform || null,
+        delHeaderAction: item.delHeaderAction
       }
       Object.assign(requestObj, item)
       return httpWithStore(requestObj)

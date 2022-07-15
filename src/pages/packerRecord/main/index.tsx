@@ -27,6 +27,8 @@ const apiId: ApiIdForSDK = 'packrecord'
 const Main = ({ state, dispatch }: Props) => {
   const { currentGame } = state
   const { data = [], loading } = getApiDataState<RecordDataRow[]>({ apiId, state })
+  // iam
+  const { data: iamusers = [] } = getApiDataState<IamUserType[]>({ apiId: 'iamuserlist', state })
   const { data: channelList = [] } = getApiDataState<ChannelDataRow[]>({ apiId: 'channel', state })
   // 混合渠道和渠道已有配置数量
   const channelWithConfList = useMemo(() => {
@@ -203,7 +205,7 @@ const Main = ({ state, dispatch }: Props) => {
             render: record => {
               return (
                 <div className='flex-col flex-jst-start flex-ali-center full-width'>
-                  <p>{record.lastUpdateAs}</p>
+                  <p>{iamusers.find(item => item.id === Number(record.lastUpdateAs))?.name || record.lastUpdateAs}</p>
                   <p>{record.updateTime}</p>
                 </div>
               )

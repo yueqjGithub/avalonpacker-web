@@ -1,4 +1,4 @@
-import { Apis } from 'avalon-iam-util-client'
+import { Apis, IamBarValue } from 'avalon-iam-util-client'
 import { getApiUrl, getLimit } from '../utils/utils'
 
 // const getApiUrl = ({ state }): string => {
@@ -29,6 +29,7 @@ export type ApiIdForSDK =
     | 'querysignpath'
     | 'querychannelsignpath'
     | 'envlist'
+    | 'iamuserlist'
 /** 通用api */
 export const apisForSDK: Apis<ApiIdForSDK> = [
   {
@@ -249,6 +250,18 @@ export const apisForSDK: Apis<ApiIdForSDK> = [
     allowEmpty: true,
     urlTranform: ({ url, state }) => {
       const apiUrl = getApiUrl({ state })
+      return `${apiUrl}${url}`
+    }
+  },
+  // 从iam取出
+  {
+    id: 'iamuserlist',
+    url: '/iam-manage/v1/users',
+    name: '用户列表',
+    allowEmpty: true,
+    urlTranform: ({ url, state }) => {
+      const { project = [] } = state as IamBarValue
+      const apiUrl = project.find(d => d.id === 'iam')?.api_url
       return `${apiUrl}${url}`
     }
   }

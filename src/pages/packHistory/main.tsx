@@ -43,6 +43,8 @@ const Main = ({ state, dispatch }: Props) => {
   const { data: gameList = [] } = getApiDataState<AppDataRow[]>({ apiId: 'gamelist', state })
   const { data: channelList = [] } = getApiDataState<ChannelDataRow[]>({ apiId: 'channel', state })
   const { data: configList = [] } = getApiDataState<RecordDataRow[]>({ apiId: 'packrecord', state })
+  // iam
+  const { data: iamusers = [] } = getApiDataState<IamUserType[]>({ apiId: 'iamuserlist', state })
   const page = React.useRef<number>(1)
   const pageSize = React.useRef<number>(10)
   const end = React.useRef<Moment>(moment())
@@ -152,7 +154,7 @@ const Main = ({ state, dispatch }: Props) => {
                 render: (val, record) => {
                   return (
                     <div className='full-width flex-col flex-jst-center flex-ali-center'>
-                      <span>{record.opsUser}</span>
+                      <span>{iamusers.find(item => item.id === Number(record.opsUser))?.name || record.opsUser}</span>
                       <span>{val ? dayjs(val).format('YYYY-MM-DD HH:mm:ss') : ''}</span>
                     </div>
                   )

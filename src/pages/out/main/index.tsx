@@ -23,6 +23,9 @@ const Main = () => {
   const timeOutRef = useRef<number>(-1)
   const { state, dispatch } = useContext(Context)
   const { currentGame, user } = state
+  // iam
+  const { data: iamusers = [] } = getApiDataState<IamUserType[]>({ apiId: 'iamuserlist', state })
+  console.log(iamusers)
   // appList
   const { data: gameList = [] } = getApiDataState<AppDataRow[]>({ apiId: 'gamelist', state })
   // 母包列表获取
@@ -255,7 +258,7 @@ const Main = () => {
       channelId: curChannel,
       motherPackage: curMotherPack![1],
       configs: curConfig,
-      ops: user.username,
+      ops: user.id,
       motherIsFtp: curMotherPack![0] === 'ftpNames' ? 1 : 0
     }
     if (curMotherPack![0] === 'ftpNames') {
@@ -487,7 +490,7 @@ const Main = () => {
               render: (record: RecordDataRow) => {
                 return (
                   <div className='full-width flex-col flex-jst-center flex-ali-center'>
-                    <span>{record.lastUpdateAs}</span>
+                    <span>{iamusers.find(item => item.id === Number(record.lastUpdateAs))?.name || record.lastUpdateAs}</span>
                     <span>{record.updateTime}</span>
                   </div>
                 )
@@ -510,7 +513,7 @@ const Main = () => {
                 return (
                   <Tooltip title="点击查看最近一次分包详情">
                     <div className='full-width flex-col flex-jst-center flex-ali-center cursor-pointer'>
-                      <span>{record.lastOps || '无'}</span>
+                      <span>{iamusers.find(item => item.id === Number(record.lastOps))?.name || record.lastOps}</span>
                       <span>{record.lastPackTime}</span>
                     </div>
                   </Tooltip>

@@ -22,6 +22,8 @@ const Detail = ({ target, state, isFromConfig = false }: Props) => {
   const [loading, setLoading] = useState<boolean>(false)
   const [detail, setDetail] = useState<any>()
   const { data: gameList = [] } = getApiDataState<AppDataRow[]>({ apiId: 'gamelist', state })
+  // iam
+  const { data: iamusers = [] } = getApiDataState<IamUserType[]>({ apiId: 'iamuserlist', state })
   const { data: channelList = [] } = getApiDataState<ChannelDataRow[]>({ apiId: 'channel', state })
   const { data: mediaList = [] } = getApiDataState<MediaFlagDataRow[]>({ apiId: 'mediaflag', state })
   const { data: configList = [] } = getApiDataState<RecordDataRow[]>({ apiId: 'packrecord', state })
@@ -69,7 +71,7 @@ const Detail = ({ target, state, isFromConfig = false }: Props) => {
             <Descriptions.Item label='分包环境'>{detail?.envDesc}</Descriptions.Item>
             <Descriptions.Item label='渠道版本'>{detail?.channelVersion}</Descriptions.Item>
             <Descriptions.Item label='分包时间'>{dayjs(detail?.createTime).format('YYYY-MM-DD HH:mm:ss')}</Descriptions.Item>
-            <Descriptions.Item label='操作人'>{detail?.opsUser}</Descriptions.Item>
+            <Descriptions.Item label='操作人'>{iamusers.find(item => item.id === Number(detail?.opsUser))?.name || detail?.opsUser}</Descriptions.Item>
           </Descriptions>
           <div className={styles.detailTit}>插件列表</div>
           <Table rowKey='code' style={{ width: '35%' }} size='small' bordered dataSource={(detail?.pluginsList as PluginsDataRow[]) || []}

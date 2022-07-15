@@ -30,7 +30,7 @@ type ChannelVersionData = {
 
 const EditModule = ({ target, initView, state, editSuccess, dispatch }: Props) => {
   const targetRef = useRef({ ...target })
-  // const { currentGame } = state
+  const { user } = state
   const { data: gameList = [] } = getApiDataState<AppDataRow[]>({ apiId: 'gamelist', state })
   // const currentGameInfo = useMemo(() => {
   //   return gameList.find(item => item.id === currentGame)
@@ -71,7 +71,7 @@ const EditModule = ({ target, initView, state, editSuccess, dispatch }: Props) =
         state,
         apiId: 'updaterecord',
         method: 'POST',
-        data: targetRef.current
+        data: { ...targetRef.current, lastUpdateAs: user.id }
       }).request
       if (res.status === 0) {
         message.success('提交成功')

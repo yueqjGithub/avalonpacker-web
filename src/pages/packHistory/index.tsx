@@ -16,6 +16,10 @@ const packHistory = ({ state, dispatch }: Props) => {
       dispatch={dispatch}
       data={[
         {
+          id: 'iamuserlist',
+          delHeaderAction: true
+        },
+        {
           id: 'gamelist',
           httpCustomConfig: {
             headers: {

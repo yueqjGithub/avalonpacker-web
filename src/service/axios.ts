@@ -53,6 +53,8 @@ interface HttpWithDispatchOptions extends HttpOptions {
   successStatus?: string | number
   /** 取消请求载体 */
   cancelPayload?: Partial<CancelPayload> | null
+  /** 不需要actionName */
+  delHeaderAction?: boolean
 }
 
 interface HttpParams extends AxiosRequestConfig {
@@ -131,7 +133,8 @@ const httpWithStore = async ({
   cancelPayload = null,
   urlTranform = undefined,
   needqs = false,
-  httpCustomConfig = null
+  httpCustomConfig = null,
+  delHeaderAction = false
 }: HttpWithDispatchOptions) => {
   const cancel = axios.CancelToken.source()
   // data = addSalt(data)
@@ -160,9 +163,13 @@ const httpWithStore = async ({
     options = Object.assign(options, target.httpCustomConfig)
   }
   if (options.headers) {
-    options.headers.actionName = options.headers.actionName ? options.headers.actionName : encodeURIComponent(target.name)
+    if (!delHeaderAction) {
+      options.headers.actionName = options.headers.actionName ? options.headers.actionName : encodeURIComponent(target.name)
+    }
   } else {
-    options.headers = { actionName: encodeURIComponent(target.name) }
+    if (!delHeaderAction) {
+      options.headers = { actionName: encodeURIComponent(target.name) }
+    }
   }
   options.cancelToken = cancel.token
   if (cancelPayload !== null) {
