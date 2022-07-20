@@ -10,6 +10,7 @@ export interface State extends IamBarValue {
   jwtLocalStorageName: string
   [propName: string]: any
   routeList: RouteSingle[]
+  isMac?: boolean
 }
 
 const initStates: State = {
@@ -22,7 +23,8 @@ const initStates: State = {
   status: [],
   iambarLoading: true,
   currentProjectInstance: {} as ProjectInstanceDataRow,
-  apis: apisForSDK
+  apis: apisForSDK,
+  isMac: import.meta.env.VITE_SYSTYPE === 'mac'
 }
 
 export default initStates

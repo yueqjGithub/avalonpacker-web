@@ -7,7 +7,9 @@
     "build": "vite build",
     "dev": "vite build",
     "release": "vite build",
+    "release:mactest": "vite build -m mac",
     "release:pubcn": "vite build -m pubcn",
+    "release:macpub": "vite build -m macpub",
     "serve": "vite preview"
   },
   "dependencies": {
@@ -21,6 +23,7 @@
     "avalon-iam-util-client": "^1.0.73",
     "avalon-iam-util-global": "^1.6.67",
     "axios": "^0.21.1",
+    "cross-env": "^7.0.3",
     "lodash": "^4.17.21",
     "moment": "^2.29.1",
     "react": "^17.0.0",

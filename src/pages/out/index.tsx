@@ -10,10 +10,7 @@ const OutPage = () => {
       state={state}
       dispatch={dispatch}
       data={[
-        // { id: 'querySourceList', data: { appId: currentGame } },
-        { id: 'iamuserlist', delHeaderAction: true },
-        { id: 'channel', httpCustomConfig: { headers: { dependPath: '/packer/admin/packerRecord/package', dependAction: encodeURIComponent('分包') } } }
-        // { id: 'packrecord', data: { appId: currentGame } }
+        { id: 'iamuserlist', delHeaderAction: true }
       ]}
     >
       <Main></Main>

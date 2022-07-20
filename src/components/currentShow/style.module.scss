@@ -1,4 +1,5 @@
 .curContainer{
+  padding-right: 0.09rem;
   .curIcon{
     width: .3rem;
     height: .3rem;
@@ -12,5 +13,20 @@
   }
   .lineHeightControl{
     line-height: .3rem;
+  }
+  .backContainer {
+    margin-top: .1rem;
+    width: 100%;
+    color: #fff;
+    &:hover{
+      color: #40a9ff;
+    }
+    .backIcon {
+      width: .3rem;
+      height: .3rem;
+      text-align: right;
+      line-height: .3rem;
+      margin: 0 0.09rem;
+    }
   }
 }

@@ -2,9 +2,11 @@ import { Button, Cascader, Divider, message, Modal, Popover, Select, Tooltip } f
 import { ATable } from 'avalon-antd-util-client'
 import { getApiDataState } from 'avalon-iam-util-client'
 import React, { ChangeEvent, useContext, useEffect, useMemo, useRef, useState } from 'react'
+import InnerStatusPage from '../../../components/innerStatusPage'
 import { PermissionHoc } from '../../../components/permissionHOC'
 import { CancelPayload, httpApi, httpWithStore } from '../../../service/axios'
 import { Context } from '../../../store/context'
+import { hasPermission } from '../../../utils/utils'
 import { ChannelDataRow } from '../../channel/common'
 import { RecordDataRow } from '../../packerRecord/common'
 import { HistoryDataRow } from '../../packHistory/common'
@@ -22,16 +24,26 @@ type ReasonType = {
 const Main = () => {
   const timeOutRef = useRef<number>(-1)
   const { state, dispatch } = useContext(Context)
-  const { currentGame, user } = state
+  const { currentGame, user, isMac } = state
+  const sysPrefix = isMac ? 'IOS分包' : 'Android分包'
   // iam
   const { data: iamusers = [] } = getApiDataState<IamUserType[]>({ apiId: 'iamuserlist', state })
-  console.log(iamusers)
   // appList
   const { data: gameList = [] } = getApiDataState<AppDataRow[]>({ apiId: 'gamelist', state })
-  // 母包列表获取
-  useEffect(() => {
-    const cancel: CancelPayload = {}
-    const getMotherHandler = async () => {
+
+  const [curMotherPack, setMotherPack] = useState<CurrentMotherPack>()
+  const [curChannel, setChannel] = useState<string[]>([])
+  const [curConfig, setConfigs] = useState<string[]>([])
+
+  // 母包及渠道列表获取
+  const [loading, setInnerLoading] = useState<boolean>(false)
+  const [loadStatus, setInnerStatus] = useState<| 'resolve' | 'reject' | 'empty'>('empty')
+  const getDatas = async (cancel?: CancelPayload) => {
+    setMotherPack(undefined)
+    setChannel([])
+    setConfigs([])
+    try {
+      setInnerLoading(true)
       await httpWithStore({
         state,
         dispatch,
@@ -46,18 +58,19 @@ const Main = () => {
         },
         cancelPayload: cancel
       })
-    }
-    getMotherHandler()
-    return () => {
-      if (cancel.querySourceList) {
-        cancel.querySourceList.cancel()
-      }
-    }
-  }, [currentGame])
-  // 配置列表获取
-  useEffect(() => {
-    const cancel: CancelPayload = {}
-    const getConfigHandler = async () => {
+      await httpWithStore({
+        state,
+        dispatch,
+        apiId: 'channel',
+        force: true,
+        httpCustomConfig: {
+          headers: {
+            dependPath: '/packer/admin/packerRecord/package',
+            dependAction: encodeURIComponent('分包')
+          }
+        },
+        cancelPayload: cancel
+      })
       await httpWithStore({
         state,
         dispatch,
@@ -72,23 +85,32 @@ const Main = () => {
         },
         cancelPayload: cancel
       })
+      setInnerStatus('resolve')
+    } catch {
+      setInnerStatus('reject')
+    } finally {
+      setInnerLoading(false)
     }
-    getConfigHandler()
+  }
+  useEffect(() => {
+    const cancel: CancelPayload = {}
+    getDatas(cancel)
     return () => {
-      if (cancel.querySourceList) {
-        cancel.querySourceList.cancel()
+      for (const k in cancel) {
+        if (cancel[k]) {
+          cancel[k].cancel()
+        }
       }
     }
   }, [currentGame])
   // 权限
   const permissionList = {
-    upload: true, // 上传母包
-    do: true, // 分包
-    download: true // 下载
+    upload: hasPermission({ state, moduleName: `${sysPrefix}工具`, action: '上传母包' }), // 上传母包
+    do: hasPermission({ state, moduleName: `${sysPrefix}工具`, action: '分包' }), // 分包
+    download: hasPermission({ state, moduleName: `${sysPrefix}工具`, action: '分包' }) // 下载
   }
   // 母包
   const { data: motherAll } = getApiDataState<MotherPackageResponse>({ apiId: 'querySourceList', state })
-  const [curMotherPack, setMotherPack] = useState<CurrentMotherPack>()
   const motherList = useMemo(() => {
     const result: { value: string, label: string, children?: { value: string, label: string, path?: string }[] }[] = []
     for (const k in motherAll) {
@@ -167,13 +189,11 @@ const Main = () => {
 
   // 渠道
   const { data: channelList = [] } = getApiDataState<ChannelDataRow[]>({ apiId: 'channel', state })
-  const [curChannel, setChannel] = useState<string[]>([])
   // 配置
   const { data: configAll = [] } = getApiDataState<RecordDataRow[]>({ apiId: 'packrecord', state })
   const configList = useMemo(() => {
     return configAll.filter(item => curChannel.includes(item.channelId) && item.couldPack)
   }, [configAll, curChannel])
-  const [curConfig, setConfigs] = useState<string[]>([])
   const curConfigList = useMemo(() => {
     return configList.filter(item => curConfig.includes(item.id!))
   }, [configList, curConfig])
@@ -315,6 +335,7 @@ const Main = () => {
         apiId: 'historydetail',
         data: requestData,
         method: 'POST',
+        httpCustomConfig: { headers: { dependPath: '/packer/admin/packerRecord/package', dependAction: encodeURIComponent('分包') } },
         state
       }).request
       if (res.status === 0) {
@@ -334,15 +355,20 @@ const Main = () => {
   const [showDetail, setShowDetail] = useState<boolean>(false)
   // render
   return (
+    <InnerStatusPage
+      loadFunc={getDatas}
+      loadStatus={loadStatus}
+      loading={loading}
+    >
     <div className="full-width">
       {/* 头部模块 */}
       <div className='full-width flex-row flex-jst-btw flex-ali-end'>
         <div className='flex-col flex-jst-start flex-ali-start'>
           <div className={styles.cusFormLine}>
             <input type="file" ref={uploadRef} style={{ display: 'none' }} onChange={e => uploadHandler(e)} />
-            <div className={styles.label}>选择母包:</div>
+            <div className={styles.label}>选择{isMac ? 'xcode工程' : '母包'}:</div>
             <Cascader
-              placeholder="请选择母包"
+              placeholder="请选择"
               style={{ width: 450 }}
               fieldNames={{ label: 'label', value: 'value', children: 'children' }}
               options={motherList}
@@ -360,7 +386,7 @@ const Main = () => {
               component={
                 <Button disabled={uploadLoading} type='primary' className='ma-lf-05' onClick={() => {
                   uploadRef.current!.click()
-                }}>上传母包</Button>
+                }}>上传{isMac ? 'xcode工程' : '母包'}</Button>
               }
               permission={permissionList.upload}
             ></PermissionHoc>
@@ -394,6 +420,7 @@ const Main = () => {
               filterOption={(val, opt) => {
                 return (opt?.children as unknown as string)?.indexOf(val) !== -1
               }}
+              value={curConfig}
               onChange={(val, opt) => {
                 setConfigs(val)
               }}
@@ -530,6 +557,7 @@ const Main = () => {
         <Detail target={curHis} state={state} isFromConfig />
       </Modal>
     </div>
+    </InnerStatusPage>
   )
 }
 

@@ -1,16 +1,29 @@
 import { CloseCircleFilled } from '@ant-design/icons'
 import { Button, Empty, Spin } from 'antd'
-import React from 'react'
+import React, { useEffect, useRef } from 'react'
+import { CancelPayload } from '../../service/axios'
 
 type Props = {
   loadStatus: 'resolve' | 'reject' | 'empty'
   loading: boolean
-  loadFunc: Function
+  loadFunc: (cancel?: CancelPayload) => any
   children: JSX.Element
   customEmpty?: JSX.Element | Element | React.ReactElement
 }
 
 const InnerStatusPage = ({ loadStatus, loading, loadFunc, children, customEmpty }: Props) => {
+  const cancel = useRef<CancelPayload>({})
+  useEffect(() => {
+    return () => {
+      if (cancel.current) {
+        for (const k in cancel.current) {
+          if (cancel.current[k]) {
+            cancel.current[k].cancel()
+          }
+        }
+      }
+    }
+  }, [])
   const view = () => {
     switch (loadStatus) {
       case 'empty':
@@ -36,7 +49,7 @@ const InnerStatusPage = ({ loadStatus, loading, loadFunc, children, customEmpty 
           <div className='full-width full-height flex-col flex-jst-center flex-ali-center'>
             <CloseCircleFilled style={{ color: '#ff0000', fontSize: '44px', marginBottom: '10px' }}/>
             <span>加载失败</span>
-            <Button onClick={() => loadFunc()}>重新请求</Button>
+            <Button onClick={() => loadFunc(cancel.current)}>重新请求</Button>
           </div>
         )
     }

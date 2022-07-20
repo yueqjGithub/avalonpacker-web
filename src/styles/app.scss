@@ -45,3 +45,28 @@ ul.ant-menu.ant-menu-root.ant-menu-vertical.ant-menu-dark.ant-menu-inline-collap
   white-space: pre-wrap;
   word-break: break-all;
 }
+// 自定义左侧应用选择
+.cus-left-select {
+  .ant-select-selector {
+    background-color: #032444 !important;
+    color: rgba(255,255,255,0.65);
+    border-color: #40a9ff !important;
+  }
+  .ant-select-arrow {
+    color: rgba(255,255,255,0.65);
+  }
+}
+
+// 自定义spinning
+.cus-spinning{
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: rgba(255,255,255,0.7);
+  z-index: 99;
+  position: absolute;
+  top: 0;
+  left: 0;
+}

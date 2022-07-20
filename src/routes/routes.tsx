@@ -3,6 +3,8 @@ import { Result } from 'antd'
 import SetGame from '../pages/setgame'
 import { BuildOutlined, ToolOutlined } from '@ant-design/icons'
 import WaitRoute from '../components/waitRoute'
+
+const namePrefix = import.meta.env.VITE_SYSTYPE === 'mac' ? 'IOS分包' : 'Android分包'
 export const routeConfig:RouteSingle[] = [
   {
     path: '/',
@@ -66,14 +68,14 @@ export const routeConfig:RouteSingle[] = [
   },
   {
     path: '/tools',
-    menuName: '分包工具',
+    menuName: `${namePrefix}工具`,
     auth: true,
     isMenu: true,
     icon: <ToolOutlined />,
     childrens: [
       {
         path: '/package',
-        menuName: '分包工具',
+        menuName: `${namePrefix}工具`,
         auth: true,
         isMenu: true,
         component: lazy(() => import('../pages/out')),
@@ -82,7 +84,7 @@ export const routeConfig:RouteSingle[] = [
       },
       {
         path: '/packerrecord',
-        menuName: '配置管理',
+        menuName: `${namePrefix}配置管理`,
         isMenu: true,
         auth: true,
         component: lazy(() => import('../pages/packerRecord')),

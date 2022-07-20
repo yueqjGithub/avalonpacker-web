@@ -66,24 +66,26 @@ const MainLayout = (props: Props) => {
               : (
                 <Layout.Sider collapsed={isDependRoute} className='fMenuContainer'>
                   <div style={{ height: 'calc(100vh - 64px)' }} className="scroll-bar flex-row flex-jst-start flex-ali-start">
-                    <Menu
-                      style={{ height: '100%', background: '#032444' }}
-                      mode='inline'
-                      theme={menuTheme}
-                      selectedKeys={selectedKeys}
-                      onSelect={({ key, domEvent }) => routeHandler(key, domEvent)}
-                      items={commonMenus.map(item => {
-                        return {
-                          key: item.path,
-                          label: item.menuName,
-                          icon: item.icon
-                        }
-                      })}
-                    >
-                      {/* {
-                        commonMenus.map(item => <Menu.Item key={item.path} icon={item.icon || <></>}>{item.menuName}</Menu.Item>)
-                      } */}
-                    </Menu>
+                    <div className="full-width" style={{ paddingTop: '0.1rem' }}>
+                      <div className={`${styles.currentShow}`}>
+                        <CurrentShow dispatch={dispatch} collapsed={collapsed} state={state} isCommon></CurrentShow>
+                      </div>
+                      <Menu
+                        style={{ height: '100%', background: '#032444' }}
+                        mode='inline'
+                        theme={menuTheme}
+                        selectedKeys={selectedKeys}
+                        onSelect={({ key, domEvent }) => routeHandler(key, domEvent)}
+                        items={commonMenus.map(item => {
+                          return {
+                            key: item.path,
+                            label: item.menuName,
+                            icon: item.icon
+                          }
+                        })}
+                      >
+                      </Menu>
+                    </div>
                   </div>
                 </Layout.Sider>
                 )

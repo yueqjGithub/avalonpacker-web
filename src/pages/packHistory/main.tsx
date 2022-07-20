@@ -86,6 +86,8 @@ const Main = ({ state, dispatch }: Props) => {
     requestHandler()
   }
   useEffect(() => {
+    page.current = 1
+    pageSize.current = 10
     requestHandler(cancelObj.current)
     return () => {
       for (const k in cancelObj.current) {
@@ -94,7 +96,7 @@ const Main = ({ state, dispatch }: Props) => {
         }
       }
     }
-  }, [page, pageSize])
+  }, [currentGame])
   return (
     <div className={loadStatus === 'loading' ? 'full-width full-height flex-row flex-1 flex-jst-center flex-ali-start' : 'full-width'}>
       {

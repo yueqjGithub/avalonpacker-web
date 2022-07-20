@@ -25,7 +25,8 @@ type TableDataRow = RecordDataRow & { packerStatus?: number, packerTime?: string
 const apiId: ApiIdForSDK = 'packrecord'
 
 const Main = ({ state, dispatch }: Props) => {
-  const { currentGame } = state
+  const { currentGame, isMac } = state
+  const sysPrefix = isMac ? 'IOS分包' : 'Android分包'
   const { data = [], loading } = getApiDataState<RecordDataRow[]>({ apiId, state })
   // iam
   const { data: iamusers = [] } = getApiDataState<IamUserType[]>({ apiId: 'iamuserlist', state })
@@ -55,18 +56,19 @@ const Main = ({ state, dispatch }: Props) => {
   const [showEdit, setEdit] = useState<boolean>(false)
   const [target, setTarget] = useState<RecordDataRow>()
   const permissionList = {
-    a: hasPermission({ state, moduleName: '配置管理', action: '添加分包配置' }),
-    upload: hasPermission({ state, moduleName: '配置管理', action: '上传母包' }),
-    d: hasPermission({ state, moduleName: '配置管理', action: '删除' }),
-    setPlugins: hasPermission({ state, moduleName: '配置管理', action: '配置设置插件' }),
-    setMedia: hasPermission({ state, moduleName: '配置管理', action: '配置设置媒体标识' }),
-    getChannelVersion: hasPermission({ state, moduleName: '配置管理', action: '获取渠道版本' }),
-    getChannelSign: hasPermission({ state, moduleName: '配置管理', action: '渠道签名文件列表' }),
-    u: hasPermission({ state, moduleName: '配置管理', action: '更新配置' }),
-    do: hasPermission({ state, moduleName: '配置管理', action: '分包' }),
-    download: hasPermission({ state, moduleName: '配置管理', action: '获取下载链接' })
+    a: hasPermission({ state, moduleName: `${sysPrefix}配置管理`, action: '添加分包配置' }),
+    upload: hasPermission({ state, moduleName: `${sysPrefix}配置管理`, action: '上传母包' }),
+    d: hasPermission({ state, moduleName: `${sysPrefix}配置管理`, action: '删除' }),
+    setPlugins: hasPermission({ state, moduleName: `${sysPrefix}配置管理`, action: '配置设置插件' }),
+    setMedia: hasPermission({ state, moduleName: `${sysPrefix}配置管理`, action: '配置设置媒体标识' }),
+    getChannelVersion: hasPermission({ state, moduleName: `${sysPrefix}配置管理`, action: '获取渠道版本' }),
+    getChannelSign: hasPermission({ state, moduleName: `${sysPrefix}配置管理`, action: '渠道签名文件列表' }),
+    u: hasPermission({ state, moduleName: `${sysPrefix}配置管理`, action: '更新配置' }),
+    do: hasPermission({ state, moduleName: `${sysPrefix}配置管理`, action: '分包' }),
+    download: hasPermission({ state, moduleName: `${sysPrefix}配置管理`, action: '获取下载链接' })
   }
   const readHandler = async (cancelPayload?) => {
+    setCurrentChannel([])
     try {
       await httpWithStore({
         apiId,
@@ -88,7 +90,7 @@ const Main = ({ state, dispatch }: Props) => {
         cancelPayload[apiId].cancel()
       }
     }
-  }, [])
+  }, [currentGame])
   // const couldUseChannel = React.useMemo(() => {
   //   const resultList = channelList.filter(item => !data.find(ele => ele.channelId === item.id))
   //   return resultList
