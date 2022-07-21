@@ -188,7 +188,10 @@ const Main = () => {
   }
 
   // 渠道
-  const { data: channelList = [] } = getApiDataState<ChannelDataRow[]>({ apiId: 'channel', state })
+  const { data: channelListAll = [] } = getApiDataState<ChannelDataRow[]>({ apiId: 'channel', state })
+  const channelList = useMemo(() => {
+    return channelListAll.filter(item => item.isMac === isMac)
+  }, [channelListAll, isMac])
   // 配置
   const { data: configAll = [] } = getApiDataState<RecordDataRow[]>({ apiId: 'packrecord', state })
   const configList = useMemo(() => {

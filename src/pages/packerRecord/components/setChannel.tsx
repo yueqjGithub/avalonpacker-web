@@ -50,7 +50,7 @@ const SetChannel = ({ channelList, state, editSuccess }: Props) => {
       <div className='full-width scroll-bar' style={{ maxHeight: '40vh' }}>
         <Form form={form} colon labelCol={{ span: 2 }} onFinish={val => submitHandler(val)}>
           <Form.Item label="配置名称" name="configName" rules={[{ required: true, message: '配置名称不能为空' }]}>
-            <Input maxLength={20} showCount></Input>
+            <Input maxLength={60} showCount></Input>
           </Form.Item>
           <Form.Item label="渠道" name="channelId" rules={[{ required: true, message: '请选择渠道' }]}>
             <Radio.Group>

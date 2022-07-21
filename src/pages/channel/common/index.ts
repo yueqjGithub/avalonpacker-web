@@ -7,4 +7,5 @@ export type ChannelDataRow = {
   versionNum: string
   extra: string
   description?: string
+  isMac: boolean
 }

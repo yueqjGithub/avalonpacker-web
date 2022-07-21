@@ -19,6 +19,7 @@ type Props = {
 }
 
 const Detail = ({ target, state, isFromConfig = false }: Props) => {
+  const { isMac } = state
   const [loading, setLoading] = useState<boolean>(false)
   const [detail, setDetail] = useState<any>()
   const { data: gameList = [] } = getApiDataState<AppDataRow[]>({ apiId: 'gamelist', state })
@@ -67,7 +68,7 @@ const Detail = ({ target, state, isFromConfig = false }: Props) => {
           <Descriptions title="" bordered column={3}>
             <Descriptions.Item label='渠道'>{channelList.find((item: ChannelDataRow) => item.channelCode === detail?.channelCode)?.channelName || ''}</Descriptions.Item>
             <Descriptions.Item label='分包配置'>{configList.find(item => item.id === detail?.configId)?.configName || ''}</Descriptions.Item>
-            <Descriptions.Item label='包名'>{detail?.packageName}</Descriptions.Item>
+            <Descriptions.Item label={ isMac ? 'bundle id' : '包名' }>{detail?.packageName}</Descriptions.Item>
             <Descriptions.Item label='分包环境'>{detail?.envDesc}</Descriptions.Item>
             <Descriptions.Item label='渠道版本'>{detail?.channelVersion}</Descriptions.Item>
             <Descriptions.Item label='分包时间'>{dayjs(detail?.createTime).format('YYYY-MM-DD HH:mm:ss')}</Descriptions.Item>

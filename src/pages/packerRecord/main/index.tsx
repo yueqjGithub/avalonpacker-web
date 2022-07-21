@@ -30,7 +30,10 @@ const Main = ({ state, dispatch }: Props) => {
   const { data = [], loading } = getApiDataState<RecordDataRow[]>({ apiId, state })
   // iam
   const { data: iamusers = [] } = getApiDataState<IamUserType[]>({ apiId: 'iamuserlist', state })
-  const { data: channelList = [] } = getApiDataState<ChannelDataRow[]>({ apiId: 'channel', state })
+  const { data: channelListAll = [] } = getApiDataState<ChannelDataRow[]>({ apiId: 'channel', state })
+  const channelList = useMemo(() => {
+    return channelListAll.filter(item => item.isMac === isMac)
+  }, [channelListAll, isMac])
   // 混合渠道和渠道已有配置数量
   const channelWithConfList = useMemo(() => {
     const result:Array<ChannelDataRow & { count: number }> = []

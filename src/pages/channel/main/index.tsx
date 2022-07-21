@@ -78,6 +78,11 @@ const Main = ({ state, dispatch }: Props) => {
           { dataIndex: 'channelName', title: '渠道名称' },
           { dataIndex: 'channelCode', title: '渠道code' },
           {
+            dataIndex: 'isMac',
+            title: '平台',
+            render: val => <span>{val ? 'IOS' : 'Android'}</span>
+          },
+          {
             title: '操作',
             width: 200,
             filterDropdown: false,

@@ -86,7 +86,7 @@ const EditModule = ({ target, initView, state, editSuccess, dispatch }: Props) =
       setLoading(false)
     }
   }
-  const getVal = (params: { keyname: any, val: any, add?: boolean }) => {
+  const getVal = (params: { keyname: keyof RecordDataRow, val: any, add?: boolean }) => {
     const { keyname, val, add } = params
     const obj = { ...targetRef.current }
     obj[keyname] = val
@@ -194,6 +194,9 @@ const EditModule = ({ target, initView, state, editSuccess, dispatch }: Props) =
         <>
           <input type="file" ref={ref} style={{ display: 'none' }} onChange={e => uploadHandler(e)}/>
           <Form form={form} labelCol={{ span: 4 }} wrapperCol={{ span: 19 }}>
+            <Form.Item label='配置名称' required initialValue={target?.configName} name='configName' rules={[{ required: true, message: '配置名称不能为空!' }]}>
+              <Input maxLength={60} showCount placeholder='请输入配置名称' onChange={e => getVal({ keyname: 'configName', val: e.target.value })}></Input>
+            </Form.Item>
             <Form.Item label='渠道包名' required initialValue={target?.packerName} name='packerName' rules={[{ required: true, message: '渠道包名不能为空!' }]}>
               <Input placeholder='请输入渠道包名' onChange={e => getVal({ keyname: 'packerName', val: e.target.value })}></Input>
             </Form.Item>

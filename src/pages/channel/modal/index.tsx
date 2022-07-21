@@ -1,5 +1,5 @@
 import React, { Fragment, useEffect, useRef, useState } from 'react'
-import { Alert, Button, Card, Checkbox, Divider, Form, Input, message } from 'antd'
+import { Alert, Button, Card, Checkbox, Divider, Form, Input, message, Radio } from 'antd'
 import { ChannelDataRow } from '../common'
 import { MinusCircleOutlined } from '@ant-design/icons'
 import { httpApi } from '../../../service/axios'
@@ -18,6 +18,7 @@ type Props = {
 const apiId: ApiIdForSDK = 'channel'
 
 const EditModule = ({ target, state, dispatch, editSuccess, isEdit }: Props) => {
+  const { isMac } = state
   const [form] = Form.useForm<ChannelDataRow>()
   const [loading, setLoading] = useState<boolean>(false)
   const editorRef = useRef<any>()
@@ -84,6 +85,12 @@ const EditModule = ({ target, state, dispatch, editSuccess, isEdit }: Props) => 
           <Form.Item label='渠道CODE' name='channelCode' rules={[{ required: true, message: '渠道CODE不能为空' }]}>
             <Input disabled={!isEdit}></Input>
           </Form.Item>
+          <Form.Item label='平台' name='isMac' rules={[{ required: true, message: '请选择平台', type: 'boolean' }]} initialValue={target ? target!.isMac : isMac }>
+            <Radio.Group>
+              <Radio value={false}>Android</Radio>
+              <Radio value={true}>IOS</Radio>
+            </Radio.Group>
+          </Form.Item>
           <Form.Item label='渠道描述'>
             <Editor
               disabled={!isEdit}
@@ -140,7 +147,6 @@ const EditModule = ({ target, state, dispatch, editSuccess, isEdit }: Props) => 
                                       style={{ width: '40%' }}
                                       name={[name, 'keyName']}
                                       wrapperCol={{ span: 22 }}
-                                      fieldKey={[fieldKey, 'keyName']}
                                       help={'填写打包时传递给脚本的属性key'}
                                       rules={[{
                                         required: true,
@@ -153,7 +159,6 @@ const EditModule = ({ target, state, dispatch, editSuccess, isEdit }: Props) => 
                                       {...restField}
                                       style={{ width: '40%' }}
                                       name={[name, 'label']}
-                                      fieldKey={[fieldKey, 'label']}
                                       help={'填写展示在出包工具界面中，对用户的提示性语句'}
                                       wrapperCol={{ span: 22 }}
                                     >
@@ -163,7 +168,6 @@ const EditModule = ({ target, state, dispatch, editSuccess, isEdit }: Props) => 
                                       {...restField}
                                       style={{ width: '15%' }}
                                       name={[name, 'required']}
-                                      fieldKey={[fieldKey, 'required']}
                                       valuePropName='checked'
                                     >
                                       <Checkbox>必填</Checkbox>
