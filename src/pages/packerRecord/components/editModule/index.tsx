@@ -10,6 +10,7 @@ import SplashConfig from './splashConfig'
 import { httpApi, httpWithStore } from '../../../../service/axios'
 import { getApiDataState } from 'avalon-iam-util-client'
 import { AppDataRow } from '../../../setgame/common'
+import { cloneDeep } from 'lodash'
 type Props = {
   target: RecordDataRow | undefined
   initView?: string
@@ -18,33 +19,32 @@ type Props = {
   dispatch: any
 }
 
-type TabItem = {
-  key: string
-  tab: string
-  component: JSX.Element | Element
-}
+// type TabItem = {
+//   key: string
+//   tab: string
+//   component: JSX.Element | Element
+// }
 
 type ChannelVersionData = {
   versions: string[]
 }
 
 const EditModule = ({ target, initView, state, editSuccess, dispatch }: Props) => {
+  const { isMac } = state
   const targetRef = useRef({ ...target })
+  const [otherFileSave, setSave] = useState<string[]>([])
   const { user } = state
   const { data: gameList = [] } = getApiDataState<AppDataRow[]>({ apiId: 'gamelist', state })
-  // const currentGameInfo = useMemo(() => {
-  //   return gameList.find(item => item.id === currentGame)
-  // }, [currentGame, gameList])
   const ref: MutableRefObject<any> = useRef(null)
   const [signList, setList] = useState<string[]>([])
-  // const [signFileValue, setFileValue] = useState<string>()
+  const [descList, setDescList] = useState<string[]>([])
   const [signLoading, setSignLoading] = useState<boolean>(false)
   const submitCount = useRef<number>(0)
   const { data, loading: spinning } = getApiDataState<ChannelVersionData>({ apiId: 'getchannelsource', state })
   const { data: envList = [] } = getApiDataState<EnvDataRow[]>({ apiId: 'envlist', state })
   const [loading, setLoading] = useState<boolean>(false)
   const [submitSymbol, setSymbol] = useState<boolean>()
-  const [form] = Form.useForm()
+  const [form] = Form.useForm<RecordDataRow>()
   const queryChannelSource = async () => {
     try {
       await httpWithStore({
@@ -66,12 +66,18 @@ const EditModule = ({ target, initView, state, editSuccess, dispatch }: Props) =
     await setSymbol(r)
   }
   const doSubmit = async () => {
+    const copy = { ...targetRef.current }
+    if (isMac) {
+      (copy.macOtherFile as unknown as string) = targetRef.current.macOtherFile?.join(',') || ''
+    } else {
+      (copy.otherFile as unknown as string) = targetRef.current.otherFile?.join(',') || ''
+    }
     try {
       const { data: res } = await httpApi({
         state,
         apiId: 'updaterecord',
         method: 'POST',
-        data: { ...targetRef.current, lastUpdateAs: user.id }
+        data: { ...copy, lastUpdateAs: user.id }
       }).request
       if (res.status === 0) {
         message.success('提交成功')
@@ -88,9 +94,7 @@ const EditModule = ({ target, initView, state, editSuccess, dispatch }: Props) =
   }
   const getVal = (params: { keyname: keyof RecordDataRow, val: any, add?: boolean }) => {
     const { keyname, val, add } = params
-    const obj = { ...targetRef.current }
-    obj[keyname] = val
-    targetRef.current = { ...obj }
+    targetRef.current[keyname] = val
     if (add) {
       submitCount.current = submitCount.current + 1
     }
@@ -109,7 +113,10 @@ const EditModule = ({ target, initView, state, editSuccess, dispatch }: Props) =
       setSignLoading(true)
       const { data: res } = await request
       if (res.status === 0) {
-        setList(res.data)
+        if (isMac) {
+          setDescList(res.data.descList)
+        }
+        setList(res.data.signList)
       } else {
         message.error(res.message)
       }
@@ -119,7 +126,9 @@ const EditModule = ({ target, initView, state, editSuccess, dispatch }: Props) =
       setSignLoading(false)
     }
   }
-  const testUpload = () => {
+  const [uploadType, setUploadType] = useState<5 | 8 | 9>(5)
+  const testUpload = (type: 5 | 8 | 9) => {
+    setUploadType(type)
     ref.current!.click()
   }
   const uploadHandler = async (e:ChangeEvent<HTMLInputElement>) => {
@@ -131,7 +140,7 @@ const EditModule = ({ target, initView, state, editSuccess, dispatch }: Props) =
     const fileName = file.name
     const fm = new FormData()
     fm.append('file', file)
-    fm.append('type', '5')
+    fm.append('type', String(uploadType))
     const targetApp = gameList.find(item => item.id === target?.appId)
     fm.append('appId', targetApp?.appId!)
     fm.append('channelId', target?.channelId!)
@@ -145,13 +154,41 @@ const EditModule = ({ target, initView, state, editSuccess, dispatch }: Props) =
         data: fm
       }).request
       if (res.status === 0) {
-        const copyList = [...signList]
-        if (copyList.indexOf(fileName) === -1) {
-          copyList.push(fileName)
+        const cur = form.getFieldsValue()
+        if (uploadType === 5) { // 上传渠道签名
+          const copyList = [...signList]
+          if (copyList.indexOf(fileName) === -1) {
+            copyList.push(fileName)
+          }
+          if (isMac) {
+            cur.macSignFile = fileName
+            getVal({ keyname: 'macSignFile', val: fileName })
+          } else {
+            cur.signFilePath = fileName
+            getVal({ keyname: 'signFilePath', val: fileName })
+          }
+          setList(copyList)
+        } else if (uploadType === 8) {
+          const copyList = [...descList]
+          if (copyList.indexOf(fileName) === -1) {
+            copyList.push(fileName)
+          }
+          cur.descFileName = fileName
+          getVal({ keyname: 'descFileName', val: fileName })
+          setDescList(copyList)
+        } else { // == 10
+          const copyList = isMac ? targetRef.current.macOtherFile! : targetRef.current.otherFile!
+          if (copyList.indexOf(fileName) === -1) {
+            copyList.push(fileName)
+          }
+          if (isMac) {
+            getVal({ keyname: 'macOtherFile', val: copyList })
+          } else {
+            getVal({ keyname: 'otherFile', val: copyList })
+          }
+          setSave(cloneDeep(copyList))
         }
-        // setFileValue(fileName)
-        getVal({ keyname: 'signFilePath', val: fileName })
-        setList(copyList)
+        form.setFieldsValue(cur)
         message.success('上传成功')
       } else {
         message.error(res.error_msg || res.message)
@@ -166,6 +203,7 @@ const EditModule = ({ target, initView, state, editSuccess, dispatch }: Props) =
   useEffect(() => {
     const cancelObj: any = {}
     if (target) {
+      setSave(isMac ? target.macOtherFile : target.otherFile)
       form.setFieldsValue(target)
       querySignPath(cancelObj)
     }
@@ -175,110 +213,8 @@ const EditModule = ({ target, initView, state, editSuccess, dispatch }: Props) =
       }
     }
   }, [])
-  // useEffect(() => {
-  //   if (target) {
-  //     setFileValue(target.signFilePath)
-  //   }
-  // }, [target])
-  const tabList: TabItem[] = [
-    // {
-    //   key: '0',
-    //   tab: '母包选择',
-    //   component: <SourceConfig submitVal={getVal} target={target} state={state}></SourceConfig>
-    // },
-    {
-      key: '1',
-      tab: '基础配置',
-      component: (
-        // <Input defaultValue={target?.packerName} placeholder='请输入渠道包名' onChange={e => getVal({ keyname: 'packerName', val: e.target.value })}></Input>
-        <>
-          <input type="file" ref={ref} style={{ display: 'none' }} onChange={e => uploadHandler(e)}/>
-          <Form form={form} labelCol={{ span: 4 }} wrapperCol={{ span: 19 }}>
-            <Form.Item label='配置名称' required initialValue={target?.configName} name='configName' rules={[{ required: true, message: '配置名称不能为空!' }]}>
-              <Input maxLength={60} showCount placeholder='请输入配置名称' onChange={e => getVal({ keyname: 'configName', val: e.target.value })}></Input>
-            </Form.Item>
-            <Form.Item label='渠道包名' required initialValue={target?.packerName} name='packerName' rules={[{ required: true, message: '渠道包名不能为空!' }]}>
-              <Input placeholder='请输入渠道包名' onChange={e => getVal({ keyname: 'packerName', val: e.target.value })}></Input>
-            </Form.Item>
-            <Form.Item label='安装游戏名' initialValue={target?.gameName} name='gameName' >
-              <Input placeholder='请输入安装游戏名' onChange={e => getVal({ keyname: 'gameName', val: e.target.value })}></Input>
-            </Form.Item>
-            {/* <Form.Item label='versionCode' help={'请注意：执行分包后，versionCode会增加1,可在应用管理界面自定义versionCode'}>
-              <InputNumber min={0} placeholder='请输入内部版本号' onChange={val => getVal({ keyname: 'versionCode', val })}></InputNumber>
-              <span>{currentGameInfo?.versionCode}</span>
-            </Form.Item> */}
-            <Form.Item label='发行区域' name='publicArea' initialValue={target?.publicArea}>
-              <Input placeholder='请填写发行区域代码，如CN、US、GLOBAL' onChange={e => getVal({ keyname: 'publicArea', val: e.target.value })}></Input>
-            </Form.Item>
-            <Form.Item label='SDK环境' name='envCode' initialValue={target?.envCode} rules={[{ required: true, message: '请设置SDK环境!' }]}>
-              <Select onChange={val => getVal({ keyname: 'envCode', val: val })}>
-                {
-                  envList.map(item => <Select.Option key={item.envCode} value={item.envCode}>{item.envDesc}</Select.Option>)
-                }
-              </Select>
-            </Form.Item>
-            <Form.Item label='产物' name='resultType' required initialValue={target?.resultType} rules={[{ required: true, message: '请选择打包产物!' }]}>
-              <Select onChange={val => getVal({ keyname: 'resultType', val: val })}>
-                <Select.Option value={'apk'}>apk</Select.Option>
-                <Select.Option value={'aab'}>aab</Select.Option>
-              </Select>
-            </Form.Item>
-            <Divider></Divider>
-            <Form.Item label="SignFilePath" name='signFilePath'>
-                <div className='flex-row flex-jst-btw flex-ali-center'>
-                  <Select loading={signLoading} defaultValue={target?.signFilePath} allowClear onChange={val => getVal({ keyname: 'signFilePath', val: val })}>
-                    {
-                      signList.map(item => <Select.Option key={item} value={item}>{item}</Select.Option>)
-                    }
-                  </Select>
-                  <Button type='primary' className='ma-lf-05' onClick={() => testUpload()}><i className='iconfont icon-cloudupload-fill text-white'></i>上传</Button>
-                </div>
-            </Form.Item>
-            <Form.Item label="signFileKeystorePassword" initialValue={target?.signFileKeystorePassword} name='signFileKeystorePassword'>
-              <Input onChange={e => getVal({ keyname: 'signFileKeystorePassword', val: e.target.value })}></Input>
-            </Form.Item>
-            <Form.Item label="signFileKeyPassword" initialValue={target?.signFileKeyPassword} name='signFileKeyPassword'>
-              <Input onChange={e => getVal({ keyname: 'signFileKeyPassword', val: e.target.value })}></Input>
-            </Form.Item>
-            <Form.Item label="signFileAlias" initialValue={target?.signFileAlias} name='signFileAlias'>
-              <Input onChange={e => getVal({ keyname: 'signFileAlias', val: e.target.value })}></Input>
-            </Form.Item>
-          </Form>
-        </>
-      )
-    },
-    {
-      key: '2',
-      tab: '渠道参数',
-      component: <BaseConfig channelSourceList={data?.versions || []} state={state} target={target!} submitSymbol={submitSymbol} submitVal={getVal} clearCount={() => { submitCount.current = 0 }}/>
-    },
-    {
-      key: '3',
-      tab: '插件参数',
-      component: <PluginsConfig state={state} target={target!} submitSymbol={submitSymbol} submitVal={getVal} clearCount={() => { submitCount.current = 0 }}/>
-    },
-    {
-      key: '4',
-      tab: 'ICON',
-      component: <IconConfig target={target} state={state} submitVal={getVal} />
-    },
-    {
-      key: '5',
-      tab: '闪屏配置',
-      component: <SplashConfig target={target} state={state} submitVal={getVal} />
-    }
-  ]
 
   const submitHandler = async () => {
-    // if (!targetRef.current.sourceName) {
-    //   submitCount.current = 0
-    //   notification.warning({
-    //     message: '参数缺失提示',
-    //     description: '未配置母包'
-    //   })
-    // } else {
-    //   submitCount.current = submitCount.current + 1
-    // }
     try {
       await form.validateFields()
       submitCount.current = submitCount.current + 1
@@ -291,15 +227,134 @@ const EditModule = ({ target, initView, state, editSuccess, dispatch }: Props) =
       })
     }
   }
+  // 删除其他文件
+  const delFile = (name: string) => {
+    const idx = otherFileSave.indexOf(name)
+    if (idx !== -1) {
+      const copy = [...otherFileSave]
+      copy.splice(idx, 1)
+      setSave(copy)
+    }
+  }
   return (
     <div className='full-width'>
       <Spin spinning={spinning}>
         <div className='full-width flex-row flex-jst-btw flex-ali-start'>
           <div className='flex-1 pa-row-md scroll-bar' style={{ height: '65vh' }}>
             <Tabs tabPosition='left' defaultActiveKey={initView}>
-              {
+              {/* {
                 tabList.map(item => <Tabs.TabPane forceRender={true} key={item.key} tab={item.tab}>{item.component}</Tabs.TabPane>)
-              }
+              } */}
+              <Tabs.TabPane forceRender key='1' tab='基础配置'>
+              <>
+                <input type="file" ref={ref} style={{ display: 'none' }} onChange={e => uploadHandler(e)}/>
+                <Form form={form} labelCol={{ span: 4 }} wrapperCol={{ span: 20 }}>
+                  <Form.Item label='配置名称' required initialValue={target?.configName} name='configName' rules={[{ required: true, message: '配置名称不能为空!' }]}>
+                    <Input maxLength={60} showCount placeholder='请输入配置名称' onChange={e => getVal({ keyname: 'configName', val: e.target.value })}></Input>
+                  </Form.Item>
+                  <Form.Item label='渠道包名' required initialValue={target?.packerName} name='packerName' rules={[{ required: true, message: '渠道包名不能为空!' }]}>
+                    <Input placeholder='请输入渠道包名' onChange={e => getVal({ keyname: 'packerName', val: e.target.value })}></Input>
+                  </Form.Item>
+                  <Form.Item label='安装游戏名' initialValue={target?.gameName} name='gameName' >
+                    <Input placeholder='请输入安装游戏名' onChange={e => getVal({ keyname: 'gameName', val: e.target.value })}></Input>
+                  </Form.Item>
+                  <Form.Item label='发行区域' name='publicArea' initialValue={target?.publicArea}>
+                    <Input placeholder='请填写发行区域代码，如CN、US、GLOBAL' onChange={e => getVal({ keyname: 'publicArea', val: e.target.value })}></Input>
+                  </Form.Item>
+                  <Form.Item label='SDK环境' name='envCode' initialValue={target?.envCode} rules={[{ required: true, message: '请设置SDK环境!' }]}>
+                    <Select onChange={val => getVal({ keyname: 'envCode', val: val })}>
+                      {
+                        envList.map(item => <Select.Option key={item.envCode} value={item.envCode}>{item.envDesc}</Select.Option>)
+                      }
+                    </Select>
+                  </Form.Item>
+                  <Form.Item label='产物' name='resultType' required initialValue={target?.resultType} rules={[{ required: true, message: '请选择打包产物!' }]}>
+                    <Select onChange={val => getVal({ keyname: 'resultType', val: val })}>
+                      <Select.Option value={'apk'}>apk</Select.Option>
+                      <Select.Option value={'aab'}>aab</Select.Option>
+                    </Select>
+                  </Form.Item>
+                  <Divider></Divider>
+                  <div className='full-width flex-row flex-jst-start flex-ali-start'>
+                    <Form.Item
+                    className='flex-1'
+                    shouldUpdate
+                    label={isMac ? 'IOS证书' : 'signFilePath'}
+                    name={isMac ? 'macSignFile' : 'signFilePath'}
+                    initialValue={isMac ? target?.macSignFile : target?.signFilePath}
+                    >
+                      <Select loading={signLoading} allowClear onChange={val => getVal({ keyname: isMac ? 'macSignFile' : 'signFilePath', val })}>
+                        {
+                          signList.map(item => <Select.Option key={item} value={item}>{item}</Select.Option>)
+                        }
+                      </Select>
+                    </Form.Item>
+                    <Button type='primary' className='ma-lf-05' onClick={() => testUpload(5)}><i className='iconfont icon-cloudupload-fill text-white'></i>上传</Button>
+                  </div>
+                  {
+                    isMac
+                      ? (
+                        <>
+                            <div className='flex-row flex-jst-start flex-ali-start'>
+                              <Form.Item shouldUpdate className='flex-1' label='IOS描述文件' name='descFileName' initialValue={target?.descFileName}>
+                                <Select loading={signLoading} allowClear onChange={val => getVal({ keyname: 'descFileName', val })}>
+                                  {
+                                    descList.map(item => <Select.Option key={item} value={item}>{item}</Select.Option>)
+                                  }
+                                </Select>
+                              </Form.Item>
+                              <Button type='primary' className='ma-lf-05' onClick={() => testUpload(8)}><i className='iconfont icon-cloudupload-fill text-white'></i>上传</Button>
+                            </div>
+                        </>
+                        )
+                      : (
+                      <>
+                        <Form.Item label="signFileKeystorePassword" initialValue={target?.signFileKeystorePassword} name='signFileKeystorePassword'>
+                          <Input onChange={e => getVal({ keyname: 'signFileKeystorePassword', val: e.target.value })}></Input>
+                        </Form.Item>
+                        <Form.Item label="signFileKeyPassword" initialValue={target?.signFileKeyPassword} name='signFileKeyPassword'>
+                          <Input onChange={e => getVal({ keyname: 'signFileKeyPassword', val: e.target.value })}></Input>
+                        </Form.Item>
+                        <Form.Item label="signFileAlias" initialValue={target?.signFileAlias} name='signFileAlias'>
+                          <Input onChange={e => getVal({ keyname: 'signFileAlias', val: e.target.value })}></Input>
+                        </Form.Item>
+                      </>
+                        )
+                  }
+                  <Form.Item label="其他文件上传" shouldUpdate name={isMac ? 'macOtherFile' : 'otherFile'}>
+                    <div className="full-width flex-row flex-jst-start flex-ali-start">
+                      <div className='flex-1 flex-col flex-jst-start flex-ali-start'>
+                        <>
+                          {
+                            otherFileSave!.map(item => {
+                              return (
+                                <div key={item} className='full-width flex-row flex-jst-start flex-ali-center'>
+                                  <span>{item}</span>
+                                  <Button className='ma-lf-05' type="primary" danger size='small' shape='circle' onClick={() => delFile(item)}>X</Button>
+                                </div>
+                              )
+                            })
+                          }
+                        </>
+                      </div>
+                      <Button type='primary' className='ma-lf-05' onClick={() => testUpload(9)}><i className='iconfont icon-cloudupload-fill text-white'></i>上传</Button>
+                    </div>
+                  </Form.Item>
+                </Form>
+              </>
+              </Tabs.TabPane>
+              <Tabs.TabPane forceRender key='2' tab='渠道参数'>
+                <BaseConfig channelSourceList={data?.versions || []} state={state} target={target!} submitSymbol={submitSymbol} submitVal={getVal} clearCount={() => { submitCount.current = 0 }}/>
+              </Tabs.TabPane>
+              <Tabs.TabPane forceRender key='3' tab='插件参数'>
+                <PluginsConfig state={state} target={target!} submitSymbol={submitSymbol} submitVal={getVal} clearCount={() => { submitCount.current = 0 }}/>
+              </Tabs.TabPane>
+              <Tabs.TabPane forceRender key='4' tab='ICON'>
+                <IconConfig target={target} state={state} submitVal={getVal} />
+              </Tabs.TabPane>
+              <Tabs.TabPane forceRender key='5' tab='闪屏配置'>
+                <SplashConfig target={target} state={state} submitVal={getVal} />
+              </Tabs.TabPane>
             </Tabs>
           </div>
         </div>

@@ -49,7 +49,23 @@ const Main = ({ state, dispatch }: Props) => {
   const [currentChannel, setCurrentChannel] = useState<string[]>([])
   // 根据选择的渠道过滤出列表展示
   const filterDatas = useMemo(() => {
-    return data.filter(item => currentChannel.includes(item.channelId))
+    const result = data.filter(item => currentChannel.includes(item.channelId))
+    result.forEach(item => {
+      if (isMac) {
+        try {
+          item.macOtherFile = (item.macOtherFile as unknown as string).split(',')
+        } catch {
+          item.macOtherFile = []
+        }
+      } else {
+        try {
+          item.macOtherFile = (item.otherFile as unknown as string).split(',')
+        } catch {
+          item.macOtherFile = []
+        }
+      }
+    })
+    return result
   }, [currentChannel, data])
   // const { data: mediaList = [] } = getApiDataState<MediaFlagDataRow[]>({ apiId: 'mediaflag', state })
   const [initView, setInitView] = useState<string>()

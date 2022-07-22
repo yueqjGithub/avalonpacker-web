@@ -15,10 +15,11 @@ type Props = {
 const apiId: ApiIdForSDK = 'gamelist'
 
 const EditModule = ({ target, state, editSuccess, permissionList }: Props) => {
+  const { isMac } = state
   const ref: MutableRefObject<any> = useRef(null)
   const [form] = Form.useForm<AppDataRow>()
   const [signList, setList] = useState<string[]>([])
-  const [signFileValue, setFileValue] = useState<string>()
+  const [descList, setDescList] = useState<string[]>([])
   const [loading, setLoading] = useState<boolean>(false)
   const [signLoading, setSignLoading] = useState<boolean>(false)
   const editFinshi = async (val: AppDataRow) => {
@@ -64,7 +65,11 @@ const EditModule = ({ target, state, editSuccess, permissionList }: Props) => {
       setSignLoading(true)
       const { data: res } = await request
       if (res.status === 0) {
-        setList(res.data)
+        if (isMac) {
+          setDescList(res.data.descList)
+        } else {
+          setList(res.data.signList)
+        }
       } else {
         message.error(res.message)
       }
@@ -74,10 +79,11 @@ const EditModule = ({ target, state, editSuccess, permissionList }: Props) => {
       setSignLoading(false)
     }
   }
-  const testUpload = () => {
+  const [uploadType, setUploadType] = useState<4 | 7>(4) // 4-android签名文件ios证书，7-ios描述文件
+  const testUpload = (type: 4 | 7) => {
+    setUploadType(type)
     ref.current!.click()
   }
-
   const uploadHandler = async (e:ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files ? e.target.files[0] : ''
     if (!file) {
@@ -87,7 +93,7 @@ const EditModule = ({ target, state, editSuccess, permissionList }: Props) => {
     const fileName = file.name
     const fm = new FormData()
     fm.append('file', file)
-    fm.append('type', '4')
+    fm.append('type', String(uploadType))
     fm.append('appId', target?.appId!)
     try {
       setLoading(false)
@@ -103,12 +109,23 @@ const EditModule = ({ target, state, editSuccess, permissionList }: Props) => {
         }
       }).request
       if (res.status === 0) {
-        const copyList = [...signList]
+        const copyList = uploadType === 4 ? [...signList] : [...descList]
         if (copyList.indexOf(fileName) === -1) {
           copyList.push(fileName)
         }
-        setFileValue(fileName)
-        setList(copyList)
+        const cur = form.getFieldsValue()
+        if (uploadType === 4) {
+          if (isMac) {
+            cur.macSignFile = fileName
+          } else {
+            cur.signFilePath = fileName
+          }
+          setList(copyList)
+        } else {
+          cur.descFileName = fileName
+          setDescList(copyList)
+        }
+        form.setFieldsValue(cur)
         message.success('上传成功')
       } else {
         message.error(res.error_msg || res.message)
@@ -131,17 +148,12 @@ const EditModule = ({ target, state, editSuccess, permissionList }: Props) => {
         cancelObj.querysignpath.cancel()
       }
     }
-  }, [])
-  useEffect(() => {
-    if (target) {
-      setFileValue(target.signFilePath)
-    }
   }, [target])
   return (
     <>
       <h3>{target?.appName || '新增应用'}</h3>
       <input type="file" ref={ref} style={{ display: 'none' }} onChange={e => uploadHandler(e)}/>
-      <Form<AppDataRow> colon={true} form={form} labelAlign='right' labelCol={{ span: 4 }} wrapperCol={{ span: 18 }} onFinish={val => editFinshi(val)}>
+      <Form<AppDataRow> colon={true} form={form} labelAlign='right' labelCol={{ span: 4 }} wrapperCol={{ span: 20 }} onFinish={val => editFinshi(val)}>
         <Form.Item label="APP_ID" name="appId" rules={[{ required: true, message: 'APP_ID不能为空' }]}>
           <Input disabled={target !== undefined}/>
         </Form.Item>
@@ -166,27 +178,60 @@ const EditModule = ({ target, state, editSuccess, permissionList }: Props) => {
           target
             ? (
             <>
-              <Form.Item label="SignFilePath" name="signFilePath" initialValue={target?.signFilePath}>
-                <div className='flex-row flex-jst-btw flex-ali-center'>
-                  <Select loading={signLoading} value={signFileValue}>
+              {
+                <>
+                  <div className='full-width flex-row flex-jst-start flex-ali-start'>
+                    <Form.Item
+                    className='flex-1'
+                    shouldUpdate
+                    label={isMac ? 'IOS证书' : 'signFilePath'}
+                    name={isMac ? 'macSignFile' : 'signFilePath'}
+                    initialValue={isMac ? target?.macSignFile : target?.signFilePath}
+                    >
+                      <Select loading={signLoading} allowClear>
+                        {
+                          signList.map(item => <Select.Option key={item} value={item}>{item}</Select.Option>)
+                        }
+                      </Select>
+                    </Form.Item>
                     {
-                      signList.map(item => <Select.Option key={item} value={item}>{item}</Select.Option>)
+                      permissionList.upload ? <Button type='primary' className='ma-lf-05' onClick={() => testUpload(4)}><i className='iconfont icon-cloudupload-fill text-white'></i>上传</Button> : ''
                     }
-                  </Select>
-                  {
-                    permissionList.upload ? <Button type='primary' className='ma-lf-05' onClick={() => testUpload()}><i className='iconfont icon-cloudupload-fill text-white'></i>上传</Button> : ''
-                  }
-                </div>
-              </Form.Item>
-              <Form.Item label="signFileKeystorePassword" name="signFileKeystorePassword">
-                <Input />
-              </Form.Item>
-              <Form.Item label="signFileKeyPassword" name="signFileKeyPassword">
-                <Input />
-              </Form.Item>
-              <Form.Item label="signFileAlias" name="signFileAlias">
-                <Input />
-              </Form.Item>
+                  </div>
+                {
+                  isMac
+                    ? (
+                      <>
+                          <div className='flex-row flex-jst-start flex-ali-start'>
+                            <Form.Item shouldUpdate className='flex-1' label='IOS描述文件' name='descFileName' initialValue={target?.descFileName}>
+                              <Select loading={signLoading} allowClear>
+                                {
+                                  descList.map(item => <Select.Option key={item} value={item}>{item}</Select.Option>)
+                                }
+                              </Select>
+                            </Form.Item>
+                            {
+                              permissionList.upload ? <Button type='primary' className='ma-lf-05' onClick={() => testUpload(7)}><i className='iconfont icon-cloudupload-fill text-white'></i>上传</Button> : ''
+                            }
+                          </div>
+                      </>
+                      )
+                    : (
+                    <>
+                      <Form.Item label="signFileKeystorePassword" name="signFileKeystorePassword">
+                        <Input />
+                      </Form.Item>
+                      <Form.Item label="signFileKeyPassword" name="signFileKeyPassword">
+                        <Input />
+                      </Form.Item>
+                      <Form.Item label="signFileAlias" name="signFileAlias">
+                        <Input />
+                      </Form.Item>
+                    </>
+                      )
+                }
+              </>
+              }
             </>
               )
             : ''

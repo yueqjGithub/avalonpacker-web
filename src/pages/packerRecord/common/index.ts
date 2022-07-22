@@ -33,6 +33,10 @@ export type RecordDataRow = {
   lastPackTime: string
   lastHisId: string
   loading?: boolean
+  macSignFile?: string
+  descFileName?: string
+  macOtherFile: string[]
+  otherFile: string[]
 }
 
 export const statusEnum = [
