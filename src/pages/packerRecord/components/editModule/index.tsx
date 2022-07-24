@@ -68,9 +68,9 @@ const EditModule = ({ target, initView, state, editSuccess, dispatch }: Props) =
   const doSubmit = async () => {
     const copy = { ...targetRef.current }
     if (isMac) {
-      (copy.macOtherFile as unknown as string) = targetRef.current.macOtherFile?.join(',') || ''
+      (copy.macOtherFile as any) = targetRef.current.macOtherFile?.join(',') || null
     } else {
-      (copy.otherFile as unknown as string) = targetRef.current.otherFile?.join(',') || ''
+      (copy.otherFile as any) = targetRef.current.otherFile?.join(',') || null
     }
     try {
       const { data: res } = await httpApi({
@@ -233,6 +233,11 @@ const EditModule = ({ target, initView, state, editSuccess, dispatch }: Props) =
     if (idx !== -1) {
       const copy = [...otherFileSave]
       copy.splice(idx, 1)
+      if (isMac) {
+        targetRef.current.macOtherFile = copy
+      } else {
+        targetRef.current.otherFile = copy
+      }
       setSave(copy)
     }
   }
@@ -252,11 +257,8 @@ const EditModule = ({ target, initView, state, editSuccess, dispatch }: Props) =
                   <Form.Item label='配置名称' required initialValue={target?.configName} name='configName' rules={[{ required: true, message: '配置名称不能为空!' }]}>
                     <Input maxLength={60} showCount placeholder='请输入配置名称' onChange={e => getVal({ keyname: 'configName', val: e.target.value })}></Input>
                   </Form.Item>
-                  <Form.Item label='渠道包名' required initialValue={target?.packerName} name='packerName' rules={[{ required: true, message: '渠道包名不能为空!' }]}>
-                    <Input placeholder='请输入渠道包名' onChange={e => getVal({ keyname: 'packerName', val: e.target.value })}></Input>
-                  </Form.Item>
-                  <Form.Item label='安装游戏名' initialValue={target?.gameName} name='gameName' >
-                    <Input placeholder='请输入安装游戏名' onChange={e => getVal({ keyname: 'gameName', val: e.target.value })}></Input>
+                  <Form.Item label={isMac ? 'bundleId' : '渠道包名'} required initialValue={target?.packerName} name='packerName' rules={[{ required: true, message: '不能为空!' }]}>
+                    <Input placeholder={`请输入${isMac ? 'bundleId' : '渠道包名'}`} onChange={e => getVal({ keyname: 'packerName', val: e.target.value })}></Input>
                   </Form.Item>
                   <Form.Item label='发行区域' name='publicArea' initialValue={target?.publicArea}>
                     <Input placeholder='请填写发行区域代码，如CN、US、GLOBAL' onChange={e => getVal({ keyname: 'publicArea', val: e.target.value })}></Input>
@@ -268,12 +270,21 @@ const EditModule = ({ target, initView, state, editSuccess, dispatch }: Props) =
                       }
                     </Select>
                   </Form.Item>
-                  <Form.Item label='产物' name='resultType' required initialValue={target?.resultType} rules={[{ required: true, message: '请选择打包产物!' }]}>
-                    <Select onChange={val => getVal({ keyname: 'resultType', val: val })}>
-                      <Select.Option value={'apk'}>apk</Select.Option>
-                      <Select.Option value={'aab'}>aab</Select.Option>
-                    </Select>
-                  </Form.Item>
+                  {
+                    !isMac && (
+                      <>
+                        <Form.Item label='安装游戏名' initialValue={target?.gameName} name='gameName' >
+                          <Input placeholder='请输入安装游戏名' onChange={e => getVal({ keyname: 'gameName', val: e.target.value })}></Input>
+                        </Form.Item>
+                        <Form.Item label='产物' name='resultType' required initialValue={target?.resultType} rules={[{ required: true, message: '请选择打包产物!' }]}>
+                          <Select onChange={val => getVal({ keyname: 'resultType', val: val })}>
+                            <Select.Option value={'apk'}>apk</Select.Option>
+                            <Select.Option value={'aab'}>aab</Select.Option>
+                          </Select>
+                        </Form.Item>
+                      </>
+                    )
+                  }
                   <Divider></Divider>
                   <div className='full-width flex-row flex-jst-start flex-ali-start'>
                     <Form.Item
@@ -283,7 +294,10 @@ const EditModule = ({ target, initView, state, editSuccess, dispatch }: Props) =
                     name={isMac ? 'macSignFile' : 'signFilePath'}
                     initialValue={isMac ? target?.macSignFile : target?.signFilePath}
                     >
-                      <Select loading={signLoading} allowClear onChange={val => getVal({ keyname: isMac ? 'macSignFile' : 'signFilePath', val })}>
+                      <Select loading={signLoading} allowClear onChange={val => {
+                        getVal({ keyname: isMac ? 'macSignFile' : 'signFilePath', val: val || null })
+                      }}
+                      >
                         {
                           signList.map(item => <Select.Option key={item} value={item}>{item}</Select.Option>)
                         }
@@ -297,7 +311,7 @@ const EditModule = ({ target, initView, state, editSuccess, dispatch }: Props) =
                         <>
                             <div className='flex-row flex-jst-start flex-ali-start'>
                               <Form.Item shouldUpdate className='flex-1' label='IOS描述文件' name='descFileName' initialValue={target?.descFileName}>
-                                <Select loading={signLoading} allowClear onChange={val => getVal({ keyname: 'descFileName', val })}>
+                                <Select loading={signLoading} allowClear onChange={val => getVal({ keyname: 'descFileName', val: val || null })}>
                                   {
                                     descList.map(item => <Select.Option key={item} value={item}>{item}</Select.Option>)
                                   }

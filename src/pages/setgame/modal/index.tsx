@@ -187,6 +187,7 @@ const EditModule = ({ target, state, editSuccess, permissionList }: Props) => {
                     label={isMac ? 'IOS证书' : 'signFilePath'}
                     name={isMac ? 'macSignFile' : 'signFilePath'}
                     initialValue={isMac ? target?.macSignFile : target?.signFilePath}
+                    normalize={val => val === undefined ? null : val}
                     >
                       <Select loading={signLoading} allowClear>
                         {
@@ -203,7 +204,7 @@ const EditModule = ({ target, state, editSuccess, permissionList }: Props) => {
                     ? (
                       <>
                           <div className='flex-row flex-jst-start flex-ali-start'>
-                            <Form.Item shouldUpdate className='flex-1' label='IOS描述文件' name='descFileName' initialValue={target?.descFileName}>
+                            <Form.Item shouldUpdate className='flex-1' label='IOS描述文件' name='descFileName' initialValue={target?.descFileName} normalize={val => val === undefined ? null : val}>
                               <Select loading={signLoading} allowClear>
                                 {
                                   descList.map(item => <Select.Option key={item} value={item}>{item}</Select.Option>)

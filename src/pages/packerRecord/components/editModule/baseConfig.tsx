@@ -28,6 +28,7 @@ const dealOptions = (str: string | undefined) => {
 }
 
 const BaseConfig = ({ target, state, submitSymbol, submitVal, clearCount, channelSourceList }: Props) => {
+  const { isMac, publicTypes } = state
   const { data: channelList = [] } = getApiDataState<ChannelDataRow[]>({ apiId: 'channel', state })
   const targetChannel = channelList.find(item => item.id === target.channelId)
   const [form] = Form.useForm()
@@ -38,7 +39,7 @@ const BaseConfig = ({ target, state, submitSymbol, submitVal, clearCount, channe
         const formResult = form.getFieldsValue()
         const result = {}
         for (const k in formResult) {
-          if (k !== 'channelVersion') {
+          if (k !== 'channelVersion' && k !== 'publicType') {
             result[k] = {}
             formResult[k].forEach(ele => {
               result[k][ele.keyName] = ele.value
@@ -46,8 +47,10 @@ const BaseConfig = ({ target, state, submitSymbol, submitVal, clearCount, channe
           }
         }
         submitVal({ keyname: 'channelVersion', val: formResult.channelVersion })
+        submitVal({ keyname: 'publicType', val: formResult.publicType })
         submitVal({ keyname: 'baseConfig', val: JSON.stringify(result), add: true })
-      } catch {
+      } catch (e) {
+        console.log(e)
         clearCount()
         notification.warning({
           message: '参数缺失提示',
@@ -90,7 +93,7 @@ const BaseConfig = ({ target, state, submitSymbol, submitVal, clearCount, channe
       <div className='full-width' dangerouslySetInnerHTML={{ __html: targetChannel?.description || '' }}></div>
       <Divider></Divider>
       <Form form={form} wrapperCol={{ span: 18 }} labelCol={{ span: 5 }} labelWrap>
-        <Card size='small' title='渠道版本选择' style={{ width: '100%', marginTop: 20 }}>
+        <Card size='small' title='渠道配置' style={{ width: '100%', marginTop: 20 }}>
           <Form.Item name='channelVersion' label='渠道版本' initialValue={target.channelVersion} rules={[{ required: true, message: '渠道版本必选' }]}>
             <Select>
               {
@@ -98,6 +101,17 @@ const BaseConfig = ({ target, state, submitSymbol, submitVal, clearCount, channe
               }
             </Select>
           </Form.Item>
+          {
+            isMac && (
+              <Form.Item label='发布方式' name='publicType' initialValue={target.publicType} rules={[{ required: true, message: '请选择发布方式' }]}>
+                <Select>
+                  {
+                    publicTypes.map(item => <Select.Option value={item.val} key={item.val}>{item.name}</Select.Option>)
+                  }
+                </Select>
+              </Form.Item>
+            )
+          }
         </Card>
         <Card size="small" title='客户端配置' style={{ width: '100%', marginTop: 20 }}>
           <Form.List name='clientConfigDoc'>
@@ -129,7 +143,10 @@ const BaseConfig = ({ target, state, submitSymbol, submitVal, clearCount, channe
             }
           </Form.List>
         </Card>
-        <Card size="small" title='服务端配置' style={{ width: '100%', marginTop: 20 }}>
+        {
+          !isMac && (
+            <>
+              <Card size="small" title='服务端配置' style={{ width: '100%', marginTop: 20 }}>
           <Form.List name='serverConfigDoc'>
             {
               (fields) => {
@@ -189,6 +206,9 @@ const BaseConfig = ({ target, state, submitSymbol, submitVal, clearCount, channe
             }
           </Form.List>
         </Card>
+            </>
+          )
+        }
       </Form>
     </div>
   )

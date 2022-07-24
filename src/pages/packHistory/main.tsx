@@ -35,7 +35,7 @@ type DataSource = {
 const apiId: ApiIdForSDK = 'queryhistory'
 
 const Main = ({ state, dispatch }: Props) => {
-  const { currentGame } = state
+  const { currentGame, isMac } = state
   const [loadStatus, setStatus] = useState<'loading' | 'resolve' | 'reject'>('resolve')
   const { data } = getApiDataState<DataSource>({ apiId, state })
   const [showDetail, setShowDetail] = useState<boolean>(false)
@@ -169,7 +169,7 @@ const Main = ({ state, dispatch }: Props) => {
               },
               { dataIndex: 'channelVersion', align: 'center', filterDropdown: false, sorter: undefined, title: '渠道版本' },
               { dataIndex: 'supersdkVersion', align: 'center', filterDropdown: false, sorter: undefined, title: 'SuperSDK版本' },
-              { dataIndex: 'motherShortName', align: 'center', filterDropdown: false, sorter: undefined, title: '母包' },
+              { dataIndex: 'motherShortName', align: 'center', filterDropdown: false, sorter: undefined, title: isMac ? 'xCode工程' : '母包' },
               {
                 title: '详情',
                 sorter: undefined,

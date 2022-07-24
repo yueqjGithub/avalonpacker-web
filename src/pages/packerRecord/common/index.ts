@@ -37,6 +37,7 @@ export type RecordDataRow = {
   descFileName?: string
   macOtherFile: string[]
   otherFile: string[]
+  publicType: number
 }
 
 export const statusEnum = [

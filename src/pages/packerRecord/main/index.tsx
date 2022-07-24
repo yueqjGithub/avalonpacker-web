@@ -53,7 +53,7 @@ const Main = ({ state, dispatch }: Props) => {
     result.forEach(item => {
       if (isMac) {
         try {
-          item.macOtherFile = (item.macOtherFile as unknown as string).split(',')
+          item.macOtherFile = item.macOtherFile ? (item.macOtherFile as unknown as string).split(',') : []
         } catch {
           item.macOtherFile = []
         }

@@ -11,7 +11,15 @@ export interface State extends IamBarValue {
   [propName: string]: any
   routeList: RouteSingle[]
   isMac?: boolean
+  publicTypes: { val: number, name: string }[]
 }
+
+const publicTypes: { val: number, name: string }[] = [
+  { val: 1, name: 'App Store Connect' },
+  { val: 2, name: 'Ad Hoc' },
+  { val: 3, name: 'Enterprise' },
+  { val: 4, name: 'Development' }
+]
 
 const initStates: State = {
   routeList: RouteList,
@@ -24,7 +32,8 @@ const initStates: State = {
   iambarLoading: true,
   currentProjectInstance: {} as ProjectInstanceDataRow,
   apis: apisForSDK,
-  isMac: import.meta.env.VITE_SYSTYPE === 'mac'
+  isMac: import.meta.env.VITE_SYSTYPE === 'mac',
+  publicTypes
 }
 
 export default initStates
