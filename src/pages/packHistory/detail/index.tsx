@@ -56,7 +56,11 @@ const Detail = ({ target, state, isFromConfig = false }: Props) => {
     queryDetail()
   }, [])
   const showUpload = useMemo(() => {
-    return isMac && detail.mediaFinishedPackagesList?.find(item => item.publicType === 1) !== undefined
+    if (detail) {
+      return isMac && detail.mediaFinishedPackagesList?.find(item => item.publicType === 1) !== undefined
+    } else {
+      return false
+    }
   }, [detail])
   return (
     <div className='full-width'>
