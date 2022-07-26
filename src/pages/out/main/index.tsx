@@ -387,7 +387,7 @@ const Main = () => {
             />
             <PermissionHoc
               component={
-                <Button disabled={uploadLoading} type='primary' className='ma-lf-05' onClick={() => {
+                <Button disabled={uploadLoading} loading={uploadLoading} type='primary' className='ma-lf-05' onClick={() => {
                   uploadRef.current!.click()
                 }}>上传{isMac ? 'xcode工程' : '母包'}</Button>
               }
