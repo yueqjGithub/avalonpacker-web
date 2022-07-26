@@ -62,6 +62,33 @@ const Detail = ({ target, state, isFromConfig = false }: Props) => {
       return false
     }
   }, [detail])
+  const dynamicColumn = useMemo(() => {
+    const result: any[] = []
+    if (isMac) {
+      result.push({
+        title: '发布方式',
+        sorter: undefined,
+        filterDropdown: false,
+        align: 'center',
+        dataIndex: 'publicType',
+        render: val => <span>{publicTypes.find(item => item.val === val)?.name || '未知'}</span>
+      })
+    }
+    if (showUpload) {
+      result.push({
+        title: '上传APPSTORE',
+        sorter: undefined,
+        filterDropdown: false,
+        align: 'center',
+        render: record => {
+          return (
+            <Button size="small" type="primary">上传APPSTORE</Button>
+          )
+        }
+      })
+    }
+    return result
+  }, [isMac, showUpload])
   return (
     <div className='full-width'>
       <Spin spinning={loading}>
@@ -142,29 +169,7 @@ const Detail = ({ target, state, isFromConfig = false }: Props) => {
                   )
                 }
               },
-              isMac
-                ? {
-                    title: '发布方式',
-                    sorter: undefined,
-                    filterDropdown: false,
-                    align: 'center',
-                    dataIndex: 'publicType',
-                    render: val => <span>{publicTypes.find(item => item.val === val)?.name || '未知'}</span>
-                  }
-                : {},
-              showUpload
-                ? {
-                    title: '上传APPSTORE',
-                    sorter: undefined,
-                    filterDropdown: false,
-                    align: 'center',
-                    render: record => {
-                      return (
-                        <Button size="small" type="primary">上传APPSTORE</Button>
-                      )
-                    }
-                  }
-                : {}
+              ...dynamicColumn
             ]}
             ></Table>
         </div>
