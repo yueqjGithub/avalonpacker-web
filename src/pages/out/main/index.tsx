@@ -152,7 +152,7 @@ const Main = () => {
       return false
     }
     const fileType = file.name.split('.').pop()
-    if (fileType !== 'apk' && fileType !== 'aab') {
+    if (fileType !== 'apk' && fileType !== 'aab' && !isMac) {
       message.error('仅支持apk/aab上传')
       return false
     }
