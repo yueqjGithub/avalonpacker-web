@@ -6,6 +6,7 @@ export type AppDataRow = {
   versionCode: number
   screenOrientation: 'portrait' | 'landscape'
   motherFtpPaths: string
+  macCertPwd?: string
   [key: string]: any
 }
 

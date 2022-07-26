@@ -319,6 +319,9 @@ const EditModule = ({ target, initView, state, editSuccess, dispatch }: Props) =
                               </Form.Item>
                               <Button type='primary' className='ma-lf-05' onClick={() => testUpload(8)}><i className='iconfont icon-cloudupload-fill text-white'></i>上传</Button>
                             </div>
+                            <Form.Item label="IOS证书密码" initialValue={target?.macCertPwd} name='macCertPwd'>
+                              <Input onChange={e => getVal({ keyname: 'macCertPwd', val: e.target.value })}></Input>
+                            </Form.Item>
                         </>
                         )
                       : (

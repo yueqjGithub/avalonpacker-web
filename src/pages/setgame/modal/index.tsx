@@ -215,17 +215,20 @@ const EditModule = ({ target, state, editSuccess, permissionList }: Props) => {
                               permissionList.upload ? <Button type='primary' className='ma-lf-05' onClick={() => testUpload(7)}><i className='iconfont icon-cloudupload-fill text-white'></i>上传</Button> : ''
                             }
                           </div>
+                          <Form.Item label="IOS证书密码" name="macCertPwd" initialValue={target?.macCertPwd}>
+                            <Input />
+                          </Form.Item>
                       </>
                       )
                     : (
                     <>
-                      <Form.Item label="signFileKeystorePassword" name="signFileKeystorePassword">
+                      <Form.Item label="signFileKeystorePassword" name="signFileKeystorePassword" initialValue={target?.signFileKeystorePassword}>
                         <Input />
                       </Form.Item>
-                      <Form.Item label="signFileKeyPassword" name="signFileKeyPassword">
+                      <Form.Item label="signFileKeyPassword" name="signFileKeyPassword" initialValue={target?.signFileKeyPassword}>
                         <Input />
                       </Form.Item>
-                      <Form.Item label="signFileAlias" name="signFileAlias">
+                      <Form.Item label="signFileAlias" name="signFileAlias" initialValue={target?.signFileAlias}>
                         <Input />
                       </Form.Item>
                     </>
