@@ -272,8 +272,7 @@ export const apisForSDK: Apis<ApiIdForSDK> = [
     name: '上传ipa',
     allowEmpty: true,
     urlTranform: ({ url, state }) => {
-      const { project = [] } = state as IamBarValue
-      const apiUrl = project.find(d => d.id === 'iam')?.api_url
+      const apiUrl = getApiUrl({ state })
       return `${apiUrl}${url}`
     }
   }
