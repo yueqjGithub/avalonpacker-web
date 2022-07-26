@@ -153,7 +153,7 @@ const EditModule = ({ target, state, editSuccess, permissionList }: Props) => {
     <>
       <h3>{target?.appName || '新增应用'}</h3>
       <input type="file" ref={ref} style={{ display: 'none' }} onChange={e => uploadHandler(e)}/>
-      <Form<AppDataRow> colon={true} form={form} labelAlign='right' labelCol={{ span: 4 }} wrapperCol={{ span: 20 }} onFinish={val => editFinshi(val)}>
+      <Form<AppDataRow> layout='vertical' colon={true} form={form} labelAlign='right' onFinish={val => editFinshi(val)}>
         <Form.Item label="APP_ID" name="appId" rules={[{ required: true, message: 'APP_ID不能为空' }]}>
           <Input disabled={target !== undefined}/>
         </Form.Item>
@@ -180,7 +180,7 @@ const EditModule = ({ target, state, editSuccess, permissionList }: Props) => {
             <>
               {
                 <>
-                  <div className='full-width flex-row flex-jst-start flex-ali-start'>
+                  <div className='full-width flex-row flex-jst-start flex-ali-center'>
                     <Form.Item
                     className='flex-1'
                     shouldUpdate
@@ -196,14 +196,14 @@ const EditModule = ({ target, state, editSuccess, permissionList }: Props) => {
                       </Select>
                     </Form.Item>
                     {
-                      permissionList.upload ? <Button type='primary' className='ma-lf-05' onClick={() => testUpload(4)}><i className='iconfont icon-cloudupload-fill text-white'></i>上传</Button> : ''
+                      permissionList.upload ? <Button type='primary' style={{ marginTop: 7 }} className='ma-lf-05' onClick={() => testUpload(4)}><i className='iconfont icon-cloudupload-fill text-white'></i>上传</Button> : ''
                     }
                   </div>
                 {
                   isMac
                     ? (
                       <>
-                          <div className='flex-row flex-jst-start flex-ali-start'>
+                          <div className='flex-row flex-jst-start flex-ali-center'>
                             <Form.Item shouldUpdate className='flex-1' label='IOS描述文件' name='descFileName' initialValue={target?.descFileName} normalize={val => val === undefined ? null : val}>
                               <Select loading={signLoading} allowClear>
                                 {
@@ -212,7 +212,7 @@ const EditModule = ({ target, state, editSuccess, permissionList }: Props) => {
                               </Select>
                             </Form.Item>
                             {
-                              permissionList.upload ? <Button type='primary' className='ma-lf-05' onClick={() => testUpload(7)}><i className='iconfont icon-cloudupload-fill text-white'></i>上传</Button> : ''
+                              permissionList.upload ? <Button style={{ marginTop: 7 }} type='primary' className='ma-lf-05' onClick={() => testUpload(7)}><i className='iconfont icon-cloudupload-fill text-white'></i>上传</Button> : ''
                             }
                           </div>
                           <Form.Item label="IOS证书密码" name="macCertPwd" initialValue={target?.macCertPwd}>

@@ -253,7 +253,7 @@ const EditModule = ({ target, initView, state, editSuccess, dispatch }: Props) =
               <Tabs.TabPane forceRender key='1' tab='基础配置'>
               <>
                 <input type="file" ref={ref} style={{ display: 'none' }} onChange={e => uploadHandler(e)}/>
-                <Form form={form} labelCol={{ span: 4 }} wrapperCol={{ span: 20 }}>
+                <Form layout='vertical' form={form}>
                   <Form.Item label='配置名称' required initialValue={target?.configName} name='configName' rules={[{ required: true, message: '配置名称不能为空!' }]}>
                     <Input maxLength={60} showCount placeholder='请输入配置名称' onChange={e => getVal({ keyname: 'configName', val: e.target.value })}></Input>
                   </Form.Item>
@@ -286,7 +286,7 @@ const EditModule = ({ target, initView, state, editSuccess, dispatch }: Props) =
                     )
                   }
                   <Divider></Divider>
-                  <div className='full-width flex-row flex-jst-start flex-ali-start'>
+                  <div className='full-width flex-row flex-jst-start flex-ali-center'>
                     <Form.Item
                     className='flex-1'
                     shouldUpdate
@@ -303,13 +303,13 @@ const EditModule = ({ target, initView, state, editSuccess, dispatch }: Props) =
                         }
                       </Select>
                     </Form.Item>
-                    <Button type='primary' className='ma-lf-05' onClick={() => testUpload(5)}><i className='iconfont icon-cloudupload-fill text-white'></i>上传</Button>
+                    <Button type='primary' style={{ marginTop: 7 }} className='ma-lf-05' onClick={() => testUpload(5)}><i className='iconfont icon-cloudupload-fill text-white'></i>上传</Button>
                   </div>
                   {
                     isMac
                       ? (
                         <>
-                            <div className='flex-row flex-jst-start flex-ali-start'>
+                            <div className='flex-row flex-jst-start flex-ali-center'>
                               <Form.Item shouldUpdate className='flex-1' label='IOS描述文件' name='descFileName' initialValue={target?.descFileName}>
                                 <Select loading={signLoading} allowClear onChange={val => getVal({ keyname: 'descFileName', val: val || null })}>
                                   {
@@ -317,7 +317,7 @@ const EditModule = ({ target, initView, state, editSuccess, dispatch }: Props) =
                                   }
                                 </Select>
                               </Form.Item>
-                              <Button type='primary' className='ma-lf-05' onClick={() => testUpload(8)}><i className='iconfont icon-cloudupload-fill text-white'></i>上传</Button>
+                              <Button type='primary' style={{ marginTop: 7 }} className='ma-lf-05' onClick={() => testUpload(8)}><i className='iconfont icon-cloudupload-fill text-white'></i>上传</Button>
                             </div>
                             <Form.Item label="IOS证书密码" initialValue={target?.macCertPwd} name='macCertPwd'>
                               <Input onChange={e => getVal({ keyname: 'macCertPwd', val: e.target.value })}></Input>
@@ -340,7 +340,7 @@ const EditModule = ({ target, initView, state, editSuccess, dispatch }: Props) =
                   }
                   <Form.Item label="其他文件上传" shouldUpdate name={isMac ? 'macOtherFile' : 'otherFile'}>
                     <div className="full-width flex-row flex-jst-start flex-ali-start">
-                      <div className='flex-1 flex-col flex-jst-start flex-ali-start'>
+                      <div className='flex-col flex-jst-start flex-ali-start'>
                         <>
                           {
                             otherFileSave!.map(item => {
