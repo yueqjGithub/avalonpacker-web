@@ -30,6 +30,7 @@ export type ApiIdForSDK =
     | 'querychannelsignpath'
     | 'envlist'
     | 'iamuserlist'
+    | 'uploadipa'
 /** 通用api */
 export const apisForSDK: Apis<ApiIdForSDK> = [
   {
@@ -258,6 +259,17 @@ export const apisForSDK: Apis<ApiIdForSDK> = [
     id: 'iamuserlist',
     url: '/iam-manage/v1/users',
     name: '用户列表',
+    allowEmpty: true,
+    urlTranform: ({ url, state }) => {
+      const { project = [] } = state as IamBarValue
+      const apiUrl = project.find(d => d.id === 'iam')?.api_url
+      return `${apiUrl}${url}`
+    }
+  },
+  {
+    id: 'uploadipa',
+    url: '/packer/admin/history-record/upload',
+    name: '上传ipa',
     allowEmpty: true,
     urlTranform: ({ url, state }) => {
       const { project = [] } = state as IamBarValue

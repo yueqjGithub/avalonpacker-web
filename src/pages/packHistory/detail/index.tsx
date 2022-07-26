@@ -1,6 +1,6 @@
 import { Button, Descriptions, message, Spin, Table } from 'antd'
 import { getApiDataState } from 'avalon-iam-util-client'
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import { httpApi } from '../../../service/axios'
 import { State } from '../../../store/state'
 import { ChannelDataRow } from '../../channel/common'
@@ -19,7 +19,7 @@ type Props = {
 }
 
 const Detail = ({ target, state, isFromConfig = false }: Props) => {
-  const { isMac } = state
+  const { isMac, publicTypes } = state
   const [loading, setLoading] = useState<boolean>(false)
   const [detail, setDetail] = useState<any>()
   const { data: gameList = [] } = getApiDataState<AppDataRow[]>({ apiId: 'gamelist', state })
@@ -55,6 +55,9 @@ const Detail = ({ target, state, isFromConfig = false }: Props) => {
   useEffect(() => {
     queryDetail()
   }, [])
+  const showUpload = useMemo(() => {
+    return isMac && detail.mediaFinishedPackagesList?.find(item => item.publicType === 1) !== undefined
+  }, [detail])
   return (
     <div className='full-width'>
       <Spin spinning={loading}>
@@ -134,7 +137,30 @@ const Detail = ({ target, state, isFromConfig = false }: Props) => {
                     ></QRCode>
                   )
                 }
-              }
+              },
+              isMac
+                ? {
+                    title: '发布方式',
+                    sorter: undefined,
+                    filterDropdown: false,
+                    align: 'center',
+                    dataIndex: 'publicType',
+                    render: val => <span>{publicTypes.find(item => item.val === val)?.name || '未知'}</span>
+                  }
+                : {},
+              showUpload
+                ? {
+                    title: '上传APPSTORE',
+                    sorter: undefined,
+                    filterDropdown: false,
+                    align: 'center',
+                    render: record => {
+                      return (
+                        <Button size="small" type="primary">上传APPSTORE</Button>
+                      )
+                    }
+                  }
+                : {}
             ]}
             ></Table>
         </div>
