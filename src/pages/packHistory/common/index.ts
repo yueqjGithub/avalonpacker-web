@@ -20,3 +20,8 @@ export type HistoryDataRow = {
   reason: string
   motherIsFtp: number
 }
+
+export type UploadStoreForm = {
+  account: string
+  pwd: string
+}

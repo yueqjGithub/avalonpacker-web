@@ -1,4 +1,4 @@
-import { Button, Descriptions, message, Spin, Table } from 'antd'
+import { Button, Descriptions, Form, Input, message, Modal, Spin, Table } from 'antd'
 import { getApiDataState } from 'avalon-iam-util-client'
 import React, { useEffect, useMemo, useState } from 'react'
 import { httpApi } from '../../../service/axios'
@@ -12,6 +12,7 @@ import { RecordDataRow } from '../../packerRecord/common'
 import styles from '../common/hisStyle.module.scss'
 import { copyHandler } from '../../../utils/utils'
 import QRCode from 'qrcode.react'
+import { UploadStoreForm } from '../common'
 type Props = {
   state: State
   target?: string // id
@@ -55,6 +56,10 @@ const Detail = ({ target, state, isFromConfig = false }: Props) => {
   useEffect(() => {
     queryDetail()
   }, [])
+  const [form] = Form.useForm<UploadStoreForm>()
+  const [showLogin, setShowLogin] = useState<boolean>(false)
+  const [curResult, setResult] = useState<any>()
+  const [uploadLoading, setUploadLoading] = useState<boolean>(false)
   const showUpload = useMemo(() => {
     if (detail) {
       return isMac && detail.mediaFinishedPackagesList?.find(item => item.publicType === 1) !== undefined
@@ -82,13 +87,55 @@ const Detail = ({ target, state, isFromConfig = false }: Props) => {
         align: 'center',
         render: record => {
           return (
-            <Button size="small" type="primary">上传APPSTORE</Button>
+            <Button size="small" type="primary"
+              onClick={() => {
+                setResult(record)
+                setShowLogin(true)
+              }}
+            >上传APPSTORE</Button>
+          )
+        }
+      })
+      result.push({
+        title: '上传APPSTORE状态',
+        sorter: undefined,
+        filterDropdown: false,
+        dataIndex: 'failReason',
+        render: (val, record) => {
+          return (
+            <>{val === 'success' ? '成功' : (val || '')}</>
           )
         }
       })
     }
     return result
   }, [isMac, showUpload])
+  const uploadStoreHandler = async (val: UploadStoreForm) => {
+    try {
+      setUploadLoading(true)
+      const requestData = {
+        account: val.account,
+        pwd: val.pwd,
+        id: curResult.id
+      }
+      const { data: res } = await httpApi({
+        apiId: 'uploadipa',
+        method: 'POST',
+        data: requestData,
+        state
+      }).request
+      if (res.status === 0) {
+        message.success('已提交上传，请到苹果页面进行核验')
+        setShowLogin(false)
+      } else {
+        message.error(res.message)
+      }
+    } catch {
+      message.error('程序出错')
+    } finally {
+      setUploadLoading(false)
+    }
+  }
   return (
     <div className='full-width'>
       <Spin spinning={loading}>
@@ -174,6 +221,25 @@ const Detail = ({ target, state, isFromConfig = false }: Props) => {
             ></Table>
         </div>
       </Spin>
+      <Modal visible={showLogin} destroyOnClose title='APPLEID登录' footer={null} onCancel={() => setShowLogin(false)}>
+        <Form layout='vertical' form={form} onFinish={val => uploadStoreHandler(val)}>
+          <Form.Item label="appleID" name="account"
+            help='当前应用对应的苹果ID'
+          >
+            <Input></Input>
+          </Form.Item>
+          <Form.Item label="密码" name="pwd"
+            help='该密码在apple页面获得，详情查看https://blog.csdn.net/cwf19860527/article/details/121958841'
+          >
+            <Input type='password'></Input>
+          </Form.Item>
+          <Form.Item>
+            <div className='full-width flex-row flex-jst-end flex-ali-end'>
+              <Button htmlType='submit' type='primary' loading={uploadLoading}>提交</Button>
+            </div>
+          </Form.Item>
+        </Form>
+      </Modal>
     </div>
   )
 }
