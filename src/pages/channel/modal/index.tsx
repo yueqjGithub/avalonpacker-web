@@ -86,7 +86,7 @@ const EditModule = ({ target, state, dispatch, editSuccess, isEdit }: Props) => 
             <Input disabled={!isEdit}></Input>
           </Form.Item>
           <Form.Item label='平台' name='isMac' rules={[{ required: true, message: '请选择平台', type: 'boolean' }]} initialValue={target ? target!.isMac : isMac }>
-            <Radio.Group>
+            <Radio.Group disabled={!isEdit}>
               <Radio value={false}>Android</Radio>
               <Radio value={true}>IOS</Radio>
             </Radio.Group>
@@ -170,7 +170,7 @@ const EditModule = ({ target, state, dispatch, editSuccess, isEdit }: Props) => 
                                       name={[name, 'required']}
                                       valuePropName='checked'
                                     >
-                                      <Checkbox>必填</Checkbox>
+                                      <Checkbox disabled={!isEdit}>必填</Checkbox>
                                     </Form.Item>
                                   </div>
                                   {
