@@ -53,4 +53,5 @@ export type EnvDataRow = {
   envDesc: string
   supersdkUrl: string
   avalonsdkUrl: string
+  enable?: boolean
 }

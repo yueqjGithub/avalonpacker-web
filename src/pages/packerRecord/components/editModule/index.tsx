@@ -1,5 +1,5 @@
 import { Button, Divider, Form, Input, message, notification, Select, Spin, Tabs } from 'antd'
-import React, { ChangeEvent, MutableRefObject, useEffect, useRef, useState } from 'react'
+import React, { ChangeEvent, MutableRefObject, useEffect, useMemo, useRef, useState } from 'react'
 import { State } from '../../../../store/state'
 import { EnvDataRow, RecordDataRow } from '../../common'
 import BaseConfig from './baseConfig'
@@ -41,7 +41,10 @@ const EditModule = ({ target, initView, state, editSuccess, dispatch }: Props) =
   const [signLoading, setSignLoading] = useState<boolean>(false)
   const submitCount = useRef<number>(0)
   const { data, loading: spinning } = getApiDataState<ChannelVersionData>({ apiId: 'getchannelsource', state })
-  const { data: envList = [] } = getApiDataState<EnvDataRow[]>({ apiId: 'envlist', state })
+  const { data: envAllList = [] } = getApiDataState<EnvDataRow[]>({ apiId: 'envlist', state })
+  const envList = useMemo(() => {
+    return envAllList.filter(item => item.enable === true)
+  }, [envAllList])
   const [loading, setLoading] = useState<boolean>(false)
   const [submitSymbol, setSymbol] = useState<boolean>()
   const [form] = Form.useForm<RecordDataRow>()
