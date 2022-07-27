@@ -60,7 +60,7 @@ const EditModal = ({ target, editSuccess }: Props) => {
           <Input></Input>
         </Form.Item>
         <Form.Item label='CODE' name='envCode' rules={[{ required: true }]}>
-          <Input></Input>
+          <Input disabled={target !== undefined}></Input>
         </Form.Item>
         <Form.Item label='supersdkUrl' name='supersdkUrl' rules={[{ required: true }]}>
           <Input></Input>
