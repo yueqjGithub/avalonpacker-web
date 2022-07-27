@@ -103,7 +103,7 @@ const CurrentShow = ({ state, collapsed, dispatch, isCommon }: Props) => {
             <div className={styles.backIcon}>
               <ArrowLeftOutlined />
             </div>
-            <div>返回公共设置</div>
+            <div>{collapsed ? '' : '返回公共设置'}</div>
           </div>
         )
       }

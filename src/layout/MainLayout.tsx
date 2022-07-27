@@ -64,11 +64,11 @@ const MainLayout = (props: Props) => {
                 </Layout.Sider>
                 )
               : (
-                <Layout.Sider collapsed={isDependRoute} className='fMenuContainer'>
+                <Layout.Sider collapsed={false} className='fMenuContainer'>
                   <div style={{ height: 'calc(100vh - 64px)' }} className="scroll-bar flex-row flex-jst-start flex-ali-start">
                     <div className="full-width" style={{ paddingTop: '0.1rem' }}>
                       <div className={`${styles.currentShow}`}>
-                        <CurrentShow dispatch={dispatch} collapsed={collapsed} state={state} isCommon></CurrentShow>
+                        <CurrentShow dispatch={dispatch} collapsed={false} state={state} isCommon></CurrentShow>
                       </div>
                       <Menu
                         style={{ height: '100%', background: '#032444' }}
