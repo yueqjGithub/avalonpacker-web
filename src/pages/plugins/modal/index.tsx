@@ -52,6 +52,7 @@ const EditModule = ({ target, state, dispatch, editSuccess, isEdit }: Props) => 
         method: 'POST',
         data: copy,
         httpCustomConfig: {
+          timeout: 60000,
           headers: {
             actionName: encodeURIComponent(target ? '更新' : '新增')
           }
@@ -118,7 +119,6 @@ const EditModule = ({ target, state, dispatch, editSuccess, isEdit }: Props) => 
                                       style={{ width: '40%' }}
                                       name={[name, 'keyName']}
                                       wrapperCol={{ span: 22 }}
-                                      fieldKey={[fieldKey, 'keyName']}
                                       help={'填写分包时传递给脚本的属性key'}
                                       rules={[{
                                         required: true,
@@ -131,7 +131,6 @@ const EditModule = ({ target, state, dispatch, editSuccess, isEdit }: Props) => 
                                       {...restField}
                                       style={{ width: '40%' }}
                                       name={[name, 'label']}
-                                      fieldKey={[fieldKey, 'label']}
                                       help={'填写展示在出包工具界面中，对用户的提示性语句'}
                                       wrapperCol={{ span: 22 }}
                                     >
@@ -141,7 +140,6 @@ const EditModule = ({ target, state, dispatch, editSuccess, isEdit }: Props) => 
                                       {...restField}
                                       style={{ width: '15%' }}
                                       name={[name, 'required']}
-                                      fieldKey={[fieldKey, 'required']}
                                       valuePropName='checked'
                                     >
                                       <Checkbox>必填</Checkbox>
