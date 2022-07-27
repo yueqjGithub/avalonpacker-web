@@ -90,7 +90,7 @@ const CurrentShow = ({ state, collapsed, dispatch, isCommon }: Props) => {
           ? null
           : (
           // <div className={`flex-1 text-primary line-height-1 ${styles.lineHeightControl}`}>{target?.appName || '未选择'}</div>
-          <Select value={target?.id} className='flex-1' onChange={(val, opt) => chooseEffect(val)} placeholder='未选择'>
+          <Select value={target?.id} className='flex-1' onSelect={(val, opt) => chooseEffect(val)} placeholder='未选择'>
             {
               data.map(item => <Select.Option key={item.id} value={item.id}>{item.appName}</Select.Option>)
             }

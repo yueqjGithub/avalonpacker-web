@@ -162,7 +162,7 @@ const Main = ({ state, dispatch }: Props) => {
                   )
                 }
               },
-              { dataIndex: 'channelCode', align: 'center', title: '渠道', sorter: undefined, filterDropdown: false, render: val => <span>{channelList.find((item: ChannelDataRow) => item.channelCode === val)!.channelName}</span> },
+              { dataIndex: 'channelCode', align: 'center', title: '渠道', sorter: undefined, filterDropdown: false, render: val => <span>{channelList.find((item: ChannelDataRow) => item.channelCode === val)?.channelName || '未知渠道'}</span> },
               // { dataIndex: 'channelVersion', filterDropdown: false, title: '渠道版本' },
               {
                 dataIndex: 'configId', sorter: undefined, title: '配置名称', align: 'center', render: val => <span>{configList.find(item => item.id === val)?.configName}</span>
