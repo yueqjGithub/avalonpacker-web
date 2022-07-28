@@ -84,6 +84,10 @@ const EditModule = ({ target, state, editSuccess, permissionList }: Props) => {
     setUploadType(type)
     ref.current!.click()
   }
+  // const uploadHandler = async (e:ChangeEvent<HTMLInputElement>) => {
+  //   const file = e.target.files![0]
+  //   splitFile(file, 5).then(res => { console.log(res) })
+  // }
   const uploadHandler = async (e:ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files ? e.target.files[0] : ''
     if (!file) {

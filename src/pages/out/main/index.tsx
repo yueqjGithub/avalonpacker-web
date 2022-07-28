@@ -541,12 +541,14 @@ const Main = () => {
               },
               render: (record: RecordDataRow) => {
                 return (
-                  <Tooltip title="点击查看最近一次分包详情">
+                  <>
+                    {record.lastHisId && <Tooltip title="点击查看最近一次分包详情">
                     <div className='full-width flex-col flex-jst-center flex-ali-center cursor-pointer'>
                       <span>{iamusers.find(item => item.id === Number(record.lastOps))?.name || record.lastOps}</span>
                       <span>{record.lastPackTime}</span>
                     </div>
-                  </Tooltip>
+                  </Tooltip>}
+                  </>
                 )
               }
             }
