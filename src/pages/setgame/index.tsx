@@ -27,7 +27,7 @@ const apiId: ApiIdForSDK = 'gamelist'
 const SetGame = ({ state, dispatch }: Props) => {
   const searchOptions = React.useRef({})
   const history = useHistory()
-  const { routeList } = state
+  const { routeList, isMac } = state
   const [cancelSource] = useState<CancelPayload>()
   const { data = [], loading } = getApiDataState<AppDataRow[]>({ apiId, state })
   const [showModal, setModal] = useState<boolean>(false)
@@ -151,10 +151,23 @@ const SetGame = ({ state, dispatch }: Props) => {
       </Modal>
       <Modal title={target?.appName} visible={showDetail} footer={false} onCancel={() => setDetail(false)} destroyOnClose width='50vw' maskClosable={false}>
         <Descriptions column={1}>
-          <Descriptions.Item label="sign_file_path">{target?.signFilePath}</Descriptions.Item>
-          <Descriptions.Item label="sign_file_keystore_password">{target?.signFileKeystorePassword}</Descriptions.Item>
-          <Descriptions.Item label="sign_file_key_password">{target?.signFileKeyPassword}</Descriptions.Item>
-          <Descriptions.Item label="sign_file_alias">{target?.signFileAlias}</Descriptions.Item>
+          <Descriptions.Item label={isMac ? '证书' : 'sign_file_path'}>{target?.signFilePath}</Descriptions.Item>
+          {
+            isMac
+              ? (
+              <>
+                <Descriptions.Item label='IOS描述文件'>{target?.descFileName}</Descriptions.Item>
+                <Descriptions.Item label='IOS证书密码'>{target?.macCertPwd}</Descriptions.Item>
+              </>
+                )
+              : (
+              <>
+              <Descriptions.Item label="sign_file_keystore_password">{target?.signFileKeystorePassword}</Descriptions.Item>
+              <Descriptions.Item label="sign_file_key_password">{target?.signFileKeyPassword}</Descriptions.Item>
+              <Descriptions.Item label="sign_file_alias">{target?.signFileAlias}</Descriptions.Item>
+              </>
+                )
+          }
         </Descriptions>
       </Modal>
     </div>
