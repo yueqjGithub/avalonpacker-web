@@ -151,7 +151,7 @@ const SetGame = ({ state, dispatch }: Props) => {
       </Modal>
       <Modal title={target?.appName} visible={showDetail} footer={false} onCancel={() => setDetail(false)} destroyOnClose width='50vw' maskClosable={false}>
         <Descriptions column={1}>
-          <Descriptions.Item label={isMac ? '证书' : 'sign_file_path'}>{target?.signFilePath}</Descriptions.Item>
+          <Descriptions.Item label={isMac ? '证书' : 'sign_file_path'}>{isMac ? target?.macSignFile : target?.signFilePath}</Descriptions.Item>
           {
             isMac
               ? (
