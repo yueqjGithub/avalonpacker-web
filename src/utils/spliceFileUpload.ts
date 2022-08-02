@@ -12,7 +12,7 @@ const splitFile: (file: File, size: number) => Promise<any[]> = (file, size = 5)
   return new Promise((resolve, reject) => {
     const fr = new FileReader()
 
-    fr.readAsArrayBuffer(file)
+    fr.readAsBinaryString(file)
 
     fr.onload = (ev) => {
       const bufferAll = ev.target?.result
@@ -32,17 +32,28 @@ type BufferUpload = (
   bufferList: BufferItem[],
   apiId: ApiIdForSDK,
   state: State,
-  httpCustomConfig?: AxiosRequestConfig | null
+  otherData?: Object,
+  httpCustomConfig?: AxiosRequestConfig | null,
 ) => any
 
-const bufferUpload: BufferUpload = (method, bufferList, apiId, state, httpCustomConfig) => {
+const bufferUpload: BufferUpload = (method, bufferList, apiId, state, httpCustomConfig, otherData) => {
   const promiseList = bufferList.map((item, idx) => {
+    const fm = new FormData()
+    fm.append('file', item.file as string)
+    fm.append('hash', item.hash)
+    fm.append('idx', idx.toString())
+    fm.append('length', bufferList.length.toString())
+    if (otherData) {
+      for (const k in otherData) {
+        fm.append(k, otherData[k])
+      }
+    }
     return new Promise((resolve, reject) => {
       httpApi({
         apiId,
         state,
         method,
-        data: { file: { ...item }, length: bufferList.length, idx },
+        data: fm,
         httpCustomConfig
       }).request.then(res => resolve(res), err => reject(err))
     })

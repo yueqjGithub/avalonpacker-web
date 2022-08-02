@@ -19,6 +19,7 @@ type DataRowType = ChannelMediaPackage & {
   configName?: string
   downloadHost?: string
   updateTime?: string
+  lastPackTime?: string
 }
 
 const DownloadModal = ({ historyList, configList, state }: Props) => {
@@ -32,7 +33,8 @@ const DownloadModal = ({ historyList, configList, state }: Props) => {
           ...m,
           downloadHost: item.downloadHost,
           configName: targetConfig?.configName,
-          updateTime: targetConfig?.updateTime
+          updateTime: targetConfig?.updateTime,
+          lastPackTime: targetConfig?.lastPackTime
         })
       })
     })
@@ -52,7 +54,7 @@ const DownloadModal = ({ historyList, configList, state }: Props) => {
               return (
                 <div className='flex-col flex-jst-center flex-align-center'>
                   <p>{record.configName}</p>
-                  <p>{record.updateTime}</p>
+                  <p>{record.lastPackTime}</p>
                 </div>
               )
             }
