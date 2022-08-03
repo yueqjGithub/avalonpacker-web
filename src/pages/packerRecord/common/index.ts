@@ -35,9 +35,9 @@ export type RecordDataRow = {
   loading?: boolean
   macSignFile?: string
   descFileName?: string
-  macOtherFile: string[]
+  macOtherFile: any
   macCertPwd?: string
-  otherFile: string[]
+  otherFile: any
   publicType: number
 }
 

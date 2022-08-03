@@ -70,11 +70,8 @@ const EditModule = ({ target, initView, state, editSuccess, dispatch }: Props) =
   }
   const doSubmit = async () => {
     const copy = { ...targetRef.current }
-    if (isMac) {
-      (copy.macOtherFile as any) = targetRef.current.macOtherFile?.join(',') || null
-    } else {
-      (copy.otherFile as any) = targetRef.current.otherFile?.join(',') || null
-    }
+    copy.macOtherFile = targetRef.current.macOtherFile?.join(',') || null
+    copy.otherFile = targetRef.current.otherFile?.join(',') || null
     try {
       const { data: res } = await httpApi({
         state,
