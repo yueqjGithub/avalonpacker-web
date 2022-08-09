@@ -311,7 +311,8 @@ const Main = () => {
         // setHistoryIds([])
         setReason(res.message)
       }
-    } catch {
+    } catch (e) {
+      console.error(e)
       setStatus('faild')
       setReason('程序出错')
     }
