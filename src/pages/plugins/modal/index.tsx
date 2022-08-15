@@ -75,10 +75,10 @@ const EditModule = ({ target, state, dispatch, editSuccess, isEdit }: Props) => 
       <h3>{target ? '修改' : '新增'}插件配置</h3>
       <Form<PluginsDataRow> form={form} colon={true} labelAlign='right' labelCol={{ span: 2 }} wrapperCol={{ span: 21 }} onFinish={val => editFinshi(val)}>
         <div className='scroll-bar full-width' style={{ maxHeight: '70vh', marginBottom: 15 }}>
-          <Form.Item label='插件名称' name='name' rules={[{ required: true, message: '名称不能为空' }]}>
+          <Form.Item normalize={val => val.trim()} label='插件名称' name='name' rules={[{ required: true, message: '名称不能为空' }]}>
             <Input disabled={!isEdit}></Input>
           </Form.Item>
-          <Form.Item label='CODE' name='code' rules={[{ required: true, message: 'CODE不能为空' }]}>
+          <Form.Item normalize={val => val.trim()} label='CODE' name='code' rules={[{ required: true, message: 'CODE不能为空' }]}>
             <Input disabled={!isEdit || target !== undefined}></Input>
           </Form.Item>
           <Form.Item label='插件类型' name='type'>
@@ -114,7 +114,7 @@ const EditModule = ({ target, state, dispatch, editSuccess, isEdit }: Props) => 
                               <Fragment key={key}>
                                 <div className='flex-row flex-jst-start flex-ali-base'>
                                   <div className='flex-row flex-jst-btw flex-ali-center flex-1'>
-                                  <Form.Item
+                                  <Form.Item normalize={val => val.trim()}
                                       {...restField}
                                       style={{ width: '40%' }}
                                       name={[name, 'keyName']}
@@ -127,7 +127,7 @@ const EditModule = ({ target, state, dispatch, editSuccess, isEdit }: Props) => 
                                     >
                                       <Input placeholder="填写属性key值" disabled={!isEdit} />
                                     </Form.Item>
-                                    <Form.Item
+                                    <Form.Item normalize={val => val.trim()}
                                       {...restField}
                                       style={{ width: '40%' }}
                                       name={[name, 'label']}

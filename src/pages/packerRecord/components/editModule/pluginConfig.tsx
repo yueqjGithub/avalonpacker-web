@@ -100,7 +100,7 @@ const PluginsConfig = ({ target, state, submitSymbol, submitVal, clearCount }: P
                             fields.map(({ key, name, fieldKey, ...restField }) => {
                               return (
                                 <div className='full-width pa-row-sm' key={key}>
-                                  <Form.Item
+                                  <Form.Item normalize={val => val.trim()}
                                     {...restField}
                                     name={[name, 'value']}
                                     label={item.settings[key].keyName}

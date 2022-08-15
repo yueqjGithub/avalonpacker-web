@@ -123,7 +123,7 @@ const BaseConfig = ({ target, state, submitSymbol, submitVal, clearCount, channe
                       fields.map(({ key, name, fieldKey, ...restField }) => {
                         return (
                           <div className='full-width pa-row-sm' key={key}>
-                            <Form.Item
+                            <Form.Item normalize={val => val.trim()}
                                 {...restField}
                                 name={[name, 'value']}
                                 label={obj.clientConfigDoc[key].keyName}
@@ -156,7 +156,7 @@ const BaseConfig = ({ target, state, submitSymbol, submitVal, clearCount, channe
                       fields.map(({ key, name, fieldKey, ...restField }) => {
                         return (
                           <div className='full-width pa-row-sm' key={key}>
-                            <Form.Item
+                            <Form.Item normalize={val => val.trim()}
                                 {...restField}
                                 name={[name, 'value']}
                                 label={obj.serverConfigDoc[key].keyName}
@@ -186,7 +186,7 @@ const BaseConfig = ({ target, state, submitSymbol, submitVal, clearCount, channe
                       fields.map(({ key, name, fieldKey, ...restField }) => {
                         return (
                           <div className='full-width pa-row-sm' key={key}>
-                            <Form.Item
+                            <Form.Item normalize={val => val.trim()}
                                 {...restField}
                                 name={[name, 'value']}
                                 label={obj.extra[key].keyName}

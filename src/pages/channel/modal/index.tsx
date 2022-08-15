@@ -79,10 +79,10 @@ const EditModule = ({ target, state, dispatch, editSuccess, isEdit }: Props) => 
       <h3>{target ? '修改' : '新增'}渠道配置</h3>
       <Form<ChannelDataRow> form={form} colon={true} labelAlign='right' labelCol={{ span: 2 }} wrapperCol={{ span: 21 }} onFinish={val => editFinshi(val)}>
         <div className='scroll-bar full-width' style={{ maxHeight: '70vh', marginBottom: 15 }}>
-          <Form.Item label='渠道名称' name='channelName' rules={[{ required: true, message: '渠道名称不能为空' }]}>
+          <Form.Item normalize={val => val.trim()} label='渠道名称' name='channelName' rules={[{ required: true, message: '渠道名称不能为空' }]}>
             <Input disabled={!isEdit}></Input>
           </Form.Item>
-          <Form.Item label='渠道CODE' name='channelCode' rules={[{ required: true, message: '渠道CODE不能为空' }]}>
+          <Form.Item normalize={val => val.trim()} label='渠道CODE' name='channelCode' rules={[{ required: true, message: '渠道CODE不能为空' }]}>
             <Input disabled={!isEdit}></Input>
           </Form.Item>
           <Form.Item label='平台' name='isMac' rules={[{ required: true, message: '请选择平台', type: 'boolean' }]} initialValue={target ? target!.isMac : isMac }>
@@ -142,7 +142,7 @@ const EditModule = ({ target, state, dispatch, editSuccess, isEdit }: Props) => 
                               <Fragment key={key}>
                                 <div className='flex-row flex-jst-start flex-ali-base'>
                                   <div className='flex-row flex-jst-btw flex-ali-center flex-1'>
-                                    <Form.Item
+                                    <Form.Item normalize={val => val.trim()}
                                       {...restField}
                                       style={{ width: '40%' }}
                                       name={[name, 'keyName']}
@@ -155,7 +155,7 @@ const EditModule = ({ target, state, dispatch, editSuccess, isEdit }: Props) => 
                                     >
                                       <Input placeholder="填写属性key值" disabled={!isEdit} />
                                     </Form.Item>
-                                    <Form.Item
+                                    <Form.Item normalize={val => val.trim()}
                                       {...restField}
                                       style={{ width: '40%' }}
                                       name={[name, 'label']}

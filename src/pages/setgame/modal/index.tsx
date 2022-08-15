@@ -158,13 +158,13 @@ const EditModule = ({ target, state, editSuccess, permissionList }: Props) => {
       <h3>{target?.appName || '新增应用'}</h3>
       <input type="file" ref={ref} style={{ display: 'none' }} onChange={e => uploadHandler(e)}/>
       <Form<AppDataRow> layout='vertical' colon={true} form={form} labelAlign='right' onFinish={val => editFinshi(val)}>
-        <Form.Item label="APP_ID" name="appId" rules={[{ required: true, message: 'APP_ID不能为空' }]}>
+        <Form.Item normalize={val => val.trim()} label="APP_ID" name="appId" rules={[{ required: true, message: 'APP_ID不能为空' }]}>
           <Input disabled={target !== undefined}/>
         </Form.Item>
-        <Form.Item label="应用名称" name="appName" rules={[{ required: true, message: '应用名称不能为空' }]}>
+        <Form.Item normalize={val => val.trim()} label="应用名称" name="appName" rules={[{ required: true, message: '应用名称不能为空' }]}>
           <Input />
         </Form.Item>
-        <Form.Item label="母包FTP路径" name="motherFtpPaths" rules={[{ required: true, message: '母包FTP路径不能为空' }]} help='多个路径请用英文,隔开，如/dungeonkeeper/cn/client/,/dungeonkeeper/global/client/'>
+        <Form.Item normalize={val => val.trim()} label="母包FTP路径" name="motherFtpPaths" rules={[{ required: true, message: '母包FTP路径不能为空' }]} help='多个路径请用英文,隔开，如/dungeonkeeper/cn/client/,/dungeonkeeper/global/client/'>
           <Input />
         </Form.Item>
         <Form.Item label="versionCode" name="versionCode" rules={[{ required: true, message: '请设置versionCode' }]} initialValue={target?.versionCode}>
@@ -219,20 +219,20 @@ const EditModule = ({ target, state, editSuccess, permissionList }: Props) => {
                               permissionList.upload ? <Button style={{ marginTop: 7 }} type='primary' className='ma-lf-05' onClick={() => testUpload(7)}><i className='iconfont icon-cloudupload-fill text-white'></i>上传</Button> : ''
                             }
                           </div>
-                          <Form.Item label="IOS证书密码" name="macCertPwd" initialValue={target?.macCertPwd}>
+                          <Form.Item normalize={val => val.trim()} label="IOS证书密码" name="macCertPwd" initialValue={target?.macCertPwd}>
                             <Input />
                           </Form.Item>
                       </>
                       )
                     : (
                     <>
-                      <Form.Item label="signFileKeystorePassword" name="signFileKeystorePassword" initialValue={target?.signFileKeystorePassword}>
+                      <Form.Item normalize={val => val.trim()} label="signFileKeystorePassword" name="signFileKeystorePassword" initialValue={target?.signFileKeystorePassword}>
                         <Input />
                       </Form.Item>
-                      <Form.Item label="signFileKeyPassword" name="signFileKeyPassword" initialValue={target?.signFileKeyPassword}>
+                      <Form.Item normalize={val => val.trim()} label="signFileKeyPassword" name="signFileKeyPassword" initialValue={target?.signFileKeyPassword}>
                         <Input />
                       </Form.Item>
-                      <Form.Item label="signFileAlias" name="signFileAlias" initialValue={target?.signFileAlias}>
+                      <Form.Item normalize={val => val.trim()} label="signFileAlias" name="signFileAlias" initialValue={target?.signFileAlias}>
                         <Input />
                       </Form.Item>
                     </>

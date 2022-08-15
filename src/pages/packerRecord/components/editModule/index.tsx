@@ -254,13 +254,13 @@ const EditModule = ({ target, initView, state, editSuccess, dispatch }: Props) =
               <>
                 <input type="file" ref={ref} style={{ display: 'none' }} onChange={e => uploadHandler(e)}/>
                 <Form layout='vertical' form={form}>
-                  <Form.Item label='配置名称' required initialValue={target?.configName} name='configName' rules={[{ required: true, message: '配置名称不能为空!' }]}>
+                  <Form.Item label='配置名称' normalize={val => val.trim()} required initialValue={target?.configName} name='configName' rules={[{ required: true, message: '配置名称不能为空!' }]}>
                     <Input maxLength={60} showCount placeholder='请输入配置名称' onChange={e => getVal({ keyname: 'configName', val: e.target.value })}></Input>
                   </Form.Item>
-                  <Form.Item label={isMac ? 'bundleId' : '渠道包名'} required initialValue={target?.packerName} name='packerName' rules={[{ required: true, message: '不能为空!' }]}>
+                  <Form.Item normalize={val => val.trim()} label={isMac ? 'bundleId' : '渠道包名'} required initialValue={target?.packerName} name='packerName' rules={[{ required: true, message: '不能为空!' }]}>
                     <Input placeholder={`请输入${isMac ? 'bundleId' : '渠道包名'}`} onChange={e => getVal({ keyname: 'packerName', val: e.target.value })}></Input>
                   </Form.Item>
-                  <Form.Item label='发行区域' name='publicArea' initialValue={target?.publicArea}>
+                  <Form.Item normalize={val => val.trim()} label='发行区域' name='publicArea' initialValue={target?.publicArea}>
                     <Input placeholder='请填写发行区域代码，如CN、US、GLOBAL' onChange={e => getVal({ keyname: 'publicArea', val: e.target.value })}></Input>
                   </Form.Item>
                   <Form.Item label='SDK环境' name='envCode' initialValue={target?.envCode} rules={[{ required: true, message: '请设置SDK环境!' }]}>
@@ -319,20 +319,20 @@ const EditModule = ({ target, initView, state, editSuccess, dispatch }: Props) =
                               </Form.Item>
                               <Button type='primary' style={{ marginTop: 7 }} className='ma-lf-05' onClick={() => testUpload(8)}><i className='iconfont icon-cloudupload-fill text-white'></i>上传</Button>
                             </div>
-                            <Form.Item label="IOS证书密码" initialValue={target?.macCertPwd} name='macCertPwd'>
+                            <Form.Item normalize={val => val.trim()} label="IOS证书密码" initialValue={target?.macCertPwd} name='macCertPwd'>
                               <Input onChange={e => getVal({ keyname: 'macCertPwd', val: e.target.value })}></Input>
                             </Form.Item>
                         </>
                         )
                       : (
                       <>
-                        <Form.Item label="signFileKeystorePassword" initialValue={target?.signFileKeystorePassword} name='signFileKeystorePassword'>
+                        <Form.Item normalize={val => val.trim()} label="signFileKeystorePassword" initialValue={target?.signFileKeystorePassword} name='signFileKeystorePassword'>
                           <Input onChange={e => getVal({ keyname: 'signFileKeystorePassword', val: e.target.value })}></Input>
                         </Form.Item>
-                        <Form.Item label="signFileKeyPassword" initialValue={target?.signFileKeyPassword} name='signFileKeyPassword'>
+                        <Form.Item normalize={val => val.trim()} label="signFileKeyPassword" initialValue={target?.signFileKeyPassword} name='signFileKeyPassword'>
                           <Input onChange={e => getVal({ keyname: 'signFileKeyPassword', val: e.target.value })}></Input>
                         </Form.Item>
-                        <Form.Item label="signFileAlias" initialValue={target?.signFileAlias} name='signFileAlias'>
+                        <Form.Item normalize={val => val.trim()} label="signFileAlias" initialValue={target?.signFileAlias} name='signFileAlias'>
                           <Input onChange={e => getVal({ keyname: 'signFileAlias', val: e.target.value })}></Input>
                         </Form.Item>
                       </>

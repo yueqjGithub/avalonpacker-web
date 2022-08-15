@@ -7,9 +7,7 @@
     "build": "vite build",
     "dev": "vite build",
     "release": "vite build",
-    "release:mactest": "vite build -m mac",
-    "release:pubcn": "vite build -m pubcn",
-    "release:macpub": "vite build -m macpub",
+    "release:mac": "vite build -m mac",
     "serve": "vite preview"
   },
   "dependencies": {
