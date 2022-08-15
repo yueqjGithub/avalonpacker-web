@@ -1,6 +1,6 @@
 import React from 'react'
 import { State } from '../../store/state'
-import { Menu, MenuTheme } from 'antd'
+import { Menu } from 'antd'
 import { useHistory } from 'react-router-dom'
 import { didShowThisMenu } from '../../utils/utils'
 
@@ -43,7 +43,7 @@ const filterRoutes = (state:State, list:RouteSingle[], routeHandler:RouteMethod)
 }
 
 const CusMenu = (props: Props) => {
-  const menuTheme = import.meta.env.VITE_MENUTHEME as MenuTheme
+  const menuTheme = 'dark'
   const { children, state, routeConfig } = props
   const history = useHistory()
   const { routeList } = state
