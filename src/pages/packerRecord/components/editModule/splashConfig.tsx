@@ -81,7 +81,7 @@ const IconConfig = ({ target, state, submitVal }: Props) => {
         const list = [...filePath]
         list.splice(idx, 1)
         setPath(list)
-        submitVal({ keyname: 'iconUrl', val: list.join(',') })
+        submitVal({ keyname: 'splashUrl', val: list.join(',') })
       }
     })
   }
