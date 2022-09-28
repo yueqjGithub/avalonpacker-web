@@ -31,6 +31,7 @@ export type ApiIdForSDK =
     | 'envlist'
     | 'iamuserlist'
     | 'uploadipa'
+    | 'donwloadxcode'
 /** 通用api */
 export const apisForSDK: Apis<ApiIdForSDK> = [
   {
@@ -270,6 +271,16 @@ export const apisForSDK: Apis<ApiIdForSDK> = [
     id: 'uploadipa',
     url: '/packer/admin/history-record/upload',
     name: '上传ipa',
+    allowEmpty: true,
+    urlTranform: ({ url, state }) => {
+      const apiUrl = getApiUrl({ state })
+      return `${apiUrl}${url}`
+    }
+  },
+  {
+    id: 'donwloadxcode',
+    url: '/packer/admin/packerRecord/downloadXcode',
+    name: '下载xcode',
     allowEmpty: true,
     urlTranform: ({ url, state }) => {
       const apiUrl = getApiUrl({ state })

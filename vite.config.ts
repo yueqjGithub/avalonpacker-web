@@ -11,6 +11,7 @@ export default ({ mode }) => {
   return defineConfig({
     base: './',
     server: {
+      https: true,
       host: '10.172.188.117',
       port: 20001,
       proxy: {

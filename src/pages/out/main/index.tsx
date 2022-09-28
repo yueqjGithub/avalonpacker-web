@@ -105,6 +105,7 @@ const Main = () => {
   }, [currentGame])
   // 权限
   const permissionList = {
+    xcode: hasPermission({ state, moduleName: `${sysPrefix}工具`, action: '下载xcode' }), // Xcode
     upload: hasPermission({ state, moduleName: `${sysPrefix}工具`, action: '上传母包' }), // 上传母包
     do: hasPermission({ state, moduleName: `${sysPrefix}工具`, action: '分包' }), // 分包
     download: hasPermission({ state, moduleName: `${sysPrefix}工具`, action: '分包' }) // 下载
@@ -354,6 +355,42 @@ const Main = () => {
       setDownLoading(false)
     }
   }
+  // 下载xcode
+  const downloadXHandler = async (channelCode: string) => {
+    const requestData = {
+      appId: currentGame,
+      channel_code: channelCode
+    }
+    const channelTarget = channelList.find(item => item.id === channelCode)
+    const res = await httpApi({
+      apiId: 'donwloadxcode',
+      data: requestData,
+      state,
+      httpCustomConfig: {
+        responseType: 'blob'
+      }
+    }).request
+    if (res.data.type !== 'application/octet-stream') {
+      message.error(`${channelTarget?.channelName}下载失败`)
+    } else {
+      const blob = new Blob([res.data], { type: 'application/octet-stream' })
+      const fileName = `${channelTarget?.channelName}.zip`
+      const url = window.URL.createObjectURL(blob)
+      const link = document.createElement('a')
+      link.style.display = 'none'
+      link.href = url
+      link.setAttribute('download', fileName)
+      document.body.appendChild(link)
+      link.click()
+      document.body.removeChild(link)
+    }
+  }
+  const downloadXcode = async () => {
+    const rList = curChannel.map(v => downloadXHandler(v))
+    setDownLoading(true)
+    await Promise.all(rList)
+    setDownLoading(false)
+  }
   // 点击打开历史详情
   const [curHis, setHis] = useState<HistoryDataRow['id']>()
   const [showDetail, setShowDetail] = useState<boolean>(false)
@@ -458,6 +495,18 @@ const Main = () => {
               </Popover>
             )
           }
+          <PermissionHoc
+            permission={permissionList.xcode}
+            component={
+              <Button
+                icon={<i className='iconfont icon-download'></i>}
+                type='primary'
+                // disabled={packStatus !== 'success' && packStatus !== 'faild'}
+                loading={downLoading}
+                onClick={() => downloadXcode()}
+              >下载Xcode工程</Button>
+            }
+          ></PermissionHoc>
           <PermissionHoc
             permission={permissionList.do}
             component={
