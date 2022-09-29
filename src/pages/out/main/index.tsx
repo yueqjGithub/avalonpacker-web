@@ -501,7 +501,7 @@ const Main = () => {
             )
           }
           <PermissionHoc
-            permission={permissionList.xcode}
+            permission={permissionList.xcode && !!isMac}
             component={
               <Button
                 icon={<i className='iconfont icon-download'></i>}
