@@ -386,6 +386,10 @@ const Main = () => {
     }
   }
   const downloadXcode = async () => {
+    if (curChannel.length === 0) {
+      message.warning('当前选择的渠道为空，无法下载')
+      return false
+    }
     const rList = curChannel.map(v => downloadXHandler(v))
     setDownLoading(true)
     await Promise.all(rList)
@@ -501,7 +505,7 @@ const Main = () => {
               <Button
                 icon={<i className='iconfont icon-download'></i>}
                 type='primary'
-                // disabled={packStatus !== 'success' && packStatus !== 'faild'}
+                disabled={packStatus !== 'success' && packStatus !== 'faild'}
                 loading={downLoading}
                 onClick={() => downloadXcode()}
               >下载Xcode工程</Button>
