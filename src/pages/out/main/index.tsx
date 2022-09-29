@@ -368,7 +368,8 @@ const Main = () => {
       data: requestData,
       state,
       httpCustomConfig: {
-        responseType: 'blob'
+        responseType: 'blob',
+        timeout: 1000 * 60 * 10
       }
     }).request
     if (res.data.type !== 'application/octet-stream') {
