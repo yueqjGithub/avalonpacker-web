@@ -34,7 +34,7 @@ const Main = () => {
   const [curMotherPack, setMotherPack] = useState<CurrentMotherPack>()
   const [curChannel, setChannel] = useState<string[]>([])
   const [curConfig, setConfigs] = useState<string[]>([])
-
+  const [saveChannel, setSaveChannel] = useState<string[]>([])
   // 母包及渠道列表获取
   const [loading, setInnerLoading] = useState<boolean>(false)
   const [loadStatus, setInnerStatus] = useState<| 'resolve' | 'reject' | 'empty'>('empty')
@@ -313,9 +313,10 @@ const Main = () => {
         setReason(res.message)
       }
     } catch (e) {
-      console.error(e)
       setStatus('faild')
       setReason('程序出错')
+    } finally {
+      setSaveChannel([...curChannel])
     }
   }
   useEffect(() => {
@@ -386,11 +387,11 @@ const Main = () => {
     }
   }
   const downloadXcode = async () => {
-    if (curChannel.length === 0) {
+    if (saveChannel.length === 0) {
       message.warning('当前选择的渠道为空，无法下载')
       return false
     }
-    const rList = curChannel.map(v => downloadXHandler(v))
+    const rList = saveChannel.map(v => downloadXHandler(v))
     setDownLoading(true)
     await Promise.all(rList)
     setDownLoading(false)
