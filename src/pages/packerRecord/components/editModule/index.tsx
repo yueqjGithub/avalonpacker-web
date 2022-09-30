@@ -55,7 +55,10 @@ const EditModule = ({ target, initView, state, editSuccess, dispatch }: Props) =
         state,
         dispatch,
         force: true,
-        targetId: target?.id
+        targetId: target?.id,
+        httpCustomConfig: {
+          timeout: 1000 * 60 * 5
+        }
       })
     } catch {
       message.error('获取渠道版本出错')
