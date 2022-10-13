@@ -55,3 +55,10 @@ export type EnvDataRow = {
   avalonsdkUrl: string
   enable?: boolean
 }
+
+export type RecordPlugins = {
+  id?: string
+  recordId: string
+  pluginsId: string
+  pluginsVersion: string
+}

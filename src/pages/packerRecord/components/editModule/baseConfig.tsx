@@ -97,7 +97,7 @@ const BaseConfig = ({ target, state, submitSymbol, submitVal, clearCount, channe
           <Form.Item name='channelVersion' label='渠道版本' initialValue={target.channelVersion} rules={[{ required: true, message: '渠道版本必选' }]}>
             <Select>
               {
-                channelSourceList.map(item => <Select.Option value={item} key={item}>{item}</Select.Option>)
+                channelSourceList.sort((a, b) => b.localeCompare(a)).map(item => <Select.Option value={item} key={item}>{item}</Select.Option>)
               }
             </Select>
           </Form.Item>

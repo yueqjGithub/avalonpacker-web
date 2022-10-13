@@ -1,22 +1,24 @@
-import { Button, message, Switch, Tabs } from 'antd'
-import { getApiDataState } from 'avalon-iam-util-client'
+import { Button, message, Select, Spin, Switch, Tabs } from 'antd'
+import { getApiDataState, setApiDataState } from 'avalon-iam-util-client'
 import React, { useMemo, useState } from 'react'
 import { httpApi } from '../../../service/axios'
 import { State } from '../../../store/state'
 import { PluginsDataRow, PluginTypeItem } from '../../plugins/common'
-import { RecordDataRow } from '../common'
+import { RecordDataRow, RecordPlugins } from '../common'
 
 type Props = {
   state: State
   target: RecordDataRow | undefined
   editSuccess: Function
+  alreadyPlugins: RecordPlugins[]
+  dispatch: any
 }
 
-const PluginsSetting = ({ target, state, editSuccess }: Props) => {
+const PluginsSetting = ({ target, state, editSuccess, dispatch, alreadyPlugins }: Props) => {
   const { data = [] } = getApiDataState<PluginsDataRow[]>({ apiId: 'plugins', state })
   const { data: types = [] } = getApiDataState<PluginTypeItem[]>({ apiId: 'pluginstypes', state })
   const [cur, setCur] = useState<string>('full')
-  const [checkedList, setList] = useState<string[]>(() => target?.pluginsList?.split(',') || [])
+  const [checkedList, setList] = useState<RecordPlugins[]>(() => alreadyPlugins || [])
   const [loading, setLoading] = useState<boolean>(false)
   const dataList = useMemo(() => {
     return cur === 'full' ? data : data.filter(item => item.type === cur)
@@ -24,21 +26,42 @@ const PluginsSetting = ({ target, state, editSuccess }: Props) => {
   const changeSet = (id: string, val: boolean) => {
     const list = [...checkedList]
     if (val) {
-      list.push(id)
+      list.push({
+        pluginsId: id,
+        recordId: target?.id || '',
+        pluginsVersion: ''
+      })
     } else {
-      const idx = list.indexOf(id)
+      const target = list.find(item => item.pluginsId === id)
+      const idx = list.indexOf(target!)
       list.splice(idx, 1)
     }
     setList(list)
   }
+  const setVersion = (id, val) => {
+    const list = [...checkedList]
+    // const target = list.find(item => item.pluginsId === id)
+    list.forEach(item => {
+      if (item.pluginsId === id) {
+        item.pluginsVersion = val
+      }
+    })
+    setList(list)
+  }
   /** 提交插件设置 */
   const submitHandler = async () => {
-    const requestData = {
-      recordId: target?.id,
-      pluginIds: checkedList.join(',')
-    }
     setLoading(true)
     try {
+      checkedList.forEach(item => {
+        if (!item.pluginsVersion) {
+          const pName = data.find(p => p.id === item.pluginsId)?.name
+          throw new Error(`插件${pName}未设置版本`)
+        }
+      })
+      const requestData = {
+        recordId: target?.id,
+        pluginIds: checkedList
+      }
       const { data: res } = await httpApi({
         apiId: 'setplugins',
         state,
@@ -52,10 +75,36 @@ const PluginsSetting = ({ target, state, editSuccess }: Props) => {
         message.error(res.message || res.err_message)
       }
     } catch (e) {
-      message.error('程序出错')
+      message.error((e as Error).message || '程序出错')
     } finally {
       setLoading(false)
     }
+  }
+  // 获取版本
+  const queryVersion = async (id: string) => {
+    const targetPlugins = data.find(item => item.id === id)
+    if (targetPlugins?.versions!.length! > 0) {
+      return
+    }
+    data.forEach(item => {
+      if (item.id === id) {
+        item.fetch = true
+      }
+    })
+    setApiDataState({ apiId: 'plugins', dispatch, data })
+    const { data: res } = await httpApi({
+      apiId: 'getchannelsource',
+      state,
+      method: 'GET',
+      data: { id, type: '2' }
+    }).request
+    data.forEach(item => {
+      if (item.id === id) {
+        item.versions = [...res.data]
+        item.fetch = false
+      }
+    })
+    setApiDataState({ apiId: 'plugins', dispatch, data })
   }
   return (
     <div className='full-width'>
@@ -75,7 +124,20 @@ const PluginsSetting = ({ target, state, editSuccess }: Props) => {
                     <h4 className='font-bold'>{item.name}</h4>
                     <span className='font-12 text-grey'>{item.description}</span>
                   </div>
-                  <Switch defaultChecked={checkedList.includes(item.id!)} onChange={val => changeSet(item.id!, val)}></Switch>
+                  <div className='flex-row flex-jst-start flex-ali-center'>
+                    {
+                      checkedList.find(j => j.pluginsId === item.id) !== undefined && (
+                        <Select style={{ width: 120, marginRight: 10 }} placeholder='版本选择'
+                        options={item.versions?.map(j => ({ label: j, value: j })) || []}
+                        onDropdownVisibleChange={val => val && queryVersion(item.id!)}
+                        notFoundContent={item.fetch ? <Spin size="small" /> : null}
+                        onSelect={val => setVersion(item.id!, val)}
+                        defaultValue={checkedList.find(j => j.pluginsId === item.id)?.pluginsVersion}
+                        ></Select>
+                      )
+                    }
+                    <Switch defaultChecked={checkedList.find(j => j.pluginsId === item.id) !== undefined} onChange={val => changeSet(item.id!, val)}></Switch>
+                  </div>
                 </div>
               )
             })

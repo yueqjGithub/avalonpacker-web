@@ -32,6 +32,7 @@ export type ApiIdForSDK =
     | 'iamuserlist'
     | 'uploadipa'
     | 'donwloadxcode'
+    | 'getpluginsbyrecords'
 /** 通用api */
 export const apisForSDK: Apis<ApiIdForSDK> = [
   {
@@ -217,7 +218,7 @@ export const apisForSDK: Apis<ApiIdForSDK> = [
   },
   {
     id: 'getchannelsource',
-    url: '/packer/admin/packerRecord/doChannelVersions',
+    url: '/packer/admin/packerRecord/queryVersion',
     name: '获取渠道版本',
     allowEmpty: true,
     urlTranform: ({ url, state }) => {
@@ -281,6 +282,16 @@ export const apisForSDK: Apis<ApiIdForSDK> = [
     id: 'donwloadxcode',
     url: '/packer/admin/packerRecord/downloadXcode',
     name: '下载xcode',
+    allowEmpty: true,
+    urlTranform: ({ url, state }) => {
+      const apiUrl = getApiUrl({ state })
+      return `${apiUrl}${url}`
+    }
+  },
+  {
+    id: 'getpluginsbyrecords',
+    url: '/packer/admin/packerRecord/getPlugins',
+    name: '获取插件列表',
     allowEmpty: true,
     urlTranform: ({ url, state }) => {
       const apiUrl = getApiUrl({ state })

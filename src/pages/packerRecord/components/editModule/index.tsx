@@ -1,7 +1,7 @@
 import { Button, Divider, Form, Input, message, notification, Select, Spin, Tabs } from 'antd'
 import React, { ChangeEvent, MutableRefObject, useEffect, useMemo, useRef, useState } from 'react'
 import { State } from '../../../../store/state'
-import { EnvDataRow, RecordDataRow } from '../../common'
+import { EnvDataRow, RecordDataRow, RecordPlugins } from '../../common'
 import BaseConfig from './baseConfig'
 import PluginsConfig from './pluginConfig'
 import IconConfig from './iconConfig'
@@ -17,6 +17,7 @@ type Props = {
   state: State
   editSuccess: Function
   dispatch: any
+  alreadyPlugins: RecordPlugins[]
 }
 
 // type TabItem = {
@@ -25,11 +26,9 @@ type Props = {
 //   component: JSX.Element | Element
 // }
 
-type ChannelVersionData = {
-  versions: string[]
-}
+type ChannelVersionData = string[]
 
-const EditModule = ({ target, initView, state, editSuccess, dispatch }: Props) => {
+const EditModule = ({ target, initView, state, editSuccess, dispatch, alreadyPlugins }: Props) => {
   const { isMac } = state
   const targetRef = useRef({ ...target })
   const [otherFileSave, setSave] = useState<string[]>([])
@@ -52,10 +51,13 @@ const EditModule = ({ target, initView, state, editSuccess, dispatch }: Props) =
     try {
       await httpWithStore({
         apiId: 'getchannelsource',
+        data: {
+          type: '1',
+          id: target?.channelId
+        },
         state,
         dispatch,
         force: true,
-        targetId: target?.id,
         httpCustomConfig: {
           timeout: 1000 * 60 * 5
         }
@@ -364,10 +366,10 @@ const EditModule = ({ target, initView, state, editSuccess, dispatch }: Props) =
               </>
               </Tabs.TabPane>
               <Tabs.TabPane forceRender key='2' tab='渠道参数'>
-                <BaseConfig channelSourceList={data?.versions || []} state={state} target={target!} submitSymbol={submitSymbol} submitVal={getVal} clearCount={() => { submitCount.current = 0 }}/>
+                <BaseConfig channelSourceList={data || []} state={state} target={target!} submitSymbol={submitSymbol} submitVal={getVal} clearCount={() => { submitCount.current = 0 }}/>
               </Tabs.TabPane>
               <Tabs.TabPane forceRender key='3' tab='插件参数'>
-                <PluginsConfig state={state} target={target!} submitSymbol={submitSymbol} submitVal={getVal} clearCount={() => { submitCount.current = 0 }}/>
+                <PluginsConfig alreadyPlugins={alreadyPlugins} state={state} target={target!} submitSymbol={submitSymbol} submitVal={getVal} clearCount={() => { submitCount.current = 0 }}/>
               </Tabs.TabPane>
               <Tabs.TabPane forceRender key='4' tab='ICON'>
                 <IconConfig target={target} state={state} submitVal={getVal} />

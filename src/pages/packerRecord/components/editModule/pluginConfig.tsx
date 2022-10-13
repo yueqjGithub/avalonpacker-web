@@ -3,7 +3,7 @@ import { getApiDataState } from 'avalon-iam-util-client'
 import React, { useEffect, useState } from 'react'
 import { State } from '../../../../store/state'
 import { PluginsDataRow } from '../../../plugins/common'
-import { RecordDataRow } from '../../common'
+import { RecordDataRow, RecordPlugins } from '../../common'
 
 type Props = {
   state: State
@@ -11,6 +11,7 @@ type Props = {
   submitSymbol: boolean | undefined
   submitVal: Function
   clearCount: Function
+  alreadyPlugins: RecordPlugins[]
 }
 
 const dealOptions = (str: string | undefined) => {
@@ -26,9 +27,9 @@ const dealOptions = (str: string | undefined) => {
   }
 }
 
-const PluginsConfig = ({ target, state, submitSymbol, submitVal, clearCount }: Props) => {
+const PluginsConfig = ({ target, state, submitSymbol, submitVal, clearCount, alreadyPlugins }: Props) => {
   const { data: pluginList = [] } = getApiDataState<PluginsDataRow[]>({ apiId: 'plugins', state })
-  const targetList = target.pluginsList?.split(',') || []
+  const targetList = alreadyPlugins.map(item => item.pluginsId) || []
   const [optionsList, setOptions] = useState<any[]>([])
   const [form] = Form.useForm()
   const validForm = async () => {

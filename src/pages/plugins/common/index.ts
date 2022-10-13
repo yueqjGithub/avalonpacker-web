@@ -7,6 +7,8 @@ export type PluginsDataRow = {
   serverConfigDoc: string
   extra: string
   description: string
+  versions?: string[]
+  fetch?: boolean
 }
 
 export type PluginTypeItem = {

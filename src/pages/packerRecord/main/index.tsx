@@ -7,7 +7,7 @@ import { ApiIdForSDK } from '../../../service/urls'
 import { State } from '../../../store/state'
 import { hasPermission } from '../../../utils/utils'
 import { ChannelDataRow } from '../../channel/common'
-import { RecordDataRow } from '../common'
+import { RecordDataRow, RecordPlugins } from '../common'
 import SetChannel from '../components/setChannel'
 import EditModule from '../components/editModule'
 import PluginsSetting from '../components/setPlugins'
@@ -47,6 +47,7 @@ const Main = ({ state, dispatch }: Props) => {
   }, [channelList, data])
   // 当前选择的渠道
   const [currentChannel, setCurrentChannel] = useState<string[]>([])
+  const [curRecordPlugins, setCurRecordPlugins] = useState<RecordPlugins[]>([])
   // 根据选择的渠道过滤出列表展示
   const filterDatas = useMemo(() => {
     const result = data.filter(item => currentChannel.includes(item.channelId))
@@ -66,7 +67,36 @@ const Main = ({ state, dispatch }: Props) => {
       }
     })
     return result
-  }, [currentChannel, data])
+  }, [currentChannel])
+  // TODO 根据配置ids获取插件集合
+  const [pluginLoading, setPluginLoading] = useState<boolean>(false)
+  const queryPlugins = async () => {
+    try {
+      setPluginLoading(true)
+      const { data: res } = await httpApi({
+        method: 'POST',
+        apiId: 'getpluginsbyrecords',
+        state,
+        data: { ids: filterDatas.map(item => item.id) }
+      }).request
+      if (res.status === 0) {
+        setCurRecordPlugins(res.data)
+      } else {
+        message.error(res.message)
+      }
+    } catch {
+      message.error('获取插件关联关系出错')
+    } finally {
+      setPluginLoading(false)
+    }
+  }
+  useEffect(() => {
+    if (filterDatas.length > 0) {
+      queryPlugins()
+    } else {
+      setCurRecordPlugins([])
+    }
+  }, [filterDatas])
   // const { data: mediaList = [] } = getApiDataState<MediaFlagDataRow[]>({ apiId: 'mediaflag', state })
   const [initView, setInitView] = useState<string>()
   const [showChannel, setShowChannel] = useState<boolean>(false)
@@ -150,7 +180,7 @@ const Main = ({ state, dispatch }: Props) => {
     <div className='full-width'>
       <ATable<TableDataRow>
         dataSource={filterDatas}
-        loading={loading}
+        loading={loading || pluginLoading}
         columns={[
           {
             dataIndex: 'channelId',
@@ -166,14 +196,13 @@ const Main = ({ state, dispatch }: Props) => {
             filterDropdown: false
           },
           {
-            dataIndex: 'pluginsList',
             title: '插件',
             sorter: undefined,
             filterDropdown: false,
             render: (val, record) => {
-              const strs = val ? val.split(',') : []
+              const strs = curRecordPlugins.filter(item => item.recordId === record.id).length
               return (
-                <Badge className='cursor-pointer' count={strs.length}>
+                <Badge className='cursor-pointer' count={strs}>
                   <div onClick={() => {
                     if (permissionList.setPlugins) {
                       setTarget(record)
@@ -337,10 +366,10 @@ const Main = ({ state, dispatch }: Props) => {
         maskClosable={false}
         onCancel={() => setEdit(false)}
       >
-        <EditModule dispatch={dispatch} editSuccess={editSuccess} target={target} initView={initView} state={state}></EditModule>
+        <EditModule alreadyPlugins={curRecordPlugins} dispatch={dispatch} editSuccess={editSuccess} target={target} initView={initView} state={state}></EditModule>
       </Modal>
       <Modal title='插件配置' footer={false} destroyOnClose width={'75vw'} visible={showPluginSetting} maskClosable={false} onCancel={() => setShowPlugins(false)}>
-        <PluginsSetting target={target} state={state} editSuccess={editSuccess} />
+        <PluginsSetting alreadyPlugins={curRecordPlugins} dispatch={dispatch} target={target} state={state} editSuccess={editSuccess} />
       </Modal>
       <Modal title='媒体标识配置' footer={false} destroyOnClose width={'75vw'} visible={showMediaSetting} maskClosable={false} onCancel={() => setShowMedia(false)}>
         <MediaSetting target={target} state={state} editSuccess={editSuccess} />

@@ -60,6 +60,16 @@ const Channel = ({ state, dispatch }: Props) => {
               dependPath: '/packer/admin/packerRecord',
               dependAction: encodeURIComponent('配置列表')
             }
+          },
+          responseTransform: (data) => {
+            if (data.status === 0) {
+              const list = data.data
+              list.forEach(item => {
+                item.versions = []
+              })
+              data.data = list
+            }
+            return data
           }
         }
       ]}
