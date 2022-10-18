@@ -126,7 +126,7 @@ const PluginsSetting = ({ target, state, editSuccess, dispatch, alreadyPlugins }
                   </div>
                   <div className='flex-row flex-jst-start flex-ali-center'>
                     {
-                      checkedList.find(j => j.pluginsId === item.id) !== undefined && (
+                      checkedList.find(j => j.pluginsId === item.id) && (
                         <Select style={{ width: 120, marginRight: 10 }} placeholder='版本选择'
                         options={item.versions?.map(j => ({ label: j, value: j })) || []}
                         onDropdownVisibleChange={val => val && queryVersion(item.id!)}
