@@ -70,3 +70,10 @@ ul.ant-menu.ant-menu-root.ant-menu-vertical.ant-menu-dark.ant-menu-inline-collap
   top: 0;
   left: 0;
 }
+
+// 右对齐select
+.text-align-right-select {
+  .ant-select-item-option-content {
+    text-align: right;
+  }
+}

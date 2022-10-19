@@ -366,10 +366,10 @@ const Main = ({ state, dispatch }: Props) => {
         maskClosable={false}
         onCancel={() => setEdit(false)}
       >
-        <EditModule alreadyPlugins={curRecordPlugins} dispatch={dispatch} editSuccess={editSuccess} target={target} initView={initView} state={state}></EditModule>
+        <EditModule alreadyPlugins={curRecordPlugins.filter(item => item.recordId === target?.id)} dispatch={dispatch} editSuccess={editSuccess} target={target} initView={initView} state={state}></EditModule>
       </Modal>
       <Modal title='插件配置' footer={false} destroyOnClose width={'75vw'} visible={showPluginSetting} maskClosable={false} onCancel={() => setShowPlugins(false)}>
-        <PluginsSetting alreadyPlugins={curRecordPlugins} dispatch={dispatch} target={target} state={state} editSuccess={editSuccess} />
+        <PluginsSetting alreadyPlugins={curRecordPlugins.filter(item => item.recordId === target?.id)} dispatch={dispatch} target={target} state={state} editSuccess={editSuccess} />
       </Modal>
       <Modal title='媒体标识配置' footer={false} destroyOnClose width={'75vw'} visible={showMediaSetting} maskClosable={false} onCancel={() => setShowMedia(false)}>
         <MediaSetting target={target} state={state} editSuccess={editSuccess} />

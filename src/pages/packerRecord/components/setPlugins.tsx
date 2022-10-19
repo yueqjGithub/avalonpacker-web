@@ -18,26 +18,12 @@ const PluginsSetting = ({ target, state, editSuccess, dispatch, alreadyPlugins }
   const { data = [] } = getApiDataState<PluginsDataRow[]>({ apiId: 'plugins', state })
   const { data: types = [] } = getApiDataState<PluginTypeItem[]>({ apiId: 'pluginstypes', state })
   const [cur, setCur] = useState<string>('full')
-  const [checkedList, setList] = useState<RecordPlugins[]>(() => alreadyPlugins || [])
+  const [checkedList, setList] = useState<RecordPlugins[]>(() => alreadyPlugins.filter(item => item.recordId === target?.id) || [])
   const [loading, setLoading] = useState<boolean>(false)
   const dataList = useMemo(() => {
     return cur === 'full' ? data : data.filter(item => item.type === cur)
   }, [data, cur])
-  const changeSet = (id: string, val: boolean) => {
-    const list = [...checkedList]
-    if (val) {
-      list.push({
-        pluginsId: id,
-        recordId: target?.id || '',
-        pluginsVersion: ''
-      })
-    } else {
-      const target = list.find(item => item.pluginsId === id)
-      const idx = list.indexOf(target!)
-      list.splice(idx, 1)
-    }
-    setList(list)
-  }
+
   const setVersion = (id, val) => {
     const list = [...checkedList]
     // const target = list.find(item => item.pluginsId === id)
@@ -100,11 +86,32 @@ const PluginsSetting = ({ target, state, editSuccess, dispatch, alreadyPlugins }
     }).request
     data.forEach(item => {
       if (item.id === id) {
-        item.versions = [...res.data]
+        const result: string[] = res.data.sort((a: string, b: string) => b.localeCompare(a))
+        item.versions = result
         item.fetch = false
       }
     })
     setApiDataState({ apiId: 'plugins', dispatch, data })
+  }
+  const changeSet = async (id: string, val: boolean) => {
+    const list = [...checkedList]
+    if (val) {
+      try {
+        await queryVersion(id)
+        list.push({
+          pluginsId: id,
+          recordId: target?.id || '',
+          pluginsVersion: dataList.find(item => item.id === id)?.versions![0] || ''
+        })
+      } catch {
+        message.error('获取版本失败')
+      }
+    } else {
+      const target = list.find(item => item.pluginsId === id)
+      const idx = list.indexOf(target!)
+      list.splice(idx, 1)
+    }
+    setList(list)
   }
   return (
     <div className='full-width'>
@@ -127,16 +134,19 @@ const PluginsSetting = ({ target, state, editSuccess, dispatch, alreadyPlugins }
                   <div className='flex-row flex-jst-start flex-ali-center'>
                     {
                       checkedList.find(j => j.pluginsId === item.id) && (
-                        <Select style={{ width: 120, marginRight: 10 }} placeholder='版本选择'
+                        <Select style={{ width: 120, marginRight: 10, textAlign: 'right' }} placeholder='版本选择'
                         options={item.versions?.map(j => ({ label: j, value: j })) || []}
-                        onDropdownVisibleChange={val => val && queryVersion(item.id!)}
+                        // onDropdownVisibleChange={val => val && queryVersion(item.id!)}
                         notFoundContent={item.fetch ? <Spin size="small" /> : null}
                         onSelect={val => setVersion(item.id!, val)}
                         defaultValue={checkedList.find(j => j.pluginsId === item.id)?.pluginsVersion}
+                        dropdownStyle={{
+                          textAlign: 'right'
+                        }}
                         ></Select>
                       )
                     }
-                    <Switch defaultChecked={checkedList.find(j => j.pluginsId === item.id) !== undefined} onChange={val => changeSet(item.id!, val)}></Switch>
+                    <Switch loading={item.fetch} checked={checkedList.find(j => j.pluginsId === item.id) !== undefined} onClick={val => changeSet(item.id!, val)}></Switch>
                   </div>
                 </div>
               )
