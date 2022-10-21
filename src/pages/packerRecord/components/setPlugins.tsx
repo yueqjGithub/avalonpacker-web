@@ -122,7 +122,7 @@ const PluginsSetting = ({ target, state, editSuccess, dispatch, alreadyPlugins }
             types.map(item => <Tabs.TabPane key={item.type} tab={item.typeName}></Tabs.TabPane>)
           }
         </Tabs>
-        <div className='flex-1 pa-row-md scroll-bar' style={{ height: '65vh' }}>
+        <div className='flex-1 pa-row-md scroll-bar' id='selectScrollContainer' style={{ height: '65vh', position: 'relative' }}>
           {
             dataList.map(item => {
               return (
@@ -143,6 +143,7 @@ const PluginsSetting = ({ target, state, editSuccess, dispatch, alreadyPlugins }
                         dropdownStyle={{
                           textAlign: 'right'
                         }}
+                        getPopupContainer={() => document.querySelector('#selectScrollContainer')!}
                         ></Select>
                       )
                     }
