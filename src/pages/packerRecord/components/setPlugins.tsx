@@ -134,15 +134,12 @@ const PluginsSetting = ({ target, state, editSuccess, dispatch, alreadyPlugins }
                   <div className='flex-row flex-jst-start flex-ali-center'>
                     {
                       checkedList.find(j => j.pluginsId === item.id) && (
-                        <Select style={{ width: 120, marginRight: 10, textAlign: 'right' }} placeholder='版本选择'
+                        <Select style={{ width: 120, marginRight: 10 }} placeholder='版本选择'
                         options={item.versions?.map(j => ({ label: j, value: j })) || []}
                         // onDropdownVisibleChange={val => val && queryVersion(item.id!)}
                         notFoundContent={item.fetch ? <Spin size="small" /> : null}
                         onSelect={val => setVersion(item.id!, val)}
                         defaultValue={checkedList.find(j => j.pluginsId === item.id)?.pluginsVersion}
-                        dropdownStyle={{
-                          textAlign: 'right'
-                        }}
                         getPopupContainer={() => document.querySelector('#selectScrollContainer')!}
                         ></Select>
                       )
