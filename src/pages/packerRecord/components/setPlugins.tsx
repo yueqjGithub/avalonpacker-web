@@ -3,6 +3,7 @@ import { getApiDataState, setApiDataState } from 'avalon-iam-util-client'
 import React, { useMemo, useState } from 'react'
 import { httpApi } from '../../../service/axios'
 import { State } from '../../../store/state'
+import { _deepClone } from '../../../utils/utils'
 import { PluginsDataRow, PluginTypeItem } from '../../plugins/common'
 import { RecordDataRow, RecordPlugins } from '../common'
 
@@ -25,7 +26,7 @@ const PluginsSetting = ({ target, state, editSuccess, dispatch, alreadyPlugins }
   }, [data, cur])
 
   const setVersion = (id, val) => {
-    const list = [...checkedList]
+    const list = _deepClone(checkedList)
     // const target = list.find(item => item.pluginsId === id)
     list.forEach(item => {
       if (item.pluginsId === id) {

@@ -136,3 +136,10 @@ export const copyHandler = (copyContent) => {
     }
   }
 }
+
+/** deeoClone */
+export const _deepClone = (obj) => {
+  const _obj = JSON.stringify(obj)
+  const objClone = JSON.parse(_obj)
+  return objClone
+}
