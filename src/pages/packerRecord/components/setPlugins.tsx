@@ -136,7 +136,11 @@ const PluginsSetting = ({ target, state, editSuccess, dispatch, alreadyPlugins }
                       checkedList.find(j => j.pluginsId === item.id) && (
                         <Select style={{ width: 120, marginRight: 10 }} placeholder='版本选择'
                         options={item.versions?.map(j => ({ label: j, value: j })) || []}
-                        // onDropdownVisibleChange={val => val && queryVersion(item.id!)}
+                        onDropdownVisibleChange={val => {
+                          if (val && item.versions?.length === 0) {
+                            queryVersion(item.id!)
+                          }
+                        }}
                         notFoundContent={item.fetch ? <Spin size="small" /> : null}
                         onSelect={val => setVersion(item.id!, val)}
                         defaultValue={checkedList.find(j => j.pluginsId === item.id)?.pluginsVersion}
