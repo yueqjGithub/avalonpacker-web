@@ -2,25 +2,34 @@ import { AxiosRequestConfig } from 'axios'
 import { httpApi } from '../service/axios'
 import { ApiIdForSDK } from '../service/urls'
 import { State } from '../store/state'
-
+import SparkMD5 from 'spark-md5'
 // 分割文件
-type BufferItem = { file: ArrayBuffer | string | undefined, hash: string }
+export type BufferItem = { file: ArrayBuffer | string | undefined, hash: string, idx: number, fileName: string }
 
-const splitFile: (file: File, size: number) => Promise<any[]> = (file, size = 5) => {
+/**
+ * 切割文件
+ * @param file // 目标文件
+ * @param size // 切割大小，单位：mb
+ * @returns BufferItem[]
+ */
+const splitFile: (file: File, size: number) => Promise<BufferItem[]> = (file, size = 5) => {
   // 生成标识-小体量并发小，可以使用如下方法生成，并发高请换成md5生成
-  const cusHash = Math.random().toString(16).substring(2)
   return new Promise((resolve, reject) => {
     const fr = new FileReader()
-
     fr.readAsBinaryString(file)
 
     fr.onload = (ev) => {
+      const spark = new SparkMD5.ArrayBuffer()
       const bufferAll = ev.target?.result
+      spark.append(bufferAll as ArrayBuffer)
+      const cusHash = spark.end()
       const bufferArr: BufferItem[] = []
       let cur = 0
+      let idx = 0
       while (cur < file.size) {
-        bufferArr.push({ file: bufferAll?.slice(cur, cur + size * 1024 * 1024), hash: cusHash })
+        bufferArr.push({ file: (bufferAll as ArrayBuffer)?.slice(cur, cur + size * 1024 * 1024), hash: cusHash, idx, fileName: file.name })
         cur += size * 1024 * 1024
+        idx++
       }
       resolve(bufferArr)
     }

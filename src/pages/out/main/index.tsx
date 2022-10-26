@@ -6,6 +6,7 @@ import InnerStatusPage from '../../../components/innerStatusPage'
 import { PermissionHoc } from '../../../components/permissionHOC'
 import { CancelPayload, httpApi, httpWithStore } from '../../../service/axios'
 import { Context } from '../../../store/context'
+import { splitFile } from '../../../utils/spliceFileUpload'
 import { hasPermission } from '../../../utils/utils'
 import { ChannelDataRow } from '../../channel/common'
 import { RecordDataRow } from '../../packerRecord/common'
@@ -147,9 +148,9 @@ const Main = () => {
     }
   }
   const uploadHandler = async (e: ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files ? e.target.files[0] : ''
+    const file = e.target.files ? e.target.files[0] : null
     if (!file) {
-      message.error('获取上传信息失败')
+      message.error('请选择文件')
       return false
     }
     const fileType = file.name.split('.').pop()
@@ -157,36 +158,50 @@ const Main = () => {
       message.error('仅支持apk/aab上传')
       return false
     }
-
-    const fm = new FormData()
-    fm.append('file', file)
-    fm.append('type', '3')
-    fm.append('appId', gameList.find(item => item.id === currentGame)?.appId || '')
-    setLoading(true)
-    try {
-      const { data: res } = await httpApi({
-        apiId: 'uploadimg',
-        state,
-        method: 'POST',
-        timeout: 120000,
-        data: fm
-      }).request
-      if (res.status === 0) {
-        message.success('上传成功')
-        await queryMotherList()
-        setMotherPack(['uploadNames', file.name])
-      } else {
-        message.error(res.error_msg || res.message)
-      }
-    } catch (e) {
-      message.error('上传出错')
-    } finally {
-      if (uploadRef.current) {
-        uploadRef.current.value = ''
-      }
-      setLoading(false)
-    }
+    const bArr = await splitFile(file, 3)
+    // 投石问路
   }
+  // const uploadHandler = async (e: ChangeEvent<HTMLInputElement>) => {
+  //   const file = e.target.files ? e.target.files[0] : ''
+  //   if (!file) {
+  //     message.error('获取上传信息失败')
+  //     return false
+  //   }
+  //   const fileType = file.name.split('.').pop()
+  //   if (fileType !== 'apk' && fileType !== 'aab' && !isMac) {
+  //     message.error('仅支持apk/aab上传')
+  //     return false
+  //   }
+
+  //   const fm = new FormData()
+  //   fm.append('file', file)
+  //   fm.append('type', '3')
+  //   fm.append('appId', gameList.find(item => item.id === currentGame)?.appId || '')
+  //   setLoading(true)
+  //   try {
+  //     const { data: res } = await httpApi({
+  //       apiId: 'uploadimg',
+  //       state,
+  //       method: 'POST',
+  //       timeout: 120000,
+  //       data: fm
+  //     }).request
+  //     if (res.status === 0) {
+  //       message.success('上传成功')
+  //       await queryMotherList()
+  //       setMotherPack(['uploadNames', file.name])
+  //     } else {
+  //       message.error(res.error_msg || res.message)
+  //     }
+  //   } catch (e) {
+  //     message.error('上传出错')
+  //   } finally {
+  //     if (uploadRef.current) {
+  //       uploadRef.current.value = ''
+  //     }
+  //     setLoading(false)
+  //   }
+  // }
 
   // 渠道
   const { data: channelListAll = [] } = getApiDataState<ChannelDataRow[]>({ apiId: 'channel', state })
