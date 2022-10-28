@@ -33,6 +33,7 @@ export type ApiIdForSDK =
     | 'uploadipa'
     | 'donwloadxcode'
     | 'getpluginsbyrecords'
+    | 'pieceupload'
 /** 通用api */
 export const apisForSDK: Apis<ApiIdForSDK> = [
   {
@@ -292,6 +293,16 @@ export const apisForSDK: Apis<ApiIdForSDK> = [
     id: 'getpluginsbyrecords',
     url: '/packer/admin/packerRecord/getPlugins',
     name: '获取插件列表',
+    allowEmpty: true,
+    urlTranform: ({ url, state }) => {
+      const apiUrl = getApiUrl({ state })
+      return `${apiUrl}${url}`
+    }
+  },
+  {
+    id: 'pieceupload',
+    url: '/packer/file/uploadSource',
+    name: '分片上传',
     allowEmpty: true,
     urlTranform: ({ url, state }) => {
       const apiUrl = getApiUrl({ state })

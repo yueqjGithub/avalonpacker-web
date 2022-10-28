@@ -6,7 +6,7 @@ import InnerStatusPage from '../../../components/innerStatusPage'
 import { PermissionHoc } from '../../../components/permissionHOC'
 import { CancelPayload, httpApi, httpWithStore } from '../../../service/axios'
 import { Context } from '../../../store/context'
-import { splitFile } from '../../../utils/spliceFileUpload'
+import { BufferItem, splitFile } from '../../../utils/spliceFileUpload'
 import { hasPermission } from '../../../utils/utils'
 import { ChannelDataRow } from '../../channel/common'
 import { RecordDataRow } from '../../packerRecord/common'
@@ -21,6 +21,22 @@ type ReasonType = {
   configName: string,
   reason: string
 }[] | string
+
+// type SinglePieceReq = {
+//   appId: string
+//   length: number
+//   file: Blob
+//   idx: number
+//   md5: string
+//   fileName: string
+//   type: number
+// }
+
+// type SinglePieceRes = {
+//   already: number[]
+//   complete: boolean
+//   success: boolean
+// }
 
 const Main = () => {
   const timeOutRef = useRef<number>(-1)
@@ -147,6 +163,32 @@ const Main = () => {
       message.error('程序出错：获取母包列表失败')
     }
   }
+
+  const uploadPiece = async (list: BufferItem[], length: number) => {
+    let cur = 0
+    while (cur < list.length) {
+      const rqList = list.slice(cur, cur + 5)
+      const pieceResList = await Promise.allSettled(rqList.map(v => {
+        const fm = new FormData()
+        fm.append('file', v.file)
+        fm.append('appId', currentGame)
+        fm.append('fileName', v.fileName)
+        fm.append('length', String(length))
+        fm.append('idx', String(v.idx))
+        fm.append('md5', v.hash)
+        fm.append('type', '1')
+        return httpApi({
+          apiId: 'pieceupload',
+          state,
+          method: 'POST',
+          timeout: 120000,
+          data: fm
+        }).request
+      }))
+      console.log(pieceResList)
+      cur += 5
+    }
+  }
   const uploadHandler = async (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files ? e.target.files[0] : null
     if (!file) {
@@ -158,8 +200,37 @@ const Main = () => {
       message.error('仅支持apk/aab上传')
       return false
     }
-    const bArr = await splitFile(file, 3)
+    const bArr = await splitFile(file, 10)
     // 投石问路
+    const fir = bArr[0]
+    const firFm = new FormData()
+    firFm.append('file', fir.file)
+    firFm.append('idx', fir.idx.toString())
+    firFm.append('length', bArr.length.toString())
+    firFm.append('md5', fir.hash)
+    firFm.append('fileName', fir.fileName)
+    firFm.append('type', '1')
+    firFm.append('appId', currentGame)
+    const { data: res } = await httpApi({
+      apiId: 'pieceupload',
+      state,
+      method: 'POST',
+      timeout: 120000,
+      data: firFm
+    }).request
+    if (res.status === 0) {
+      const { already } = res.data
+      if (res.data.complete) {
+        // 之前已上传成功
+        message.success('上传成功')
+      } else {
+        const needUploadIdxs = bArr.filter(v => !already.includes(v.idx))
+        // 走完人生路
+        needUploadIdxs.length > 0 && uploadPiece(needUploadIdxs, bArr.length)
+      }
+    } else {
+      message.error(res.message)
+    }
   }
   // const uploadHandler = async (e: ChangeEvent<HTMLInputElement>) => {
   //   const file = e.target.files ? e.target.files[0] : ''
