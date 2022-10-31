@@ -12,7 +12,6 @@ import { ChannelDataRow } from '../../channel/common'
 import { RecordDataRow } from '../../packerRecord/common'
 import { HistoryDataRow } from '../../packHistory/common'
 import Detail from '../../packHistory/detail'
-import { AppDataRow } from '../../setgame/common'
 import { CurrentMotherPack, HistoryDetailVo, MotherPackageResponse } from '../common'
 import styles from '../common/styles.module.scss'
 import DownloadModal from '../component/download'
@@ -22,22 +21,6 @@ type ReasonType = {
   reason: string
 }[] | string
 
-// type SinglePieceReq = {
-//   appId: string
-//   length: number
-//   file: Blob
-//   idx: number
-//   md5: string
-//   fileName: string
-//   type: number
-// }
-
-// type SinglePieceRes = {
-//   already: number[]
-//   complete: boolean
-//   success: boolean
-// }
-
 const Main = () => {
   const timeOutRef = useRef<number>(-1)
   const { state, dispatch } = useContext(Context)
@@ -46,7 +29,7 @@ const Main = () => {
   // iam
   const { data: iamusers = [] } = getApiDataState<IamUserType[]>({ apiId: 'iamuserlist', state })
   // appList
-  const { data: gameList = [] } = getApiDataState<AppDataRow[]>({ apiId: 'gamelist', state })
+  // const { data: gameList = [] } = getApiDataState<AppDataRow[]>({ apiId: 'gamelist', state })
 
   const [curMotherPack, setMotherPack] = useState<CurrentMotherPack>()
   const [curChannel, setChannel] = useState<string[]>([])
@@ -163,9 +146,10 @@ const Main = () => {
       message.error('程序出错：获取母包列表失败')
     }
   }
-
+  const degRef = useRef<number>(0)
   const uploadPiece = async (list: BufferItem[], length: number) => {
     let cur = 0
+    const failList: any = []
     while (cur < list.length) {
       const rqList = list.slice(cur, cur + 5)
       const pieceResList = await Promise.allSettled(rqList.map(v => {
@@ -185,9 +169,11 @@ const Main = () => {
           data: fm
         }).request
       }))
-      console.log(pieceResList)
+      const fail = pieceResList.filter(v => v.status === 'rejected' || v.value?.data?.status !== 0)
+      failList.push(...fail)
       cur += 5
     }
+    return failList.length
   }
   const uploadHandler = async (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files ? e.target.files[0] : null
@@ -200,79 +186,67 @@ const Main = () => {
       message.error('仅支持apk/aab上传')
       return false
     }
-    const bArr = await splitFile(file, 10)
-    // 投石问路
-    const fir = bArr[0]
-    const firFm = new FormData()
-    firFm.append('file', fir.file)
-    firFm.append('idx', fir.idx.toString())
-    firFm.append('length', bArr.length.toString())
-    firFm.append('md5', fir.hash)
-    firFm.append('fileName', fir.fileName)
-    firFm.append('type', '1')
-    firFm.append('appId', currentGame)
-    const { data: res } = await httpApi({
-      apiId: 'pieceupload',
-      state,
-      method: 'POST',
-      timeout: 120000,
-      data: firFm
-    }).request
-    if (res.status === 0) {
-      const { already } = res.data
-      if (res.data.complete) {
-        // 之前已上传成功
-        message.success('上传成功')
+    try {
+      setLoading(true)
+      const bArr = await splitFile(file, 10)
+      // 投石问路
+      const fir = bArr[0]
+      const firFm = new FormData()
+      firFm.append('file', fir.file)
+      firFm.append('idx', fir.idx.toString())
+      firFm.append('length', bArr.length.toString())
+      firFm.append('md5', fir.hash)
+      firFm.append('fileName', fir.fileName)
+      firFm.append('type', '1')
+      firFm.append('appId', currentGame)
+      const { data: res } = await httpApi({
+        apiId: 'pieceupload',
+        state,
+        method: 'POST',
+        timeout: 120000,
+        data: firFm
+      }).request
+      if (res.status === 0) {
+        const { already } = res.data
+        if (res.data.complete) {
+          // 之前已上传成功
+          message.success('上传成功')
+        } else {
+          const needUploadIdxs = bArr.filter(v => !already.includes(v.idx))
+          // 走完人生路
+          const pieceResult: number = needUploadIdxs.length > 0 && await uploadPiece(needUploadIdxs, bArr.length)
+          degRef.current = 1 - (pieceResult / bArr.length)
+          if (pieceResult === 0) {
+            message.success('上传成功')
+          } else {
+            throw new Error('上传结束，但是有部分分片上传失败')
+          }
+          await queryMotherList()
+          setMotherPack(['uploadNames', file.name])
+        }
       } else {
-        const needUploadIdxs = bArr.filter(v => !already.includes(v.idx))
-        // 走完人生路
-        needUploadIdxs.length > 0 && uploadPiece(needUploadIdxs, bArr.length)
+        throw new Error(res.message)
       }
-    } else {
-      message.error(res.message)
+    } catch (e) {
+      Modal.confirm({
+        title: `已上传${(degRef.current * 100).toFixed(0)}%`,
+        content: '上传文件失败，是否从断开处继续上传？',
+        okText: '重新上传',
+        cancelText: '取消',
+        onOk: () => {
+          if (uploadRef.current) {
+            uploadRef.current.value = ''
+          }
+          uploadRef.current!.click()
+        }
+      })
+    } finally {
+      if (uploadRef.current) {
+        uploadRef.current.value = ''
+      }
+      setLoading(false)
     }
   }
-  // const uploadHandler = async (e: ChangeEvent<HTMLInputElement>) => {
-  //   const file = e.target.files ? e.target.files[0] : ''
-  //   if (!file) {
-  //     message.error('获取上传信息失败')
-  //     return false
-  //   }
-  //   const fileType = file.name.split('.').pop()
-  //   if (fileType !== 'apk' && fileType !== 'aab' && !isMac) {
-  //     message.error('仅支持apk/aab上传')
-  //     return false
-  //   }
-
-  //   const fm = new FormData()
-  //   fm.append('file', file)
-  //   fm.append('type', '3')
-  //   fm.append('appId', gameList.find(item => item.id === currentGame)?.appId || '')
-  //   setLoading(true)
-  //   try {
-  //     const { data: res } = await httpApi({
-  //       apiId: 'uploadimg',
-  //       state,
-  //       method: 'POST',
-  //       timeout: 120000,
-  //       data: fm
-  //     }).request
-  //     if (res.status === 0) {
-  //       message.success('上传成功')
-  //       await queryMotherList()
-  //       setMotherPack(['uploadNames', file.name])
-  //     } else {
-  //       message.error(res.error_msg || res.message)
-  //     }
-  //   } catch (e) {
-  //     message.error('上传出错')
-  //   } finally {
-  //     if (uploadRef.current) {
-  //       uploadRef.current.value = ''
-  //     }
-  //     setLoading(false)
-  //   }
-  // }
 
   // 渠道
   const { data: channelListAll = [] } = getApiDataState<ChannelDataRow[]>({ apiId: 'channel', state })
