@@ -15,7 +15,11 @@ const Channel = ({ state, dispatch }: Props) => {
     <PageContainer
       state={state}
       dispatch={dispatch}
-      data={[{ id: apiId }]}
+      data={[{ id: apiId },
+        {
+          id: 'getchannelids',
+          delHeaderAction: true
+        }]}
     >
       <Main state={state} dispatch={dispatch}></Main>
     </PageContainer>

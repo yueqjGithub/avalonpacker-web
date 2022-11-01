@@ -1,4 +1,4 @@
-import React, { Fragment, useEffect, useRef, useState } from 'react'
+import React, { Fragment, useEffect, useMemo, useRef, useState } from 'react'
 import { Alert, Button, Card, Checkbox, Divider, Form, Input, message, Radio } from 'antd'
 import { ChannelDataRow } from '../common'
 import { MinusCircleOutlined } from '@ant-design/icons'
@@ -6,6 +6,8 @@ import { httpApi } from '../../../service/axios'
 import { State } from '../../../store/state'
 import { ApiIdForSDK } from '../../../service/urls'
 import { Editor } from '@tinymce/tinymce-react'
+import { getApiDataState } from 'avalon-iam-util-client'
+import { _deepClone } from '../../../utils/utils'
 
 type Props = {
   state: State
@@ -14,6 +16,10 @@ type Props = {
   editSuccess: Function
   isEdit: boolean
 }
+type ChannelIdItem = {
+  id: number,
+  name: string
+}
 
 const apiId: ApiIdForSDK = 'channel'
 
@@ -21,6 +27,11 @@ const EditModule = ({ target, state, dispatch, editSuccess, isEdit }: Props) => 
   const { isMac } = state
   const [form] = Form.useForm<ChannelDataRow>()
   const [loading, setLoading] = useState<boolean>(false)
+  const { data: channelPlatformIds } = getApiDataState<ChannelIdItem[]>({ apiId: 'getchannelids', state })
+  const channelIdsOptions = useMemo(() => {
+    const copy = channelPlatformIds && _deepClone(channelPlatformIds) || []
+    copy.sort((a: ChannelIdItem, b: ChannelIdItem) => a.id > b.id)
+  }, [channelPlatformIds])
   const editorRef = useRef<any>()
   const optionsList = [
     { value: 'serverConfigDoc', label: '服务端配置' },

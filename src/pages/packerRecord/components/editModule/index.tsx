@@ -348,7 +348,7 @@ const EditModule = ({ target, initView, state, editSuccess, dispatch, alreadyPlu
                       <div className='flex-col flex-jst-start flex-ali-start'>
                         <>
                           {
-                            otherFileSave && otherFileSave.map(item => {
+                            otherFileSave && otherFileSave?.map(item => {
                               return (
                                 <div key={item} className='full-width flex-row flex-jst-start flex-ali-center'>
                                   <span>{item}</span>

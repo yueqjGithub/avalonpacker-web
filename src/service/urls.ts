@@ -34,6 +34,7 @@ export type ApiIdForSDK =
     | 'donwloadxcode'
     | 'getpluginsbyrecords'
     | 'pieceupload'
+    | 'getchannelids'
 /** 通用api */
 export const apisForSDK: Apis<ApiIdForSDK> = [
   {
@@ -306,6 +307,17 @@ export const apisForSDK: Apis<ApiIdForSDK> = [
     allowEmpty: true,
     urlTranform: ({ url, state }) => {
       const apiUrl = getApiUrl({ state })
+      return `${apiUrl}${url}`
+    }
+  },
+  {
+    id: 'getchannelids',
+    url: '/v1/const-configs/appstore_channel',
+    name: '获取渠道公共id',
+    allowEmpty: true,
+    urlTranform: ({ url, state }) => {
+      const { project = [] } = state as IamBarValue
+      const apiUrl = project.find(d => d.id === 'cc')?.api_url
       return `${apiUrl}${url}`
     }
   }
