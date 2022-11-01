@@ -70,7 +70,7 @@ const PluginsSetting = ({ target, state, editSuccess, dispatch, alreadyPlugins }
   // 获取版本
   const queryVersion = async (id: string) => {
     const targetPlugins = data.find(item => item.id === id)
-    if (targetPlugins?.versions!.length! > 0) {
+    if (targetPlugins?.versions?.length! > 0) {
       return
     }
     data.forEach(item => {
@@ -104,7 +104,8 @@ const PluginsSetting = ({ target, state, editSuccess, dispatch, alreadyPlugins }
           recordId: target?.id || '',
           pluginsVersion: dataList.find(item => item.id === id)?.versions![0] || ''
         })
-      } catch {
+      } catch (e) {
+        console.log(e)
         message.error('获取版本失败')
       }
     } else {
