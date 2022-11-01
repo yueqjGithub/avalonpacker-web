@@ -1,5 +1,5 @@
 import React, { Fragment, useEffect, useMemo, useRef, useState } from 'react'
-import { Alert, Button, Card, Checkbox, Divider, Form, Input, message, Radio } from 'antd'
+import { Alert, Button, Card, Checkbox, Divider, Form, Input, message, Radio, Select } from 'antd'
 import { ChannelDataRow } from '../common'
 import { MinusCircleOutlined } from '@ant-design/icons'
 import { httpApi } from '../../../service/axios'
@@ -30,7 +30,8 @@ const EditModule = ({ target, state, dispatch, editSuccess, isEdit }: Props) => 
   const { data: channelPlatformIds } = getApiDataState<ChannelIdItem[]>({ apiId: 'getchannelids', state })
   const channelIdsOptions = useMemo(() => {
     const copy = channelPlatformIds && _deepClone(channelPlatformIds) || []
-    copy.sort((a: ChannelIdItem, b: ChannelIdItem) => a.id > b.id)
+    copy.sort((a: ChannelIdItem, b: ChannelIdItem) => a.id - b.id)
+    return copy
   }, [channelPlatformIds])
   const editorRef = useRef<any>()
   const optionsList = [
@@ -101,6 +102,15 @@ const EditModule = ({ target, state, dispatch, editSuccess, isEdit }: Props) => 
               <Radio value={false}>Android</Radio>
               <Radio value={true}>IOS</Radio>
             </Radio.Group>
+          </Form.Item>
+          <Form.Item label="渠道ID" name='channelId' rules={[{ required: true, message: '请选择渠道ID' }]} initialValue={target ? target!.channelId : null}>
+            <Select
+              options={channelIdsOptions.map(item => ({ label: `${item.id}_${item.name}`, value: item.id }))}
+              showSearch
+              filterOption={(input, option) =>
+                (option!.label as unknown as string).toLowerCase().includes(input.toLowerCase())
+              }
+            ></Select>
           </Form.Item>
           <Form.Item label='渠道描述'>
             <Editor

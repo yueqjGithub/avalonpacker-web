@@ -28,12 +28,12 @@ export const myFlatten = <T>(list:T[], key:string, uniKey:string, result:T[] = [
 
 /** 获取api接口地址 */
 export function getApiUrl (jsonParam: { state: any }) {
-  // const { state } = jsonParam
-  // const { currentProjectInstance } = state
-  // const { data = {} as DevToolsData } = getApiDataState<DevToolsData>({ apiId: 'devTools', state })
-  // const { customApiUrl = '' } = data
-  // return customApiUrl === undefined || customApiUrl === '' ? currentProjectInstance.api_url : customApiUrl
-  return ''
+  const { state } = jsonParam
+  const { currentProjectInstance } = state
+  const { data = {} as DevToolsData } = getApiDataState<DevToolsData>({ apiId: 'devTools', state })
+  const { customApiUrl = '' } = data
+  return customApiUrl === undefined || customApiUrl === '' ? currentProjectInstance.api_url : customApiUrl
+  // return ''
 }
 
 /** 判断是否拥有权限 */
@@ -138,7 +138,7 @@ export const copyHandler = (copyContent) => {
 }
 
 /** deeoClone */
-export const _deepClone = (obj) => {
+export const _deepClone: <T>(obj: T) => T = (obj) => {
   const _obj = JSON.stringify(obj)
   const objClone = JSON.parse(_obj)
   return objClone
