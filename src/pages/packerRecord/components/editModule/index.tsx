@@ -182,7 +182,7 @@ const EditModule = ({ target, initView, state, editSuccess, dispatch, alreadyPlu
           getVal({ keyname: 'descFileName', val: fileName })
           setDescList(copyList)
         } else { // == 10
-          const copyList = isMac ? targetRef.current.macOtherFile! : targetRef.current.otherFile!
+          const copyList = (isMac ? targetRef.current.macOtherFile : targetRef.current.otherFile) || []
           if (copyList.indexOf(fileName) === -1) {
             copyList.push(fileName)
           }
@@ -348,7 +348,7 @@ const EditModule = ({ target, initView, state, editSuccess, dispatch, alreadyPlu
                       <div className='flex-col flex-jst-start flex-ali-start'>
                         <>
                           {
-                            otherFileSave?.map(item => {
+                            otherFileSave && otherFileSave.map(item => {
                               return (
                                 <div key={item} className='full-width flex-row flex-jst-start flex-ali-center'>
                                   <span>{item}</span>

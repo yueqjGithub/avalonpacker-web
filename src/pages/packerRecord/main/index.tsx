@@ -60,9 +60,9 @@ const Main = ({ state, dispatch }: Props) => {
         }
       } else {
         try {
-          item.macOtherFile = (item.otherFile as unknown as string).split(',')
+          item.otherFile = (item.otherFile as unknown as string).split(',')
         } catch {
-          item.macOtherFile = []
+          item.otherFile = []
         }
       }
     })
