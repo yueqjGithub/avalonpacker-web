@@ -30,7 +30,8 @@ export default ({ mode }) => {
       })
     ],
     build: {
-      target: 'es2015'
+      target: 'es2015',
+      minify: 'terser'
     },
     css: {
       preprocessorOptions: {
