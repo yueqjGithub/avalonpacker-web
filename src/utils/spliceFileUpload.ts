@@ -1,4 +1,4 @@
-import Mywork from '../worker/getmdWork.js?worker'
+import Mywork from '../worker/getmdWork.ts?worker'
 // 分割文件
 export type BufferItem = { file: Blob, hash: string, idx: number, fileName: string }
 

@@ -1,6 +1,6 @@
 import { defineConfig, loadEnv } from 'vite'
 import reactRefresh from '@vitejs/plugin-react-refresh'
-import legacy from '@vitejs/plugin-legacy'
+// import legacy from '@vitejs/plugin-legacy'
 // https://vitejs.dev/config/
 
 export default ({ mode }) => {
@@ -24,10 +24,10 @@ export default ({ mode }) => {
       include: ['avalon-iam-util-client', 'avalon-common-util-global', 'avalon-iam-util-global', 'avalon-antd-util-client']
     },
     plugins: [
-      reactRefresh(),
-      legacy({
-        targets: ['defaults', 'not IE 11']
-      })
+      reactRefresh()
+      // legacy({
+      //   targets: ['defaults', 'not IE 11']
+      // })
     ],
     build: {
       target: 'es2015'
