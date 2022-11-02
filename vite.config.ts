@@ -26,12 +26,11 @@ export default ({ mode }) => {
     plugins: [
       reactRefresh(),
       legacy({
-        targets: ['defaults', 'not IE 11']
+        targets: ['defaults', 'ie >= 11']
       })
     ],
     build: {
-      target: 'es2015',
-      minify: 'terser'
+      target: 'es2015'
     },
     css: {
       preprocessorOptions: {
