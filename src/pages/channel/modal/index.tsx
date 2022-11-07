@@ -87,7 +87,7 @@ const EditModule = ({ target, state, dispatch, editSuccess, isEdit }: Props) => 
     }
   }
   return (
-    <div className='full-width'>
+    <div className='full-width' id='selectScrollContainer'>
       <h3>{target ? '修改' : '新增'}渠道配置</h3>
       <Form<ChannelDataRow> form={form} colon={true} labelAlign='right' labelCol={{ span: 2 }} wrapperCol={{ span: 21 }} onFinish={val => editFinshi(val)}>
         <div className='scroll-bar full-width' style={{ maxHeight: '70vh', marginBottom: 15 }}>
@@ -107,6 +107,7 @@ const EditModule = ({ target, state, dispatch, editSuccess, isEdit }: Props) => 
             <Select
               options={channelIdsOptions.map(item => ({ label: `${item.id}_${item.name}`, value: item.id }))}
               showSearch
+              getPopupContainer={() => document.querySelector('#selectScrollContainer')!}
               filterOption={(input, option) =>
                 (option!.label as unknown as string).toLowerCase().includes(input.toLowerCase())
               }
