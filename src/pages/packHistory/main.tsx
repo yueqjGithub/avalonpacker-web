@@ -27,6 +27,7 @@ type QueryOptions = {
     start: string
     end: string
   }
+  versionCode?: number
 }
 type DataSource = {
   total: number
@@ -49,6 +50,7 @@ const Main = ({ state, dispatch }: Props) => {
   const pageSize = React.useRef<number>(10)
   const end = React.useRef<Moment>(moment())
   const start = React.useRef<Moment>(moment().subtract(7, 'day'))
+  const versionCode = React.useRef<number>()
   const cancelObj = useRef({})
   const requestHandler = async (cancelPayload: any = {}) => {
     const requestData: QueryOptions = {
@@ -59,6 +61,9 @@ const Main = ({ state, dispatch }: Props) => {
         start: start.current.hour(0).minute(0).second(0).format('YYYY-MM-DDTHH:mm:ss'),
         end: end.current.hour(23).minute(59).second(59).format('YYYY-MM-DDTHH:mm:ss')
       }
+    }
+    if (versionCode.current || versionCode.current === 0) {
+      requestData.versionCode = versionCode.current
     }
     try {
       setStatus('loading')
@@ -80,9 +85,10 @@ const Main = ({ state, dispatch }: Props) => {
       setStatus('reject')
     }
   }
-  const doSearch = (dateList: { range: [Moment, Moment] }) => {
-    start.current = dateList.range[0] || ''
-    end.current = dateList.range[1] || ''
+  const doSearch = (searchOptions: { range: [Moment, Moment], versionCode: number | undefined }) => {
+    start.current = searchOptions.range[0] || ''
+    end.current = searchOptions.range[1] || ''
+    versionCode.current = searchOptions.versionCode
     requestHandler()
   }
   useEffect(() => {
@@ -133,11 +139,19 @@ const Main = ({ state, dispatch }: Props) => {
                     searchOptions={[
                       {
                         type: 'timerange',
-                        label: '',
+                        label: '分包日期',
                         keyName: 'range',
                         placeholder: '',
                         defaultValue: [start.current, end.current],
                         format: 'YYYY/MM/DD'
+                      },
+                      {
+                        type: 'inputNumber',
+                        label: 'versionCode',
+                        keyName: 'versionCode',
+                        placeholder: '输入versioncode查询',
+                        min: 0,
+                        step: 1
                       }
                     ]}
                     onSearch={searchOpt => doSearch(searchOpt)}
@@ -170,6 +184,16 @@ const Main = ({ state, dispatch }: Props) => {
               { dataIndex: 'channelVersion', align: 'center', filterDropdown: false, sorter: undefined, title: '渠道版本' },
               { dataIndex: 'supersdkVersion', align: 'center', filterDropdown: false, sorter: undefined, title: 'SuperSDK版本' },
               { dataIndex: 'motherShortName', align: 'center', filterDropdown: false, sorter: undefined, title: isMac ? 'xCode工程' : '母包' },
+              {
+                dataIndex: 'versionCode',
+                align: 'center',
+                filterDropdown: false,
+                sorter: undefined,
+                title: 'versionCode',
+                render: (val, record) => {
+                  return <>{val === -1 ? '' : val}</>
+                }
+              },
               {
                 title: '详情',
                 sorter: undefined,

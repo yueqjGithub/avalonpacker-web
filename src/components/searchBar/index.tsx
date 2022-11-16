@@ -1,4 +1,4 @@
-import { Button, Input, Select, Form, DatePicker } from 'antd'
+import { Button, Input, Select, Form, DatePicker, InputNumber } from 'antd'
 import { Dayjs } from 'dayjs'
 import React, { useEffect, useState } from 'react'
 import locale from 'antd/lib/calendar/locale/zh_CN.js'
@@ -6,7 +6,7 @@ import { Moment } from 'moment'
 import styles from './style.module.scss'
 
 /** 搜索项类型 */
-type SearchInTypes = 'input' | 'select' | 'timepick' | 'timerange'
+type SearchInTypes = 'input' | 'select' | 'timepick' | 'timerange' | 'inputNumber'
 
 /** 搜索框为select时，强制传入source遍历出下拉 */
 export type SelectSource = {
@@ -29,6 +29,7 @@ type SearchItemBasic<T extends SearchInTypes> = {
 /** 搜索项类型集合 */
 type SearchTypeRows = {
   input: SearchItemBasic<'input'>
+  inputNumber: SearchItemBasic<'inputNumber'> & {min?: number, max?: number, step?: number}
   select: SearchItemBasic<'select'> & {source: SelectSource[]}
   timepick: SearchItemBasic<'timepick'> & {defaultTime?: [Dayjs, Dayjs], showTime?: boolean}
   timerange: SearchItemBasic<'timerange'> & {defaultTime?: [Moment, Moment], format?: string, showTime?: boolean}
@@ -66,6 +67,16 @@ const SearchBar = (props: Props) => {
           locale={locale}
           format={ele.format}
           showTime={ele.showTime}
+          />
+        )
+      case 'inputNumber':
+        return (
+          <InputNumber
+            min={ele.min}
+            max={ele.max}
+            step={ele.step}
+            style={{ width: '100%' }}
+            placeholder={ele.placeholder}
           />
         )
       default:

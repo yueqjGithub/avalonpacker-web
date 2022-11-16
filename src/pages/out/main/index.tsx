@@ -179,11 +179,24 @@ const Main = () => {
     const file = e.target.files ? e.target.files[0] : null
     if (!file) {
       message.error('请选择文件')
+      if (uploadRef.current) {
+        uploadRef.current.value = ''
+      }
+      return false
+    }
+    if (file.name.indexOf(' ') !== -1) {
+      message.error('文件名不能包含空格')
+      if (uploadRef.current) {
+        uploadRef.current.value = ''
+      }
       return false
     }
     const fileType = file.name.split('.').pop()
     if (fileType !== 'apk' && fileType !== 'aab' && !isMac) {
       message.error('仅支持apk/aab上传')
+      if (uploadRef.current) {
+        uploadRef.current.value = ''
+      }
       return false
     }
     try {
