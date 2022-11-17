@@ -89,6 +89,7 @@ const Main = ({ state, dispatch }: Props) => {
     start.current = searchOptions.range[0] || ''
     end.current = searchOptions.range[1] || ''
     versionCode.current = searchOptions.versionCode
+    page.current = 1
     requestHandler()
   }
   useEffect(() => {
@@ -159,6 +160,7 @@ const Main = ({ state, dispatch }: Props) => {
                 </div>
               )
             }}
+            rowKey={'id'}
             columns={[
               { dataIndex: 'app', title: '游戏项目', sorter: undefined, filterDropdown: false, render: val => <span>{gameList.find((item: AppDataRow) => item.appId === val)!.appName}</span> },
               {
