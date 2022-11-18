@@ -185,7 +185,7 @@ const Main = () => {
       return false
     }
     if (file.name.indexOf(' ') !== -1) {
-      message.error('文件名不能包含空格')
+      message.error('上传文件名禁止包含空格')
       if (uploadRef.current) {
         uploadRef.current.value = ''
       }
