@@ -224,6 +224,8 @@ const Main = () => {
         if (res.data.complete) {
           // 之前已上传成功
           message.success('上传成功')
+          await queryMotherList()
+          setMotherPack(['uploadNames', file.name])
         } else {
           const needUploadIdxs = bArr.filter(v => !already.includes(v.idx))
           // 走完人生路
