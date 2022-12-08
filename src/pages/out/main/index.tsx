@@ -521,7 +521,15 @@ const Main = () => {
               mode='multiple'
               style={{ width: 450 }}
               value={curChannel}
-              onChange={val => setChannel(val)}
+              onChange={val => {
+                setChannel(val)
+                const copy = [...curConfig]
+                const newConfig = copy.filter(v => {
+                  const target = configList.find(item => item.id === v)
+                  return val.includes(target!.channelId)
+                })
+                setConfigs(newConfig)
+              }}
               filterOption={(val, opt) => {
                 return (opt?.children as unknown as string)?.indexOf(val) !== -1
               }}

@@ -14,6 +14,7 @@ import PluginsSetting from '../components/setPlugins'
 import MediaSetting from '../components/setMedia'
 // import FailReason from '../components/failReason'
 import { PermissionHoc } from '../../../components/permissionHOC'
+import { CopyOutlined } from '@ant-design/icons'
 
 type Props = {
   state: State
@@ -34,6 +35,8 @@ const Main = ({ state, dispatch }: Props) => {
   const channelList = useMemo(() => {
     return channelListAll.filter(item => item.isMac === isMac)
   }, [channelListAll, isMac])
+  // 复制相关
+  const [isCopy, setIsCopy] = useState<boolean>(false)
   // 混合渠道和渠道已有配置数量
   const channelWithConfList = useMemo(() => {
     const result:Array<ChannelDataRow & { count: number }> = []
@@ -193,7 +196,8 @@ const Main = ({ state, dispatch }: Props) => {
             dataIndex: 'configName',
             title: '配置名称',
             sorter: undefined,
-            filterDropdown: false
+            filterDropdown: false,
+            width: 300
           },
           {
             title: '插件',
@@ -272,6 +276,7 @@ const Main = ({ state, dispatch }: Props) => {
                     component={
                       <Button loading={record.loading} size='small' className='custom-btn-pa-sm' icon={<i className='iconfont icon-banshou'></i>} type='primary' onClick={(e) => {
                         setInitView(undefined)
+                        setIsCopy(false)
                         setTarget(record)
                         setEdit(true)
                       }}>配置</Button>
@@ -286,6 +291,37 @@ const Main = ({ state, dispatch }: Props) => {
                       : ''
                   }
                 </>
+              )
+            }
+          },
+          {
+            title: '复制',
+            sorter: undefined,
+            filterDropdown: false,
+            render: record => {
+              return (
+                <div className='flex-row'>
+                  <PermissionHoc
+                    permission={permissionList.a}
+                    component={
+                      <Button
+                        type='primary'
+                        size='small'
+                        className='custom-btn-pa-sm'
+                        icon={<CopyOutlined />}
+                        disabled={!permissionList.a || record.packerStatus === 1}
+                        onClick={async () => {
+                          setInitView(undefined)
+                          setIsCopy(true)
+                          setTarget(record)
+                          setEdit(true)
+                        }}
+                      >
+                        复制
+                      </Button>
+                    }
+                  ></PermissionHoc>
+                </div>
               )
             }
           },
@@ -345,6 +381,7 @@ const Main = ({ state, dispatch }: Props) => {
               <PermissionHoc
                 component={
                   <Button type='primary' onClick={() => {
+                    setIsCopy(false)
                     setShowChannel(true)
                   }}>新增分包配置</Button>
                 }
@@ -358,7 +395,11 @@ const Main = ({ state, dispatch }: Props) => {
         <SetChannel channelList={channelList} state={state} editSuccess={editSuccess}></SetChannel>
       </Modal>
       <Modal
-        title={<>{`分包配置 ${channelList.find(item => item.id === target?.channelId)?.channelName}-${target?.configName}`}</>}
+        title={
+          <>
+            {isCopy ? `从 ${channelList.find(item => item.id === target?.channelId)?.channelName}-${target?.configName} 复制` : `分包配置 ${channelList.find(item => item.id === target?.channelId)?.channelName}-${target?.configName}`}
+          </>
+        }
         footer={false}
         destroyOnClose
         width={'75vw'}
@@ -366,7 +407,9 @@ const Main = ({ state, dispatch }: Props) => {
         maskClosable={false}
         onCancel={() => setEdit(false)}
       >
-        <EditModule alreadyPlugins={curRecordPlugins.filter(item => item.recordId === target?.id)} dispatch={dispatch} editSuccess={editSuccess} target={target} initView={initView} state={state}></EditModule>
+        <EditModule
+        isCopy={isCopy}
+        alreadyPlugins={curRecordPlugins.filter(item => item.recordId === target?.id)} dispatch={dispatch} editSuccess={editSuccess} target={target} initView={initView} state={state}></EditModule>
       </Modal>
       <Modal title='插件配置' footer={false} destroyOnClose width={'75vw'} visible={showPluginSetting} maskClosable={false} onCancel={() => setShowPlugins(false)}>
         <PluginsSetting alreadyPlugins={curRecordPlugins.filter(item => item.recordId === target?.id)} dispatch={dispatch} target={target} state={state} editSuccess={editSuccess} />
