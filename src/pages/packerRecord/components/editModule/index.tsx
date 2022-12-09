@@ -11,6 +11,7 @@ import { httpApi, httpWithStore } from '../../../../service/axios'
 import { getApiDataState } from 'avalon-iam-util-client'
 import { AppDataRow } from '../../../setgame/common'
 import { cloneDeep } from 'lodash'
+import { _deepClone } from '../../../../utils/utils'
 type Props = {
   target: RecordDataRow | undefined
   initView?: string
@@ -18,6 +19,7 @@ type Props = {
   editSuccess: Function
   dispatch: any
   alreadyPlugins: RecordPlugins[]
+  isCopy: boolean
 }
 
 // type TabItem = {
@@ -28,7 +30,7 @@ type Props = {
 
 type ChannelVersionData = string[]
 
-const EditModule = ({ target, initView, state, editSuccess, dispatch, alreadyPlugins }: Props) => {
+const EditModule = ({ target, initView, state, editSuccess, dispatch, alreadyPlugins, isCopy }: Props) => {
   const { isMac } = state
   const targetRef = useRef({ ...target })
   const [otherFileSave, setSave] = useState<string[]>([])
@@ -80,9 +82,9 @@ const EditModule = ({ target, initView, state, editSuccess, dispatch, alreadyPlu
     try {
       const { data: res } = await httpApi({
         state,
-        apiId: 'updaterecord',
+        apiId: isCopy ? 'addrecord' : 'updaterecord',
         method: 'POST',
-        data: { ...copy, lastUpdateAs: user.id }
+        data: { ...copy, lastUpdateAs: user.id, isCopy, pluginList: alreadyPlugins }
       }).request
       if (res.status === 0) {
         message.success('提交成功')
@@ -208,8 +210,20 @@ const EditModule = ({ target, initView, state, editSuccess, dispatch, alreadyPlu
   useEffect(() => {
     const cancelObj: any = {}
     if (target) {
+      const copy = _deepClone(target)
       setSave(isMac ? target.macOtherFile : target.otherFile)
-      form.setFieldsValue(target)
+      if (isCopy) {
+        const cName = `${copy.configName}（复制）`
+        if (cName.length > 60) {
+          notification.warning({
+            message: '配置名称超出长度',
+            description: '名字长度超过 60 字符，请修改配置名字'
+          })
+        }
+        copy.configName = cName
+        targetRef.current.configName = cName
+      }
+      form.setFieldsValue(copy)
       querySignPath(cancelObj)
     }
     return () => {
@@ -227,8 +241,8 @@ const EditModule = ({ target, initView, state, editSuccess, dispatch, alreadyPlu
     } catch {
       submitCount.current = 0
       notification.warning({
-        message: '参数缺失提示',
-        description: '基础配置不完整'
+        message: '参数错误提示',
+        description: '基础配置未正确填写'
       })
     }
   }
@@ -259,7 +273,13 @@ const EditModule = ({ target, initView, state, editSuccess, dispatch, alreadyPlu
               <>
                 <input type="file" ref={ref} style={{ display: 'none' }} onChange={e => uploadHandler(e)}/>
                 <Form layout='vertical' form={form}>
-                  <Form.Item label='配置名称' normalize={val => val.trim()} required initialValue={target?.configName} name='configName' rules={[{ required: true, message: '配置名称不能为空!' }]}>
+                  <Form.Item
+                    label='配置名称'
+                    normalize={val => val.trim()}
+                    required
+                    name='configName'
+                    rules={[{ required: true, message: '配置名称不能为空!' }, { max: 60, message: '配置名称不能超过60个字符' }]}
+                  >
                     <Input maxLength={60} showCount placeholder='请输入配置名称' onChange={e => getVal({ keyname: 'configName', val: e.target.value })}></Input>
                   </Form.Item>
                   <Form.Item normalize={val => val.trim()} label={isMac ? 'bundleId' : '渠道包名'} required initialValue={target?.packerName} name='packerName' rules={[{ required: true, message: '不能为空!' }]}>
@@ -275,12 +295,12 @@ const EditModule = ({ target, initView, state, editSuccess, dispatch, alreadyPlu
                       }
                     </Select>
                   </Form.Item>
+                  <Form.Item label='游戏默认安装名' initialValue={target?.gameName} name='gameName' >
+                    <Input placeholder='请输入游戏默认安装名' onChange={e => getVal({ keyname: 'gameName', val: e.target.value })}></Input>
+                  </Form.Item>
                   {
                     !isMac && (
                       <>
-                        <Form.Item label='安装游戏名' initialValue={target?.gameName} name='gameName' >
-                          <Input placeholder='请输入安装游戏名' onChange={e => getVal({ keyname: 'gameName', val: e.target.value })}></Input>
-                        </Form.Item>
                         <Form.Item label='产物' name='resultType' required initialValue={target?.resultType} rules={[{ required: true, message: '请选择打包产物!' }]}>
                           <Select onChange={val => getVal({ keyname: 'resultType', val: val })}>
                             <Select.Option value={'apk'}>apk</Select.Option>

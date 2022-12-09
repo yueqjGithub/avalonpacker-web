@@ -73,7 +73,7 @@ const EditModule = ({ target, state, editSuccess, permissionList }: Props) => {
       } else {
         message.error(res.message)
       }
-    } catch {
+    } catch (e) {
       message.error('获取签名文件失败')
     } finally {
       setSignLoading(false)
@@ -211,7 +211,7 @@ const EditModule = ({ target, state, editSuccess, permissionList }: Props) => {
                             <Form.Item shouldUpdate className='flex-1' label='IOS描述文件' name='descFileName' initialValue={target?.descFileName} normalize={val => val === undefined ? null : val}>
                               <Select loading={signLoading} allowClear>
                                 {
-                                  descList.map(item => <Select.Option key={item} value={item}>{item}</Select.Option>)
+                                  descList && descList.map(item => <Select.Option key={item} value={item}>{item}</Select.Option>)
                                 }
                               </Select>
                             </Form.Item>
