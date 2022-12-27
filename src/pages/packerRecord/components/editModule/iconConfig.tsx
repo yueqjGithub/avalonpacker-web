@@ -1,5 +1,5 @@
 import { CloseOutlined, PlusOutlined } from '@ant-design/icons'
-import { Button, message, Modal, Space, Spin } from 'antd'
+import { Button, message, Modal, Space, Spin, Typography } from 'antd'
 import { getApiDataState } from 'avalon-iam-util-client'
 import React, { ChangeEvent, MutableRefObject, useEffect, useRef, useState } from 'react'
 import { httpApi } from '../../../../service/axios'
@@ -29,8 +29,8 @@ const IconConfig = ({ target, state, submitVal }: Props) => {
     if (target?.iconUrl) {
       const arr = target.iconUrl.split(',')
       setPath(arr[0])
-      console.log('arr', arr)
-      if (arr.length === 2) {
+
+      if (arr.length === 3) {
         setPath1(arr[1])
         setPath2(arr[2])
       }
@@ -118,10 +118,12 @@ const IconConfig = ({ target, state, submitVal }: Props) => {
     })
   }
   return (
+    <div>
+      <Typography.Text style={{ color: 'red' }}>unity 2018 及以下版本修改 icon 不生效，需要游戏项目组修改；2019 以及以上版本才生效。</Typography.Text>
     <Space>
     <div className='full-width'>
       <input type="file" accept="image/png" ref={ref} style={{ display: 'none' }} onChange={e => uploadHandler(e, 0)}/>
-      <p className='font-20'>普通ICON上传</p>
+      <p className='font-20'>普通ICON</p>
       <Spin spinning={loading}>
         <div className='full-width flex-row flex-jst-start flex-ali-center flex-wrap'>
           {
@@ -208,7 +210,7 @@ const IconConfig = ({ target, state, submitVal }: Props) => {
       </Spin>
     </div>
     </Space>
-
+    </div>
   )
 }
 
