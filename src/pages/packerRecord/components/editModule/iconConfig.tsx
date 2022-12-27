@@ -1,5 +1,5 @@
 import { CloseOutlined, PlusOutlined } from '@ant-design/icons'
-import { Button, message, Modal, Spin } from 'antd'
+import { Button, message, Modal, Space, Spin } from 'antd'
 import { getApiDataState } from 'avalon-iam-util-client'
 import React, { ChangeEvent, MutableRefObject, useEffect, useRef, useState } from 'react'
 import { httpApi } from '../../../../service/axios'
@@ -68,7 +68,14 @@ const IconConfig = ({ target, state, submitVal }: Props) => {
       }).request
       if (res.status === 0) {
         message.success('上传成功')
-        setPath(res.data)
+        if (index === 0) {
+          setPath(res.data)
+        } else if (index === 1) {
+          setPath1(res.data)
+        } else if (index === 2) {
+          setPath2(res.data)
+        }
+
         // 服务器不让新加字段，让使用一个字段用逗号隔开
         const newData = [filePath, filePath1, filePath2]
         newData[index] = res.data
@@ -91,17 +98,26 @@ const IconConfig = ({ target, state, submitVal }: Props) => {
       setLoading(false)
     }
   }
-  const delIcon = () => {
+  const delIcon = (index: number) => {
     Modal.confirm({
       title: '确定要删除当前ICON吗',
       onOk: () => {
-        setPath('')
-        submitVal({ keyname: 'iconUrl', val: null })
+        if (index === 0) {
+          setPath('')
+        } else if (index === 1) {
+          setPath1('')
+        } else if (index === 2) {
+          setPath2('')
+        }
+        const newData = [filePath, filePath1, filePath2]
+        newData[index] = ''
+        const val = newData.join(',')
+        submitVal({ keyname: 'iconUrl', val: val })
       }
     })
   }
   return (
-    <>
+    <Space>
     <div className='full-width'>
       <input type="file" accept="image/png" ref={ref} style={{ display: 'none' }} onChange={e => uploadHandler(e, 0)}/>
       <p className='font-20'>普通ICON上传</p>
@@ -113,7 +129,7 @@ const IconConfig = ({ target, state, submitVal }: Props) => {
               <div className={`${styles.uploadOut} ${styles.showImg} flex-col flex-jst-center flex-ali-center`}>
                 <img src={filePath} alt="" className={`${styles.imgResult}`}/>
                 <div className={`${styles.delBtn}`}>
-                  <Button type='primary' size='small' danger shape='circle' icon={<CloseOutlined />} onClick={delIcon}></Button>
+                  <Button type='primary' size='small' danger shape='circle' icon={<CloseOutlined />} onClick={() => delIcon(0)}></Button>
                 </div>
               </div>
                 )
@@ -142,7 +158,7 @@ const IconConfig = ({ target, state, submitVal }: Props) => {
               <div className={`${styles.uploadOut} ${styles.showImg} flex-col flex-jst-center flex-ali-center`}>
                 <img src={filePath1} alt="" className={`${styles.imgResult}`}/>
                 <div className={`${styles.delBtn}`}>
-                  <Button type='primary' size='small' danger shape='circle' icon={<CloseOutlined />} onClick={delIcon}></Button>
+                  <Button type='primary' size='small' danger shape='circle' icon={<CloseOutlined />} onClick={() => delIcon(1)}></Button>
                 </div>
               </div>
                 )
@@ -171,7 +187,7 @@ const IconConfig = ({ target, state, submitVal }: Props) => {
               <div className={`${styles.uploadOut} ${styles.showImg} flex-col flex-jst-center flex-ali-center`}>
                 <img src={filePath2} alt="" className={`${styles.imgResult}`}/>
                 <div className={`${styles.delBtn}`}>
-                  <Button type='primary' size='small' danger shape='circle' icon={<CloseOutlined />} onClick={delIcon}></Button>
+                  <Button type='primary' size='small' danger shape='circle' icon={<CloseOutlined />} onClick={() => delIcon(2)}></Button>
                 </div>
               </div>
                 )
@@ -183,14 +199,14 @@ const IconConfig = ({ target, state, submitVal }: Props) => {
                 <div className='text-grey font-12'>上传格式：png</div>
                 <div className='text-grey font-12'>像素大小：512 * 512</div>
                 <div className='text-grey font-12'>文件大小：小于2M</div>
-                <div className='text-grey font-12'>内容区域最好不大于264 * 264，最大不能超过 288 * 288</div>
+                <div className='text-grey font-12'>推荐小于264 * 264，最大不能超过 288 * 288</div>
               </div>
                 )
           }
         </div>
       </Spin>
     </div>
-    </>
+    </Space>
 
   )
 }
