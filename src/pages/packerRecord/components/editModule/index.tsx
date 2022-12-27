@@ -235,9 +235,9 @@ const EditModule = ({ target, initView, state, editSuccess, dispatch, alreadyPlu
 
   const submitHandler = async () => {
     // 检查icon
-    const iconUrl = form.getFieldValue('iconUrl')
+    const iconUrl = targetRef.current.iconUrl
 
-    if (iconUrl === null || iconUrl.split(',').some(d => d === '')) {
+    if (iconUrl === null || iconUrl?.split(',').some(d => d === '')) {
       notification.warning({
         message: '参数错误提示',
         description: 'icon未配置'
