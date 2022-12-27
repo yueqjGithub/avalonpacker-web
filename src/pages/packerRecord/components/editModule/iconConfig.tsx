@@ -42,6 +42,12 @@ const IconConfig = ({ target, state, submitVal }: Props) => {
       message.error('获取上传信息失败')
       return false
     }
+
+    if (file.name.includes(',')) {
+      message.error('文件名不能包含,')
+      return false
+    }
+
     const fileType = file.name.split('.').pop()
     if (fileType !== 'png') {
       message.error('仅支持Png格式的图片上传')
