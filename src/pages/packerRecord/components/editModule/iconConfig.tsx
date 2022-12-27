@@ -119,97 +119,97 @@ const IconConfig = ({ target, state, submitVal }: Props) => {
   }
   return (
     <div>
-      <Typography.Text style={{ color: 'red' }}>unity 2018 及以下版本修改 icon 不生效，需要游戏项目组修改；2019 以及以上版本才生效。</Typography.Text>
-    <Space>
-    <div className='full-width'>
-      <input type="file" accept="image/png" ref={ref} style={{ display: 'none' }} onChange={e => uploadHandler(e, 0)}/>
-      <p className='font-20'>普通ICON</p>
-      <Spin spinning={loading}>
-        <div className='full-width flex-row flex-jst-start flex-ali-center flex-wrap'>
-          {
-            filePath
-              ? (
-              <div className={`${styles.uploadOut} ${styles.showImg} flex-col flex-jst-center flex-ali-center`}>
-                <img src={filePath} alt="" className={`${styles.imgResult}`}/>
-                <div className={`${styles.delBtn}`}>
-                  <Button type='primary' size='small' danger shape='circle' icon={<CloseOutlined />} onClick={() => delIcon(0)}></Button>
-                </div>
-              </div>
-                )
-              : (
-              <div className={`${styles.uploadOut} ${styles.ctrl} flex-col flex-jst-center flex-ali-center`}>
-                <Button type='primary' shape='circle' icon={<PlusOutlined />} size='large' onClick={() => {
-                  ref.current!.click()
-                }}></Button>
-                <div className='text-grey font-12'>上传格式：png</div>
-                <div className='text-grey font-12'>像素大小：512 * 512</div>
-                <div className='text-grey font-12'>文件大小：小于2M</div>
-              </div>
-                )
-          }
+      <Typography.Paragraph style={{ color: 'red' }}>unity 2018 及以下版本修改 icon 不生效，需要游戏项目组修改；2019 以及以上版本才生效。</Typography.Paragraph>
+      <Space>
+        <div className='full-width'>
+          <input type="file" accept="image/png" ref={ref} style={{ display: 'none' }} onChange={e => uploadHandler(e, 0)}/>
+          <p className='font-20'>普通ICON</p>
+          <Spin spinning={loading}>
+            <div className='full-width flex-row flex-jst-start flex-ali-center flex-wrap'>
+              {
+                filePath
+                  ? (
+                  <div className={`${styles.uploadOut} ${styles.showImg} flex-col flex-jst-center flex-ali-center`}>
+                    <img src={filePath} alt="" className={`${styles.imgResult}`}/>
+                    <div className={`${styles.delBtn}`}>
+                      <Button type='primary' size='small' danger shape='circle' icon={<CloseOutlined />} onClick={() => delIcon(0)}></Button>
+                    </div>
+                  </div>
+                    )
+                  : (
+                  <div className={`${styles.uploadOut} ${styles.ctrl} flex-col flex-jst-center flex-ali-center`}>
+                    <Button type='primary' shape='circle' icon={<PlusOutlined />} size='large' onClick={() => {
+                      ref.current!.click()
+                    }}></Button>
+                    <div className='text-grey font-12'>上传格式：png</div>
+                    <div className='text-grey font-12'>像素大小：512 * 512</div>
+                    <div className='text-grey font-12'>文件大小：小于2M</div>
+                  </div>
+                    )
+              }
+            </div>
+          </Spin>
         </div>
-      </Spin>
-    </div>
-    <div className='full-width'>
-      <input type="file" accept="image/png" ref={ref1} style={{ display: 'none' }} onChange={e => uploadHandler(e, 1)}/>
-      <p className='font-20'>背景图</p>
-      <Spin spinning={loading}>
-        <div className='full-width flex-row flex-jst-start flex-ali-center flex-wrap'>
-          {
-            filePath1
-              ? (
-              <div className={`${styles.uploadOut} ${styles.showImg} flex-col flex-jst-center flex-ali-center`}>
-                <img src={filePath1} alt="" className={`${styles.imgResult}`}/>
-                <div className={`${styles.delBtn}`}>
-                  <Button type='primary' size='small' danger shape='circle' icon={<CloseOutlined />} onClick={() => delIcon(1)}></Button>
-                </div>
-              </div>
-                )
-              : (
-              <div className={`${styles.uploadOut} ${styles.ctrl} flex-col flex-jst-center flex-ali-center`}>
-                <Button type='primary' shape='circle' icon={<PlusOutlined />} size='large' onClick={() => {
-                  ref1.current!.click()
-                }}></Button>
-                <div className='text-grey font-12'>上传格式：png</div>
-                <div className='text-grey font-12'>像素大小：512 * 512</div>
-                <div className='text-grey font-12'>文件大小：小于2M</div>
-              </div>
-                )
-          }
+        <div className='full-width'>
+          <input type="file" accept="image/png" ref={ref1} style={{ display: 'none' }} onChange={e => uploadHandler(e, 1)}/>
+          <p className='font-20'>背景图</p>
+          <Spin spinning={loading}>
+            <div className='full-width flex-row flex-jst-start flex-ali-center flex-wrap'>
+              {
+                filePath1
+                  ? (
+                  <div className={`${styles.uploadOut} ${styles.showImg} flex-col flex-jst-center flex-ali-center`}>
+                    <img src={filePath1} alt="" className={`${styles.imgResult}`}/>
+                    <div className={`${styles.delBtn}`}>
+                      <Button type='primary' size='small' danger shape='circle' icon={<CloseOutlined />} onClick={() => delIcon(1)}></Button>
+                    </div>
+                  </div>
+                    )
+                  : (
+                  <div className={`${styles.uploadOut} ${styles.ctrl} flex-col flex-jst-center flex-ali-center`}>
+                    <Button type='primary' shape='circle' icon={<PlusOutlined />} size='large' onClick={() => {
+                      ref1.current!.click()
+                    }}></Button>
+                    <div className='text-grey font-12'>上传格式：png</div>
+                    <div className='text-grey font-12'>像素大小：512 * 512</div>
+                    <div className='text-grey font-12'>文件大小：小于2M</div>
+                  </div>
+                    )
+              }
+            </div>
+          </Spin>
         </div>
-      </Spin>
-    </div>
-    <div className='full-width'>
-      <input type="file" accept="image/png" ref={ref2} style={{ display: 'none' }} onChange={e => uploadHandler(e, 2)}/>
-      <p className='font-20'>前景图</p>
-      <Spin spinning={loading}>
-        <div className='full-width flex-row flex-jst-start flex-ali-center flex-wrap'>
-          {
-            filePath2
-              ? (
-              <div className={`${styles.uploadOut} ${styles.showImg} flex-col flex-jst-center flex-ali-center`}>
-                <img src={filePath2} alt="" className={`${styles.imgResult}`}/>
-                <div className={`${styles.delBtn}`}>
-                  <Button type='primary' size='small' danger shape='circle' icon={<CloseOutlined />} onClick={() => delIcon(2)}></Button>
-                </div>
-              </div>
-                )
-              : (
-              <div className={`${styles.uploadOut} ${styles.ctrl} flex-col flex-jst-center flex-ali-center`}>
-                <Button type='primary' shape='circle' icon={<PlusOutlined />} size='large' onClick={() => {
-                  ref2.current!.click()
-                }}></Button>
-                <div className='text-grey font-12'>上传格式：png</div>
-                <div className='text-grey font-12'>像素大小：512 * 512</div>
-                <div className='text-grey font-12'>文件大小：小于2M</div>
-                <div className='text-grey font-12' style={{ padding: '0 30px' }}>推荐小于264 * 264，最大不能超过 288 * 288</div>
-              </div>
-                )
-          }
+        <div className='full-width'>
+          <input type="file" accept="image/png" ref={ref2} style={{ display: 'none' }} onChange={e => uploadHandler(e, 2)}/>
+          <p className='font-20'>前景图</p>
+          <Spin spinning={loading}>
+            <div className='full-width flex-row flex-jst-start flex-ali-center flex-wrap'>
+              {
+                filePath2
+                  ? (
+                  <div className={`${styles.uploadOut} ${styles.showImg} flex-col flex-jst-center flex-ali-center`}>
+                    <img src={filePath2} alt="" className={`${styles.imgResult}`}/>
+                    <div className={`${styles.delBtn}`}>
+                      <Button type='primary' size='small' danger shape='circle' icon={<CloseOutlined />} onClick={() => delIcon(2)}></Button>
+                    </div>
+                  </div>
+                    )
+                  : (
+                  <div className={`${styles.uploadOut} ${styles.ctrl} flex-col flex-jst-center flex-ali-center`}>
+                    <Button type='primary' shape='circle' icon={<PlusOutlined />} size='large' onClick={() => {
+                      ref2.current!.click()
+                    }}></Button>
+                    <div className='text-grey font-12'>上传格式：png</div>
+                    <div className='text-grey font-12'>像素大小：512 * 512</div>
+                    <div className='text-grey font-12'>文件大小：小于2M</div>
+                    <div className='text-grey font-12' style={{ padding: '0 30px' }}>推荐小于264 * 264，最大不能超过 288 * 288</div>
+                  </div>
+                    )
+              }
+            </div>
+          </Spin>
         </div>
-      </Spin>
-    </div>
-    </Space>
+      </Space>
     </div>
   )
 }
