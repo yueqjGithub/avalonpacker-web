@@ -18,15 +18,22 @@ const IconConfig = ({ target, state, submitVal }: Props) => {
   const [loading, setLoading] = useState<boolean>(false)
   const { data: gameList = [] } = getApiDataState<AppDataRow[]>({ apiId: 'gamelist', state })
   const [filePath, setPath] = useState<string>('')
+  const [filePath1, setPath1] = useState<string>('')
+  const [filePath2, setPath2] = useState<string>('')
   const testUpload = () => {
     ref.current!.click()
   }
   useEffect(() => {
     if (target?.iconUrl) {
-      setPath(target.iconUrl)
+      const arr = target.iconUrl.split(',')
+      setPath(arr[0])
+      if (arr.length === 2) {
+        setPath1(arr[1])
+        setPath2(arr[2])
+      }
     }
   }, [target])
-  const uploadHandler = async (e:ChangeEvent<HTMLInputElement>) => {
+  const uploadHandler = async (e:ChangeEvent<HTMLInputElement>, index: number) => {
     const file = e.target.files ? e.target.files[0] : ''
     if (!file) {
       message.error('获取上传信息失败')
@@ -60,7 +67,11 @@ const IconConfig = ({ target, state, submitVal }: Props) => {
       if (res.status === 0) {
         message.success('上传成功')
         setPath(res.data)
-        submitVal({ keyname: 'iconUrl', val: res.data })
+        // 服务器不让新加字段，让使用一个字段用逗号隔开
+        const newData = [filePath, filePath1, filePath2]
+        newData[index] = res.data
+        const val = newData.join(',')
+        submitVal({ keyname: 'iconUrl', val: val })
       } else {
         message.error(res.error_msg || res.message)
       }
@@ -81,9 +92,10 @@ const IconConfig = ({ target, state, submitVal }: Props) => {
     })
   }
   return (
+    <>
     <div className='full-width'>
-      <input type="file" accept="image/png" ref={ref} style={{ display: 'none' }} onChange={e => uploadHandler(e)}/>
-      <p className='font-20'>渠道ICON上传</p>
+      <input type="file" accept="image/png" ref={ref} style={{ display: 'none' }} onChange={e => uploadHandler(e, 0)}/>
+      <p className='font-20'>普通ICON上传</p>
       <Spin spinning={loading}>
         <div className='full-width flex-row flex-jst-start flex-ali-center flex-wrap'>
           {
@@ -108,6 +120,63 @@ const IconConfig = ({ target, state, submitVal }: Props) => {
         </div>
       </Spin>
     </div>
+    <div className='full-width'>
+      <input type="file" accept="image/png" ref={ref} style={{ display: 'none' }} onChange={e => uploadHandler(e, 1)}/>
+      <p className='font-20'>背景图</p>
+      <Spin spinning={loading}>
+        <div className='full-width flex-row flex-jst-start flex-ali-center flex-wrap'>
+          {
+            filePath1
+              ? (
+              <div className={`${styles.uploadOut} ${styles.showImg} flex-col flex-jst-center flex-ali-center`}>
+                <img src={filePath1} alt="" className={`${styles.imgResult}`}/>
+                <div className={`${styles.delBtn}`}>
+                  <Button type='primary' size='small' danger shape='circle' icon={<CloseOutlined />} onClick={delIcon}></Button>
+                </div>
+              </div>
+                )
+              : (
+              <div className={`${styles.uploadOut} ${styles.ctrl} flex-col flex-jst-center flex-ali-center`}>
+                <Button type='primary' shape='circle' icon={<PlusOutlined />} size='large' onClick={() => testUpload()}></Button>
+                <div className='text-grey font-12'>上传格式：png</div>
+                <div className='text-grey font-12'>像素大小：512 * 512</div>
+                <div className='text-grey font-12'>文件大小：小于2M</div>
+              </div>
+                )
+          }
+        </div>
+      </Spin>
+    </div>
+    <div className='full-width'>
+      <input type="file" accept="image/png" ref={ref} style={{ display: 'none' }} onChange={e => uploadHandler(e, 2)}/>
+      <p className='font-20'>前景图</p>
+      <Spin spinning={loading}>
+        <div className='full-width flex-row flex-jst-start flex-ali-center flex-wrap'>
+          {
+            filePath2
+              ? (
+              <div className={`${styles.uploadOut} ${styles.showImg} flex-col flex-jst-center flex-ali-center`}>
+                <img src={filePath2} alt="" className={`${styles.imgResult}`}/>
+                <div className={`${styles.delBtn}`}>
+                  <Button type='primary' size='small' danger shape='circle' icon={<CloseOutlined />} onClick={delIcon}></Button>
+                </div>
+              </div>
+                )
+              : (
+              <div className={`${styles.uploadOut} ${styles.ctrl} flex-col flex-jst-center flex-ali-center`}>
+                <Button type='primary' shape='circle' icon={<PlusOutlined />} size='large' onClick={() => testUpload()}></Button>
+                <div className='text-grey font-12'>上传格式：png</div>
+                <div className='text-grey font-12'>像素大小：512 * 512</div>
+                <div className='text-grey font-12'>文件大小：小于2M</div>
+                <div className='text-grey font-12'>内容区域最好不大于264 * 264，最大不能超过 288 * 288</div>
+              </div>
+                )
+          }
+        </div>
+      </Spin>
+    </div>
+    </>
+
   )
 }
 
