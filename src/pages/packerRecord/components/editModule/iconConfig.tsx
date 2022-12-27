@@ -29,6 +29,7 @@ const IconConfig = ({ target, state, submitVal }: Props) => {
     if (target?.iconUrl) {
       const arr = target.iconUrl.split(',')
       setPath(arr[0])
+      console.log('arr', arr)
       if (arr.length === 2) {
         setPath1(arr[1])
         setPath2(arr[2])
@@ -199,7 +200,7 @@ const IconConfig = ({ target, state, submitVal }: Props) => {
                 <div className='text-grey font-12'>上传格式：png</div>
                 <div className='text-grey font-12'>像素大小：512 * 512</div>
                 <div className='text-grey font-12'>文件大小：小于2M</div>
-                <div className='text-grey font-12'>推荐小于264 * 264，最大不能超过 288 * 288</div>
+                <div className='text-grey font-12' style={{ padding: '0 30px' }}>推荐小于264 * 264，最大不能超过 288 * 288</div>
               </div>
                 )
           }
