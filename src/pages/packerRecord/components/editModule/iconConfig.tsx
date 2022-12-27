@@ -81,6 +81,7 @@ const IconConfig = ({ target, state, submitVal }: Props) => {
         const newData = [filePath, filePath1, filePath2]
         newData[index] = res.data
         const val = newData.join(',')
+        console.log('val', val)
         submitVal({ keyname: 'iconUrl', val: val })
       } else {
         message.error(res.error_msg || res.message)
