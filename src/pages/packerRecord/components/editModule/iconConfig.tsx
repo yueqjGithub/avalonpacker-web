@@ -15,14 +15,16 @@ type Props = {
 
 const IconConfig = ({ target, state, submitVal }: Props) => {
   const ref: MutableRefObject<any> = useRef(null)
+  const ref1: MutableRefObject<any> = useRef(null)
+  const ref2: MutableRefObject<any> = useRef(null)
   const [loading, setLoading] = useState<boolean>(false)
   const { data: gameList = [] } = getApiDataState<AppDataRow[]>({ apiId: 'gamelist', state })
   const [filePath, setPath] = useState<string>('')
   const [filePath1, setPath1] = useState<string>('')
   const [filePath2, setPath2] = useState<string>('')
-  const testUpload = () => {
-    ref.current!.click()
-  }
+  // const testUpload = () => {
+  //   ref.current!.click()
+  // }
   useEffect(() => {
     if (target?.iconUrl) {
       const arr = target.iconUrl.split(',')
@@ -78,7 +80,14 @@ const IconConfig = ({ target, state, submitVal }: Props) => {
     } catch (e) {
       message.error('上传出错')
     } finally {
-      ref.current.value = ''
+      if (index === 0) {
+        ref.current.value = ''
+      } else if (index === 1) {
+        ref1.current.value = ''
+      } else if (index === 2) {
+        ref2.current.value = ''
+      }
+
       setLoading(false)
     }
   }
@@ -110,7 +119,9 @@ const IconConfig = ({ target, state, submitVal }: Props) => {
                 )
               : (
               <div className={`${styles.uploadOut} ${styles.ctrl} flex-col flex-jst-center flex-ali-center`}>
-                <Button type='primary' shape='circle' icon={<PlusOutlined />} size='large' onClick={() => testUpload()}></Button>
+                <Button type='primary' shape='circle' icon={<PlusOutlined />} size='large' onClick={() => {
+                  ref.current!.click()
+                }}></Button>
                 <div className='text-grey font-12'>上传格式：png</div>
                 <div className='text-grey font-12'>像素大小：512 * 512</div>
                 <div className='text-grey font-12'>文件大小：小于2M</div>
@@ -121,7 +132,7 @@ const IconConfig = ({ target, state, submitVal }: Props) => {
       </Spin>
     </div>
     <div className='full-width'>
-      <input type="file" accept="image/png" ref={ref} style={{ display: 'none' }} onChange={e => uploadHandler(e, 1)}/>
+      <input type="file" accept="image/png" ref={ref1} style={{ display: 'none' }} onChange={e => uploadHandler(e, 1)}/>
       <p className='font-20'>背景图</p>
       <Spin spinning={loading}>
         <div className='full-width flex-row flex-jst-start flex-ali-center flex-wrap'>
@@ -137,7 +148,9 @@ const IconConfig = ({ target, state, submitVal }: Props) => {
                 )
               : (
               <div className={`${styles.uploadOut} ${styles.ctrl} flex-col flex-jst-center flex-ali-center`}>
-                <Button type='primary' shape='circle' icon={<PlusOutlined />} size='large' onClick={() => testUpload()}></Button>
+                <Button type='primary' shape='circle' icon={<PlusOutlined />} size='large' onClick={() => {
+                  ref1.current!.click()
+                }}></Button>
                 <div className='text-grey font-12'>上传格式：png</div>
                 <div className='text-grey font-12'>像素大小：512 * 512</div>
                 <div className='text-grey font-12'>文件大小：小于2M</div>
@@ -148,7 +161,7 @@ const IconConfig = ({ target, state, submitVal }: Props) => {
       </Spin>
     </div>
     <div className='full-width'>
-      <input type="file" accept="image/png" ref={ref} style={{ display: 'none' }} onChange={e => uploadHandler(e, 2)}/>
+      <input type="file" accept="image/png" ref={ref2} style={{ display: 'none' }} onChange={e => uploadHandler(e, 2)}/>
       <p className='font-20'>前景图</p>
       <Spin spinning={loading}>
         <div className='full-width flex-row flex-jst-start flex-ali-center flex-wrap'>
@@ -164,7 +177,9 @@ const IconConfig = ({ target, state, submitVal }: Props) => {
                 )
               : (
               <div className={`${styles.uploadOut} ${styles.ctrl} flex-col flex-jst-center flex-ali-center`}>
-                <Button type='primary' shape='circle' icon={<PlusOutlined />} size='large' onClick={() => testUpload()}></Button>
+                <Button type='primary' shape='circle' icon={<PlusOutlined />} size='large' onClick={() => {
+                  ref2.current!.click()
+                }}></Button>
                 <div className='text-grey font-12'>上传格式：png</div>
                 <div className='text-grey font-12'>像素大小：512 * 512</div>
                 <div className='text-grey font-12'>文件大小：小于2M</div>
